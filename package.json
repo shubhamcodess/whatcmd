@@ -1,0 +1,50 @@
+{
+  "name": "@shubhamcodess/cmdkit",
+  "version": "0.1.0",
+  "description": "Type plain English in your terminal, get a shell command back. Runs locally on Ollama, grounded in your own system.",
+  "type": "module",
+  "bin": {
+    "cmdkit": "dist/cli.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "!dist/**/*.test.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "build": "tsc -p . && chmod +x dist/cli.js",
+    "test": "npm run build && node --test \"dist/**/*.test.js\"",
+    "eval": "npm run build && node scripts/eval.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "cli",
+    "terminal",
+    "shell",
+    "ollama",
+    "llm",
+    "copilot",
+    "natural-language",
+    "bash",
+    "zsh"
+  ],
+  "author": "shubhamcodess",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubhamcodess/cmdkit.git"
+  },
+  "homepage": "https://github.com/shubhamcodess/cmdkit#readme",
+  "bugs": "https://github.com/shubhamcodess/cmdkit/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.3"
+  }
+}
