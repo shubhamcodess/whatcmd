@@ -53,7 +53,7 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - run: npm ci
       - id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Build (base path = the Pages URL path, e.g. /cmdkit/)
         run: npm run build
         env:
