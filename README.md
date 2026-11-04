@@ -25,25 +25,29 @@ Most of the time you know what you want to do but not the exact flags. whatcmd t
 
 ## Install
 
-> Requires Node.js 18.17 or newer and macOS or Linux (bash or zsh for the shortcut).
+Requirements: Node.js 18.17 or newer, macOS or Linux, and bash or zsh for the shortcut (any shell can use `whatcmd <request>`).
 
-Once version 0.1.0 is on npm (the release workflow publishes it on merge to `main`):
+Choose one of the two options. Both install the same `whatcmd` command.
+
+### Option 1: npm
 
 ```bash
 npm install -g @shubhamcodess/whatcmd
 whatcmd init
 ```
 
-Before that, install from source:
+### Option 2: release tarball
+
+Every release attaches the installable package to its GitHub release. Download it from the [releases page](https://github.com/shubhamcodess/cmdkit/releases), then install the file:
 
 ```bash
-git clone https://github.com/shubhamcodess/cmdkit whatcmd
-cd whatcmd
-npm ci
-npm run build
-npm install -g .          # puts the `whatcmd` command on your PATH
+npm install -g ./shubhamcodess-whatcmd-0.1.0.tgz
 whatcmd init
 ```
+
+Replace `0.1.0` with the version you downloaded. The tarball is the same file CI builds and tests, so it works without npm access.
+
+### Then: first-time setup
 
 `whatcmd init` walks you through setup:
 
@@ -53,7 +57,19 @@ whatcmd init
 4. Runs a test request and shows how fast it is.
 5. Adds the `/w` shortcut to your `~/.zshrc` (or `~/.bashrc`).
 
-Open a new terminal and type `/w <request>`. Any shell can use `whatcmd <request>` directly.
+Open a new terminal and type `/w <request>`.
+
+### Development: clone and install from source
+
+```bash
+git clone https://github.com/shubhamcodess/cmdkit whatcmd
+cd whatcmd
+npm ci                    # installs dependencies and builds dist/
+npm test                  # 30 unit tests
+npm install -g .          # installs the whatcmd command from this checkout
+```
+
+To change the code and see it immediately, run `npm run build` after each edit, or use `npm link` instead of `npm install -g .` and remember to `npm unlink -g @shubhamcodess/whatcmd` when you're done. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow.
 
 ## Use
 
