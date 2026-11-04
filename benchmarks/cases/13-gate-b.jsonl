@@ -1,0 +1,18 @@
+{"id":"gate-check-001","category":"gate","input":"ls -al","expect":{"type":"fn","fn":"check","args":["ls -al"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-002","category":"gate","input":"NONE","expect":{"type":"fn","fn":"check","args":["NONE"],"equals":{"ok":false,"reason":"not-a-shell-task"}}}
+{"id":"gate-check-003","category":"gate","input":"none","expect":{"type":"fn","fn":"check","args":["none"],"equals":{"ok":false,"reason":"not-a-shell-task"}}}
+{"id":"gate-check-004","category":"gate","input":"<empty string> (check)","expect":{"type":"fn","fn":"check","args":[""],"equals":{"ok":false,"reason":"empty"}}}
+{"id":"gate-check-005","category":"gate","input":"echo Hello there","expect":{"type":"fn","fn":"check","args":["echo Hello there"],"equals":{"ok":false,"reason":"chat-reply"}}}
+{"id":"gate-check-006","category":"gate","input":"echo hi","expect":{"type":"fn","fn":"check","args":["echo hi"],"equals":{"ok":false,"reason":"chat-reply"}}}
+{"id":"gate-check-007","category":"gate","input":"I can't help with that","expect":{"type":"fn","fn":"check","args":["I can't help with that"],"equals":{"ok":false,"reason":"unparseable"}}}
+{"id":"gate-check-008","category":"gate","input":"definitely-not-a-real-tool-xyz --now","expect":{"type":"fn","fn":"check","args":["definitely-not-a-real-tool-xyz --now"],"equals":{"ok":true,"missing":["definitely-not-a-real-tool-xyz"],"risks":[]}}}
+{"id":"gate-check-009","category":"gate","input":"echo $HOME","expect":{"type":"fn","fn":"check","args":["echo $HOME"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-010","category":"gate","input":"echo a | wc -c","expect":{"type":"fn","fn":"check","args":["echo a | wc -c"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-011","category":"gate","input":"echo hi > out.txt","expect":{"type":"fn","fn":"check","args":["echo hi > out.txt"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-012","category":"gate","input":"rm -rf build","expect":{"type":"fn","fn":"check","args":["rm -rf build"],"equals":{"ok":true,"missing":[],"risks":["deletes files recursively"]}}}
+{"id":"gate-check-013","category":"gate","input":"sudo definitely-not-here-xyz","expect":{"type":"fn","fn":"check","args":["sudo definitely-not-here-xyz"],"equals":{"ok":true,"missing":["definitely-not-here-xyz"],"risks":["runs as root"]}}}
+{"id":"gate-check-014","category":"gate","input":"git status","expect":{"type":"fn","fn":"check","args":["git status"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-015","category":"gate","input":"/bin/ls -la","expect":{"type":"fn","fn":"check","args":["/bin/ls -la"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-016","category":"gate","input":"./nonexistent-script.sh","expect":{"type":"fn","fn":"check","args":["./nonexistent-script.sh"],"equals":{"ok":true,"missing":[],"risks":[]}}}
+{"id":"gate-check-017","category":"gate","input":"Here is your command: ls -la","expect":{"type":"fn","fn":"check","args":["Here is your command: ls -la"],"equals":{"ok":true,"missing":["Here"],"risks":[]}}}
+{"id":"gate-check-018","category":"gate","input":"ls /nonexistent/path/xyz","expect":{"type":"fn","fn":"check","args":["ls /nonexistent/path/xyz"],"equals":{"ok":true,"missing":[],"risks":[]}}}

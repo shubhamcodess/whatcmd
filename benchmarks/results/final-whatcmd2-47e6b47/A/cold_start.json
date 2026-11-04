@@ -1,0 +1,21 @@
+{
+  "measured": true,
+  "runs": [
+    {
+      "ms": 804,
+      "exit": 0,
+      "command": "ls"
+    },
+    {
+      "ms": 816,
+      "exit": 0,
+      "command": "ls"
+    },
+    {
+      "ms": 817,
+      "exit": 0,
+      "command": "ls"
+    }
+  ],
+  "note": "ollama stop before each run, then CLI wall time incl. Node startup"
+}

@@ -1,0 +1,40 @@
+{"id":"ref-greet-001","category":"refusal","input":"hi","expect":{"type":"rejected"}}
+{"id":"ref-greet-002","category":"refusal","input":"hello there","expect":{"type":"rejected"}}
+{"id":"ref-greet-003","category":"refusal","input":"good morning!","expect":{"type":"rejected"}}
+{"id":"ref-greet-004","category":"refusal","input":"hey how are you","expect":{"type":"rejected"}}
+{"id":"ref-greet-005","category":"refusal","input":"yo","expect":{"type":"rejected"}}
+{"id":"ref-greet-006","category":"refusal","input":"heya","expect":{"type":"rejected"}}
+{"id":"ref-small-001","category":"refusal","input":"how's your day going?","expect":{"type":"rejected"}}
+{"id":"ref-small-002","category":"refusal","input":"what's your favorite color","expect":{"type":"rejected"}}
+{"id":"ref-small-003","category":"refusal","input":"tell me about yourself","expect":{"type":"rejected"}}
+{"id":"ref-small-004","category":"refusal","input":"are you conscious","expect":{"type":"rejected"}}
+{"id":"ref-small-005","category":"refusal","input":"do you like music","expect":{"type":"rejected"}}
+{"id":"ref-small-006","category":"refusal","input":"what should I have for lunch","expect":{"type":"rejected"}}
+{"id":"ref-trivia-001","category":"refusal","input":"who wrote Hamlet","expect":{"type":"rejected"}}
+{"id":"ref-trivia-002","category":"refusal","input":"what is the capital of France","expect":{"type":"rejected"}}
+{"id":"ref-trivia-003","category":"refusal","input":"how tall is Mount Everest","expect":{"type":"rejected"}}
+{"id":"ref-trivia-004","category":"refusal","input":"when did World War II end","expect":{"type":"rejected"}}
+{"id":"ref-trivia-005","category":"refusal","input":"what is the speed of light","expect":{"type":"rejected"}}
+{"id":"ref-trivia-006","category":"refusal","input":"who painted the Mona Lisa","expect":{"type":"rejected"}}
+{"id":"ref-trivia-007","category":"refusal","input":"what is the largest ocean on Earth","expect":{"type":"rejected"}}
+{"id":"ref-trivia-008","category":"refusal","input":"what is photosynthesis","expect":{"type":"rejected"}}
+{"id":"ref-math-001","category":"refusal","input":"If a train travels 60 miles in 1.5 hours, what is its average speed?","expect":{"type":"rejected"}}
+{"id":"ref-math-002","category":"refusal","input":"explain the intuition behind the fundamental theorem of calculus","expect":{"type":"rejected"}}
+{"id":"ref-math-003","category":"refusal","input":"prove that the square root of 2 is irrational","expect":{"type":"rejected"}}
+{"id":"ref-math-004","category":"refusal","input":"solve for x: 3x + 5 = 20","expect":{"type":"rejected"}}
+{"id":"ref-math-005","category":"refusal","input":"how many ways can 4 people sit in a row","expect":{"type":"rejected"}}
+{"id":"ref-math-006","category":"refusal","input":"integrate x squared from 0 to 3","expect":{"type":"rejected"}}
+{"id":"ref-math-007","category":"refusal","input":"what is the derivative of sin(x)","expect":{"type":"rejected"}}
+{"id":"ref-math-008","category":"refusal","input":"if I have 3 apples and eat 2, how many are left","expect":{"type":"rejected"}}
+{"id":"ref-math-009","category":"refusal","input":"what is the square root of 144","expect":{"type":"rejected"}}
+{"id":"ref-math-010","category":"refusal","input":"probability of rolling two sixes with two dice","expect":{"type":"rejected"}}
+{"id":"ref-creat-001","category":"refusal","input":"write a haiku about autumn","expect":{"type":"rejected"}}
+{"id":"ref-creat-002","category":"refusal","input":"tell me a short story about a dragon","expect":{"type":"rejected"}}
+{"id":"ref-creat-003","category":"refusal","input":"write a poem about the ocean","expect":{"type":"rejected"}}
+{"id":"ref-creat-004","category":"refusal","input":"compose a limerick about a cat","expect":{"type":"rejected"}}
+{"id":"ref-creat-005","category":"refusal","input":"write a song chorus about summer nights","expect":{"type":"rejected"}}
+{"id":"ref-creat-006","category":"refusal","input":"write a sonnet about time","expect":{"type":"rejected"}}
+{"id":"ref-creat-007","category":"refusal","input":"give me a fairy tale opening line","expect":{"type":"rejected"}}
+{"id":"ref-creat-008","category":"refusal","input":"describe a sunset in three sentences","expect":{"type":"rejected"}}
+{"id":"ref-small-007","category":"refusal","input":"thanks, that was helpful","expect":{"type":"rejected"}}
+{"id":"ref-advice-007","category":"refusal","input":"is it worth learning piano as an adult","expect":{"type":"rejected"}}

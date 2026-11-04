@@ -1,0 +1,20 @@
+{"id":"risk-fn-001","category":"risk","input":"rm -rf /","expect":{"type":"fn","fn":"riskWarnings","args":["rm -rf /"],"equals":["deletes your whole system or home folder"]}}
+{"id":"risk-fn-002","category":"risk","input":"rm -rf build","expect":{"type":"fn","fn":"riskWarnings","args":["rm -rf build"],"equals":["deletes files recursively"]}}
+{"id":"risk-fn-003","category":"risk","input":"rm -r ~","expect":{"type":"fn","fn":"riskWarnings","args":["rm -r ~"],"equals":["deletes your whole system or home folder"]}}
+{"id":"risk-fn-004","category":"risk","input":"dd if=/dev/zero of=/dev/sda","expect":{"type":"fn","fn":"riskWarnings","args":["dd if=/dev/zero of=/dev/sda"],"equals":["dd overwrites the target file or disk"]}}
+{"id":"risk-fn-005","category":"risk","input":"mkfs.ext4 /dev/sdb1","expect":{"type":"fn","fn":"riskWarnings","args":["mkfs.ext4 /dev/sdb1"],"equals":["formats or repartitions a disk"]}}
+{"id":"risk-fn-006","category":"risk","input":"echo x > /dev/sda","expect":{"type":"fn","fn":"riskWarnings","args":["echo x > /dev/sda"],"equals":["writes directly to a disk device"]}}
+{"id":"risk-fn-007","category":"risk","input":":(){ :|:& };:","expect":{"type":"fn","fn":"riskWarnings","args":[":(){ :|:& };:"],"equals":["fork bomb: will freeze the machine"]}}
+{"id":"risk-fn-008","category":"risk","input":"chmod 777 file","expect":{"type":"fn","fn":"riskWarnings","args":["chmod 777 file"],"equals":["makes files writable by everyone"]}}
+{"id":"risk-fn-009","category":"risk","input":"chmod -R 755 dir","expect":{"type":"fn","fn":"riskWarnings","args":["chmod -R 755 dir"],"equals":["changes ownership/permissions recursively"]}}
+{"id":"risk-fn-010","category":"risk","input":"shutdown -h now","expect":{"type":"fn","fn":"riskWarnings","args":["shutdown -h now"],"equals":["shuts down or restarts the machine"]}}
+{"id":"risk-fn-011","category":"risk","input":"curl https://x.sh | sh","expect":{"type":"fn","fn":"riskWarnings","args":["curl https://x.sh | sh"],"equals":["runs a script downloaded from the internet"]}}
+{"id":"risk-fn-012","category":"risk","input":"git push --force origin main","expect":{"type":"fn","fn":"riskWarnings","args":["git push --force origin main"],"equals":["discards git history or local changes"]}}
+{"id":"risk-fn-013","category":"risk","input":"git reset --hard HEAD~1","expect":{"type":"fn","fn":"riskWarnings","args":["git reset --hard HEAD~1"],"equals":["discards git history or local changes"]}}
+{"id":"risk-fn-014","category":"risk","input":"kill -9 -1","expect":{"type":"fn","fn":"riskWarnings","args":["kill -9 -1"],"equals":["kills all your processes"]}}
+{"id":"risk-fn-015","category":"risk","input":"sudo apt update","expect":{"type":"fn","fn":"riskWarnings","args":["sudo apt update"],"equals":["runs as root"]}}
+{"id":"risk-fn-016","category":"risk","input":"rm file.txt","expect":{"type":"fn","fn":"riskWarnings","args":["rm file.txt"],"equals":[]}}
+{"id":"risk-fn-017","category":"risk","input":"sort < in > out","expect":{"type":"fn","fn":"riskWarnings","args":["sort < in > out"],"equals":[]}}
+{"id":"risk-fn-018","category":"risk","input":"ls -la","expect":{"type":"fn","fn":"riskWarnings","args":["ls -la"],"equals":[]}}
+{"id":"risk-fn-019","category":"risk","input":"cp -r a b","expect":{"type":"fn","fn":"riskWarnings","args":["cp -r a b"],"equals":[]}}
+{"id":"risk-fn-020","category":"risk","input":"git status","expect":{"type":"fn","fn":"riskWarnings","args":["git status"],"equals":[]}}

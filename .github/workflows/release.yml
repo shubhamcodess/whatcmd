@@ -1,0 +1,155 @@
+name: Release
+
+# Runs on every push to main, which is what a merged pull request produces.
+# If package.json's version has no tag yet, it:
+#   1. tests the package again,
+#   2. publishes it to npm with provenance (only when the NPM_TOKEN secret exists),
+#   3. verifies the registry install (only after a real publish),
+#   4. creates the tag vX.Y.Z and the GitHub release, with notes from the CHANGELOG.md section and the tarball attached.
+# A push that does not change the version does nothing.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Is this a new version?
+    runs-on: ubuntu-latest
+    outputs:
+      needed: ${{ steps.plan.outputs.needed }}
+      name: ${{ steps.plan.outputs.name }}
+      version: ${{ steps.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        name: Read name and version, check for an existing tag
+        run: |
+          set -euo pipefail
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          case "$NAME" in @*/*) ;; *) echo "::error::package name must be scoped (@scope/name)"; exit 1;; esac
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            NEEDED=false
+          else
+            NEEDED=true
+          fi
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "needed=$NEEDED" >> "$GITHUB_OUTPUT"
+          echo "$NAME@$VERSION: tag v$VERSION exists = $([ "$NEEDED" = true ] && echo no || echo yes)"
+
+  test:
+    name: Test and check the package
+    needs: plan
+    if: needs.plan.outputs.needed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Release notes exist for this version
+        run: node scripts/release-notes.mjs "${{ needs.plan.outputs.version }}" > /dev/null
+      - run: node scripts/check-pack.mjs
+
+  publish:
+    name: Publish to npm
+    needs: [plan, test]
+    if: needs.plan.outputs.needed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance
+    env:
+      HAS_TOKEN: ${{ secrets.NPM_TOKEN != '' }}
+    outputs:
+      published: ${{ steps.publish.outputs.published }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - id: publish
+        name: Publish (skipped with a notice when NPM_TOKEN is not set)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NAME: ${{ needs.plan.outputs.name }}
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          set -euo pipefail
+          echo "published=false" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_TOKEN" != "true" ]; then
+            echo "::notice::NPM_TOKEN is not set: $NAME@$VERSION not published. The GitHub release is still created."
+            exit 0
+          fi
+          if [ "$(npm view "$NAME@$VERSION" version 2>/dev/null || true)" = "$VERSION" ]; then
+            echo "::notice::$NAME@$VERSION is already on the registry"
+            exit 0
+          fi
+          npm publish --provenance --access public
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+  verify:
+    name: Verify the registry install
+    needs: [plan, publish]
+    if: needs.publish.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERIFY_PROVENANCE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+      - run: bash scripts/verify-registry.sh "${{ needs.plan.outputs.name }}" "${{ needs.plan.outputs.version }}"
+
+  release:
+    name: Tag and GitHub release
+    needs: [plan, test, publish]
+    if: needs.plan.outputs.needed == 'true' && needs.test.result == 'success' && needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the tag and the release
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NAME: ${{ needs.plan.outputs.name }}
+      VERSION: ${{ needs.plan.outputs.version }}
+      PUBLISHED: ${{ needs.publish.outputs.published }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: npm
+      - run: npm ci
+      - name: Build the tarball (the same one the package check tested)
+        run: npm pack
+      - name: Release notes from CHANGELOG.md
+        run: |
+          node scripts/release-notes.mjs "$VERSION" > notes.md
+          if [ "$PUBLISHED" = "true" ]; then
+            printf '\n---\nnpm: https://www.npmjs.com/package/%s/v/%s\n' "$NAME" "$VERSION" >> notes.md
+          else
+            printf '\n---\nNot published to npm yet (NPM_TOKEN was not set when this release was made).\n' >> notes.md
+          fi
+      - name: Create tag v<version> and the GitHub release
+        run: |
+          set -euo pipefail
+          gh release create "v$VERSION" ./*.tgz \
+            --target "$GITHUB_SHA" \
+            --title "v$VERSION" \
+            --notes-file notes.md

@@ -1,0 +1,20 @@
+{"id":"prof-sed-001","category":"profile","input":"edit config.txt in place replacing dev with prod","expect":{"type":"command","all":["sed\\s+-i\\s*(''|\"\")","config\\.txt"],"none":["sed\\s+-i\\s+['\"]?s"]}}
+{"id":"prof-sed-002","category":"profile","input":"change every occurrence of cat to dog in notes.md, editing the file directly","expect":{"type":"command","all":["sed\\s+-i\\s*(''|\"\")","notes\\.md"],"none":["sed\\s+-i\\s+['\"]?s"]}}
+{"id":"prof-pkg-001","category":"profile","input":"install the package jq","expect":{"type":"command","all":["brew\\s+install\\s+jq"],"none":["apt|dnf|yum|pacman|apk"]}}
+{"id":"prof-pkg-002","category":"profile","input":"install ripgrep on this machine","expect":{"type":"command","all":["brew\\s+install\\s+(ripgrep|rg)"],"none":["apt|dnf|yum|pacman|apk"]}}
+{"id":"prof-pkg-003","category":"profile","input":"install the tree command","expect":{"type":"command","all":["brew\\s+install\\s+tree"],"none":["apt|dnf|yum|pacman|apk"]}}
+{"id":"prof-stat-001","category":"profile","input":"show the creation date of notes.txt","expect":{"type":"command","all":["notes\\.txt"],"any":["stat\\s+-f","ls\\s+-[a-zA-Z]*[lT]"],"none":["stat\\s+-c"]}}
+{"id":"prof-stat-002","category":"profile","input":"print the size of big.iso in bytes","expect":{"type":"command","all":["big\\.iso"],"any":["stat\\s+-f","wc\\s+-c","ls\\s+-l","du"],"none":["stat\\s+-c"]}}
+{"id":"prof-date-001","category":"profile","input":"show the date 30 days ago as YYYY-MM-DD","expect":{"type":"command","all":["date\\s+-v\\s*-30d"],"none":["date\\s+-d"]}}
+{"id":"prof-port-001","category":"profile","input":"list the processes listening on TCP port 5000","expect":{"type":"command","all":["5000"],"any":["lsof","netstat"],"none":["\\bss\\b"]}}
+{"id":"prof-port-002","category":"profile","input":"which process is using port 8000","expect":{"type":"command","all":["8000"],"any":["lsof","netstat","fuser"],"none":["\\bss\\b"]}}
+{"id":"prof-svc-001","category":"profile","input":"restart the nginx service","expect":{"type":"command","all":["nginx"],"any":["brew\\s+services\\s+restart","launchctl","nginx\\s+-s\\s+reload","sudo\\s+nginx"],"none":["systemctl"]}}
+{"id":"prof-svc-002","category":"profile","input":"show the status of the postgresql service","expect":{"type":"command","all":["postgres"],"any":["brew\\s+services","launchctl","pg_ctl"],"none":["systemctl"]}}
+{"id":"prof-svc-003","category":"profile","input":"check whether the docker daemon is running","expect":{"type":"command","all":["docker"],"any":["docker\\s+(info|version|ps|system)","brew\\s+services","launchctl","pgrep","ps\\s"],"none":["systemctl"]}}
+{"id":"prof-misc-001","category":"profile","input":"show the uptime and load of this machine","expect":{"type":"command","all":["uptime"],"none":["uptime\\s+-p"]}}
+{"id":"prof-misc-002","category":"profile","input":"copy the current date and time to the clipboard","expect":{"type":"command","all":["date"],"any":["pbcopy"],"none":["xclip","wl-copy","xsel"]}}
+{"id":"prof-misc-003","category":"profile","input":"open the file report.pdf","expect":{"type":"command","all":["report\\.pdf"],"any":["\\bopen\\b"],"none":["xdg-open"]}}
+{"id":"prof-misc-004","category":"profile","input":"show the network interfaces and their IP addresses","expect":{"type":"command","all":["ifconfig|ipconfig"],"none":["\\bip\\s+addr"]}}
+{"id":"prof-misc-005","category":"profile","input":"show disk usage of the root filesystem in human readable form","expect":{"type":"command","all":["\\bdf\\b"],"any":["-h"],"none":["lsblk"]}}
+{"id":"prof-misc-006","category":"profile","input":"list all installed homebrew formulae","expect":{"type":"command","all":["brew\\s+(list|ls)"]}}
+{"id":"prof-misc-007","category":"profile","input":"show the memory usage of the system","expect":{"type":"command","all":["vm_stat|top|sysctl|memory_pressure|system_profiler"],"none":["\\bfree\\s+-","/proc/meminfo"]}}

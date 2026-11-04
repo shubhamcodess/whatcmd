@@ -1,0 +1,20 @@
+# npm run eval, whatcmd commit 47e6b47, model qwen2.5-coder:1.5b, grounding on
+# date: 2026-11-04T18:36:16Z (UTC), machine: Apple M4 Pro, macOS 15.6.1, Ollama 0.40.14
+FAIL  show free memory in megabytes  =>  vm_stat
+FAIL  list the 10 biggest directories here  =>  ls -lh | sort -rh | head -n 10
+FAIL  show environment variables containing PATH  =>  echo $PATH
+FAIL  show cpu info  =>  sysctl -n machdep.cpu.brand_string, sysctl hw.ncpu
+FAIL  use jq to print only the raw name field of data.json  =>  jq '.name' data.json
+FAIL  who is logged in right now  =>  whoami
+FAIL  list my cron jobs  =>  jobs
+FAIL  how many seconds are in a day, calculated in the shell  =>  (rejected: not-a-shell-task)
+FAIL  show the system load  =>  (rejected: not-a-shell-task)
+FAIL  show the process tree  =>  ps aux
+FAIL  show CPU info  =>  sysctl -n machdep.cpu.brand_string, sysctl hw.ncpu
+FAIL  schedule a job to run every day at 9am  =>  (rejected: not-a-shell-task)
+FAIL  let group members write to the shared folder  =>  man write
+LEAK  prove that the square root of 2 is irrational  =>  prove -e 'sqrt(2) != int(sqrt(2))'
+model qwen2.5-coder:1.5b | grounding on
+valid requests answered correctly: 35/48
+non-shell requests blocked:        34/35
+latency p50 105 ms, p90 218 ms, max 645 ms

@@ -1,0 +1,45 @@
+{"id":"gen-files-001","category":"generation","input":"find files larger than 100MB","expect":{"type":"command","all":["\\bfind\\b","-size\\s+\\+?100M"],"none":["\\brm\\b"]}}
+{"id":"gen-files-002","category":"generation","input":"how do I list all txt files in this folder recursively","expect":{"type":"command","all":["\\.txt"],"any":["\\bfind\\b","\\bls\\b"],"none":["\\brm\\b"]}}
+{"id":"gen-files-003","category":"generation","input":"search for the word TODO in all python files","expect":{"type":"command","all":["TODO","\\.py"],"any":["\\bgrep\\b","\\brg\\b","\\bfind\\b"],"none":["\\brm\\b"]}}
+{"id":"gen-files-004","category":"generation","input":"find empty directories under ~/Downloads","expect":{"type":"command","all":["\\bfind\\b","Downloads"],"any":["-empty","-type\\s+d"],"none":["\\brm\\b"]}}
+{"id":"gen-files-005","category":"generation","input":"show me the 10 most recently modified files in this folder","expect":{"type":"command","all":["\\bls\\b|\\bfind\\b"],"any":["-[a-zA-Z]*t","mtime","sort"],"none":["\\brm\\b"]}}
+{"id":"gen-files-006","category":"generation","input":"rename all .jpeg files to .jpg","expect":{"type":"command","all":["\\.jpeg","\\.jpg"],"any":["\\bfor\\b","\\bmv\\b","rename"],"none":["\\brm\\b"]}}
+{"id":"gen-files-007","category":"generation","input":"how do i find the largest files in my home directory","expect":{"type":"command","all":["\\bfind\\b|\\bdu\\b|\\bls\\b"],"any":["-size","sort","\\bdu\\b","-S\\b"],"none":["\\brm\\b"]}}
+{"id":"gen-files-008","category":"generation","input":"delete all .DS_Store files under this folder","expect":{"type":"command","all":["\\.DS_Store"],"any":["\\bfind\\b","\\brm\\b"]}}
+{"id":"gen-files-009","category":"generation","input":"count the number of files in the current directory","expect":{"type":"command","all":["wc"],"any":["\\bls\\b","\\bfind\\b"],"none":["\\brm\\b"]}}
+{"id":"gen-files-010","category":"generation","input":"find files named 'config.yaml' anywhere under /etc","expect":{"type":"command","all":["\\bfind\\b","config\\.yaml","/etc"],"none":["\\brm\\b"]}}
+{"id":"gen-files-011","category":"generation","input":"list the hidden files in this directory","expect":{"type":"command","all":["\\bls\\b"],"any":["-a\\b","-la","-al","-A\\b"],"none":["\\brm\\b"]}}
+{"id":"gen-files-012","category":"generation","input":"find files modified in the last 24 hours","expect":{"type":"command","all":["\\bfind\\b"],"any":["-mtime\\s+-1","-mmin\\s+-1440","-newer"],"none":["\\brm\\b"]}}
+{"id":"gen-files-013","category":"generation","input":"search *.log files in /var/log for the text error","expect":{"type":"command","all":["error","\\.log"],"any":["\\bgrep\\b","\\brg\\b","\\bfind\\b"],"none":["\\brm\\b"]}}
+{"id":"gen-files-014","category":"generation","input":"wher is the file called report.pdf located??","expect":{"type":"command","all":["report\\.pdf"],"any":["\\bfind\\b","mdfind","locate"],"none":["\\brm\\b"]}}
+{"id":"gen-files-015","category":"generation","input":"show folder sizes sorted biggest first in this directory","expect":{"type":"command","all":["\\bdu\\b"],"any":["sort"],"none":["\\brm\\b"]}}
+{"id":"gen-text-001","category":"generation","input":"count lines in access.log","expect":{"type":"command","all":["\\bwc\\b","access\\.log"],"any":["-l"]}}
+{"id":"gen-text-002","category":"generation","input":"replace foo with bar in all txt files in place","expect":{"type":"command","all":["foo","bar"],"any":["sed\\s+-i","perl"]}}
+{"id":"gen-text-003","category":"generation","input":"print the third column of data.csv","expect":{"type":"command","all":["data\\.csv"],"any":["awk","cut"]}}
+{"id":"gen-text-004","category":"generation","input":"remove duplicate lines from names.txt and sort them","expect":{"type":"command","all":["names\\.txt","sort"],"any":["uniq","sort\\s+-u"]}}
+{"id":"gen-text-005","category":"generation","input":"show the lines of app.log that contain 'timeout' with line numbers","expect":{"type":"command","all":["app\\.log","timeout"],"any":["-n","NR"]}}
+{"id":"gen-text-006","category":"generation","input":"join the lines in list.txt with commas","expect":{"type":"command","all":["list\\.txt"],"any":["paste","tr","sed","awk"]}}
+{"id":"gen-text-007","category":"generation","input":"count how many times the word the appears in book.txt","expect":{"type":"command","all":["book\\.txt","\\bthe\\b"],"any":["grep","wc","tr"]}}
+{"id":"gen-text-008","category":"generation","input":"show the first 5 lines of big.csv","expect":{"type":"command","all":["big\\.csv","head"],"any":["-5","-n\\s*5"]}}
+{"id":"gen-text-009","category":"generation","input":"print lines 20 to 30 of notes.md","expect":{"type":"command","all":["notes\\.md"],"any":["sed","awk","head","tail"]}}
+{"id":"gen-text-010","category":"generation","input":"convert input.txt to uppercase and print it","expect":{"type":"command","all":["input\\.txt"],"any":["tr","awk","sed"],"none":["\\brm\\b"]}}
+{"id":"gen-text-011","category":"generation","input":"what's the longest line in story.txt?","expect":{"type":"command","all":["story\\.txt"],"any":["awk","wc","sort","grep"]}}
+{"id":"gen-text-012","category":"generation","input":"sort the entries in ranks.txt numerically, highest first","expect":{"type":"command","all":["ranks\\.txt","sort"],"any":["-n","-rn","-nr","-k"]}}
+{"id":"gen-text-013","category":"generation","input":"extract all email addresses from contacts.txt","expect":{"type":"command","all":["contacts\\.txt"],"any":["grep","sed","awk","rg"]}}
+{"id":"gen-text-014","category":"generation","input":"replace 'old text' with 'new text' in every file of this folder","expect":{"type":"command","all":["old.text","new.text"],"any":["sed","perl"]}}
+{"id":"gen-text-015","category":"generation","input":"how do I print the number of characters in words.txt","expect":{"type":"command","all":["words\\.txt"],"any":["wc\\s+-c","wc\\s+-m","awk"]}}
+{"id":"gen-proc-001","category":"generation","input":"list all running processes","expect":{"type":"command","all":["\\bps\\b|\\btop\\b|\\bhtop\\b"]}}
+{"id":"gen-proc-002","category":"generation","input":"find the PID of firefox","expect":{"type":"command","all":["firefox"],"any":["pgrep","\\bps\\b","pidof"]}}
+{"id":"gen-proc-003","category":"generation","input":"kill the process named node","expect":{"type":"command","all":["node"],"any":["pkill","killall","kill"],"none":["kill\\s+-9\\s+-1"]}}
+{"id":"gen-proc-004","category":"generation","input":"show the 5 processes using the most CPU","expect":{"type":"command","all":["\\bps\\b|\\btop\\b"],"any":["%cpu","-r","sort","cpu"]}}
+{"id":"gen-proc-005","category":"generation","input":"how much memory is my top process using","expect":{"type":"command","all":["\\bps\\b|\\btop\\b"],"any":["mem","rss","vsz","-m"]}}
+{"id":"gen-proc-006","category":"generation","input":"which process is listening on port 3000","expect":{"type":"command","all":["3000"],"any":["lsof","netstat","fuser"]}}
+{"id":"gen-proc-007","category":"generation","input":"run sleep 100 in the background so it keeps going after I log out","expect":{"type":"command","all":["sleep\\s+100"],"any":["nohup","&","disown","screen","tmux"]}}
+{"id":"gen-proc-008","category":"generation","input":"list all processes owned by user bob","expect":{"type":"command","all":["bob"],"any":["\\bps\\b","pgrep","top"]}}
+{"id":"gen-proc-009","category":"generation","input":"stop all java processes","expect":{"type":"command","all":["java"],"any":["pkill","killall","kill"],"none":["kill\\s+-9\\s+-1"]}}
+{"id":"gen-proc-010","category":"generation","input":"watch the load average every 2 seconds","expect":{"type":"command","all":["uptime|top|watch|sysctl|vm_stat|while"]}}
+{"id":"gen-proc-011","category":"generation","input":"show a live view of processes sorted by memory","expect":{"type":"command","all":["top|htop|ps"],"any":["mem","rsize","sort","-o"]}}
+{"id":"gen-proc-012","category":"generation","input":"how long has my computer been running","expect":{"type":"command","all":["uptime"]}}
+{"id":"gen-proc-013","category":"generation","input":"list zombie processes","expect":{"type":"command","all":["\\bps\\b"],"any":["Z","stat","zombie","state"]}}
+{"id":"gen-proc-014","category":"generation","input":"kill the process with PID 4321","expect":{"type":"command","all":["kill","4321"],"none":["-9\\s+-1"]}}
+{"id":"gen-proc-015","category":"generation","input":"show the process tree","expect":{"type":"command","all":["\\bps\\b|\\btop\\b|pstree"],"any":["-axf","-f","tree","pstree"]}}

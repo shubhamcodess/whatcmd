@@ -1,0 +1,45 @@
+{"id":"gen-net-001","category":"generation","input":"what's using port 8080","expect":{"type":"command","all":["8080"],"any":["lsof","netstat","fuser"]}}
+{"id":"gen-net-002","category":"generation","input":"show my IP address","expect":{"type":"command","all":["ifconfig|ipconfig|curl|hostname"]}}
+{"id":"gen-net-003","category":"generation","input":"ping google.com 4 times","expect":{"type":"command","all":["\\bping\\b","google\\.com"],"any":["-c\\s*4"]}}
+{"id":"gen-net-004","category":"generation","input":"download the file https://example.com/a.zip into the current folder","expect":{"type":"command","all":["curl","example\\.com/a\\.zip"]}}
+{"id":"gen-net-005","category":"generation","input":"check if port 443 is open on example.com","expect":{"type":"command","all":["example\\.com"],"any":["nc","telnet","curl","nmap","openssl"]}}
+{"id":"gen-net-006","category":"generation","input":"show the DNS records for github.com","expect":{"type":"command","all":["github\\.com"],"any":["dig","nslookup","host"]}}
+{"id":"gen-net-007","category":"generation","input":"list all open network connections","expect":{"type":"command","all":["lsof|netstat"],"any":["-i","-an","-tn","-n"]}}
+{"id":"gen-net-008","category":"generation","input":"show the routing table","expect":{"type":"command","all":["netstat|route|ip"],"any":["-r","route","table"]}}
+{"id":"gen-net-009","category":"generation","input":"how do I check my public IP using curl","expect":{"type":"command","all":["curl"],"any":["ifconfig\\.me","icanhazip","ipinfo","ipify","checkip","ip"]}}
+{"id":"gen-net-010","category":"generation","input":"measure the download speed of https://example.com/file with curl","expect":{"type":"command","all":["curl"],"any":["-w","time_total","speed","/dev/null"]}}
+{"id":"gen-net-011","category":"generation","input":"trace the route to 8.8.8.8","expect":{"type":"command","all":["8\\.8\\.8\\.8"],"any":["traceroute","tracepath","mtr","tracert"]}}
+{"id":"gen-net-012","category":"generation","input":"listen on port 9000 and show incoming messages","expect":{"type":"command","all":["9000"],"any":["nc","netcat","python3"]}}
+{"id":"gen-net-013","category":"generation","input":"show the open listening ports on this machine","expect":{"type":"command","all":["lsof|netstat|nmap"],"any":["-i","LISTEN","-an","-tln","-tn"]}}
+{"id":"gen-net-014","category":"generation","input":"copy report.pdf to user@server:/tmp with scp","expect":{"type":"command","all":["scp","report\\.pdf","server"]}}
+{"id":"gen-net-015","category":"generation","input":"what's my wifi network name","expect":{"type":"command","all":["networksetup|airport|wdutil|system_profiler"]}}
+{"id":"gen-arch-001","category":"generation","input":"compress the folder photos into photos.tar.gz","expect":{"type":"command","all":["\\btar\\b","photos\\.tar\\.gz","-[a-zA-Z]*c"]}}
+{"id":"gen-arch-002","category":"generation","input":"extract backup.tar.gz here","expect":{"type":"command","all":["\\btar\\b","backup\\.tar\\.gz"],"any":["-x","xf","xzf","zxf"]}}
+{"id":"gen-arch-003","category":"generation","input":"zip the src folder","expect":{"type":"command","all":["\\bzip\\b","src"],"any":["-r"]}}
+{"id":"gen-arch-004","category":"generation","input":"unzip archive.zip into the folder out","expect":{"type":"command","all":["unzip","archive\\.zip"],"any":["-d\\s*out","out"]}}
+{"id":"gen-arch-005","category":"generation","input":"list the contents of logs.tar.gz without extracting it","expect":{"type":"command","all":["\\btar\\b|zipinfo|unzip\\s+-l","logs\\.tar\\.gz"],"any":["-t","-tf","-tvf","-ztf","-tzf","unzip"]}}
+{"id":"gen-arch-006","category":"generation","input":"gzip a big file called dump.sql","expect":{"type":"command","all":["gzip|tar|pigz","dump\\.sql"],"any":["gzip","-z"]}}
+{"id":"gen-arch-007","category":"generation","input":"decompress data.gz","expect":{"type":"command","all":["data\\.gz"],"any":["gunzip","gzip\\s+-d","gzip\\s+-dk","-d"]}}
+{"id":"gen-arch-008","category":"generation","input":"create a zip archive of all png files in this folder","expect":{"type":"command","all":["zip"],"any":["\\.png"]}}
+{"id":"gen-arch-009","category":"generation","input":"tar up the directory 'my project' with spaces in its name","expect":{"type":"command","all":["\\btar\\b"],"any":["my\\\\? project","'my project'","\"my project\""]}}
+{"id":"gen-arch-010","category":"generation","input":"show the size of archive.zip before extracting","expect":{"type":"command","all":["archive\\.zip"],"any":["ls","du","stat","zipinfo","unzip\\s+-l"]}}
+{"id":"gen-arch-011","category":"generation","input":"bzip2 compress notes.txt","expect":{"type":"command","all":["notes\\.txt"],"any":["bzip2","tar\\s+-[a-z]*j"]}}
+{"id":"gen-arch-012","category":"generation","input":"xz compress huge.iso","expect":{"type":"command","all":["huge\\.iso"],"any":["xz","-J"]}}
+{"id":"gen-arch-013","category":"generation","input":"add newfile.txt to the existing archive old.tar","expect":{"type":"command","all":["\\btar\\b","old\\.tar","newfile\\.txt"],"any":["-r","-u","-rf","-uf"]}}
+{"id":"gen-arch-014","category":"generation","input":"extract only config.json from backup.zip","expect":{"type":"command","all":["backup\\.(zip|tar)","config\\.json"],"any":["unzip","tar"]}}
+{"id":"gen-arch-015","category":"generation","input":"make a tar archive of the docs folder but leave out .git","expect":{"type":"command","all":["\\btar\\b|\\bzip\\b","docs"],"any":["exclude","-x","\\.git"]}}
+{"id":"gen-git-001","category":"generation","input":"show the last 5 commits","expect":{"type":"command","all":["git\\s+log"],"any":["-5","-n\\s*5","-n5","--oneline"]}}
+{"id":"gen-git-002","category":"generation","input":"undo my last commit but keep the changes","expect":{"type":"command","all":["git\\s+reset"],"any":["--soft","HEAD~1","HEAD\\^","HEAD~"],"none":["--hard"]}}
+{"id":"gen-git-003","category":"generation","input":"create a new branch called feature-login","expect":{"type":"command","all":["git","feature-login"],"any":["checkout\\s+-b","switch\\s+-c","branch"]}}
+{"id":"gen-git-004","category":"generation","input":"show what changed in the working tree","expect":{"type":"command","all":["git\\s+(diff|status)"]}}
+{"id":"gen-git-005","category":"generation","input":"stage everything and commit with the message 'fix typo'","expect":{"type":"command","all":["git","fix typo"],"any":["add","commit"]}}
+{"id":"gen-git-006","category":"generation","input":"list all branches including remote ones","expect":{"type":"command","all":["git\\s+branch"],"any":["-a","--all","-r"]}}
+{"id":"gen-git-007","category":"generation","input":"delete the local branch old-experiment","expect":{"type":"command","all":["git\\s+branch","old-experiment"],"any":["-d","-D"]}}
+{"id":"gen-git-008","category":"generation","input":"push my branch to origin and set the upstream","expect":{"type":"command","all":["git\\s+push","origin"],"any":["-u","--set-upstream"]}}
+{"id":"gen-git-009","category":"generation","input":"show who last changed each line of README.md","expect":{"type":"command","all":["git\\s+blame","README\\.md"]}}
+{"id":"gen-git-010","category":"generation","input":"stash my changes","expect":{"type":"command","all":["git\\s+stash"]}}
+{"id":"gen-git-011","category":"generation","input":"show the commit graph in one line per commit","expect":{"type":"command","all":["git\\s+log"],"any":["--graph","--oneline","--all"]}}
+{"id":"gen-git-012","category":"generation","input":"pull the latest changes from origin","expect":{"type":"command","all":["git\\s+(pull|fetch)"]}}
+{"id":"gen-git-013","category":"generation","input":"show the diff of the last commit","expect":{"type":"command","all":["git\\s+(show|diff)"]}}
+{"id":"gen-git-014","category":"generation","input":"make a new git repo here","expect":{"type":"command","all":["git\\s+init"]}}
+{"id":"gen-git-015","category":"generation","input":"list the files tracked by git in this repo","expect":{"type":"command","all":["git\\s+(ls-files|ls-tree)"]}}

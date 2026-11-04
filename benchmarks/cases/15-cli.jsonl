@@ -1,0 +1,20 @@
+{"id":"cli-version-001","category":"cli","input":"--version","expect":{"type":"cli","argv":["--version"],"exit":0,"stdout":"^\\d+\\.\\d+\\.\\d+"}}
+{"id":"cli-noargs-001","category":"cli","input":"no arguments","expect":{"type":"cli","argv":[],"exit":1,"stdout":"Usage"}}
+{"id":"cli-help-001","category":"cli","input":"--help","expect":{"type":"cli","argv":["--help"],"exit":0,"stdout":"Usage"}}
+{"id":"cli-raw-001","category":"cli","input":"--raw on a valid request","expect":{"type":"cli","argv":["--raw","--","find files larger than 100MB"],"exit":0,"stdout":"\\S"}}
+{"id":"cli-raw-002","category":"cli","input":"--raw on a joke","expect":{"type":"cli","argv":["--raw","--","tell me a joke"],"exit":2,"stderr":"not a shell task"}}
+{"id":"cli-host-001","category":"cli","input":"unreachable host from WHATCMD_HOST","expect":{"type":"cli","env":{"WHATCMD_HOST":"127.0.0.1:1"},"argv":["--raw","--","list files"],"exit":1,"stderr":"Cannot reach Ollama"}}
+{"id":"cli-model-001","category":"cli","input":"--model with a missing model","expect":{"type":"cli","argv":["--model=does-not-exist:1b","--raw","--","list files"],"exit":1,"stderr":"is not downloaded"}}
+{"id":"cli-models-001","category":"cli","input":"models lists the default model","expect":{"type":"cli","argv":["models"],"exit":0,"stdout":"qwen2\\.5-coder:1\\.5b"}}
+{"id":"cli-profile-001","category":"cli","input":"profile prints the target system","expect":{"type":"cli","argv":["profile"],"exit":0,"stdout":"Target system:"}}
+{"id":"cli-shell-001","category":"cli","input":"shell bash prints the hook","expect":{"type":"cli","argv":["shell","bash"],"exit":0,"stdout":"whatcmd shell hook for bash"}}
+{"id":"cli-shell-002","category":"cli","input":"shell zsh prints the hook","expect":{"type":"cli","argv":["shell","zsh"],"exit":0,"stdout":"whatcmd shell hook for zsh"}}
+{"id":"cli-init-request-001","category":"cli","input":"init a git repo is a request","expect":{"type":"cli","argv":["init","a","git","repo"],"exit":0,"stdout":"git init"}}
+{"id":"cli-debug-001","category":"cli","input":"--debug prints timings on stderr","expect":{"type":"cli","argv":["--debug","--raw","--","list files in this folder"],"exit":0,"stderr":"timings"}}
+{"id":"cli-doctor-001","category":"cli","input":"doctor --yes in a sandbox HOME","expect":{"type":"cli","env":{"HOME":"SANDBOX"},"argv":["doctor","--yes"],"exit":0,"stderr":"is ready"}}
+{"id":"cli-raw-003","category":"cli","input":"--raw with no request","expect":{"type":"cli","argv":["--raw"],"exit":1,"stdout":"Usage"}}
+{"id":"cli-use-001","category":"cli","input":"use the default model","expect":{"type":"cli","argv":["use","qwen2.5-coder:1.5b"],"exit":0,"stderr":"Now using"}}
+{"id":"cli-uninstall-001","category":"cli","input":"uninstall with no shortcut installed","expect":{"type":"cli","env":{"HOME":"SANDBOX"},"argv":["uninstall"],"exit":0,"stderr":"No shortcut was installed"}}
+{"id":"cli-version-002","category":"cli","input":"-v short flag","expect":{"type":"cli","argv":["-v"],"exit":0,"stdout":"^\\d+\\.\\d+\\.\\d+"}}
+{"id":"cli-models-002","category":"cli","input":"models with unreachable host","expect":{"type":"cli","env":{"WHATCMD_HOST":"127.0.0.1:1"},"argv":["models"],"exit":1,"stderr":"Cannot reach Ollama"}}
+{"id":"cli-profile-002","category":"cli","input":"profile --refresh re-detects","expect":{"type":"cli","argv":["profile","--refresh"],"exit":0,"stdout":"Target system:"}}
