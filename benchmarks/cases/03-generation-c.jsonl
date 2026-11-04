@@ -1,0 +1,45 @@
+{"id":"gen-docker-001","category":"generation","input":"list running docker containers","expect":{"type":"command","all":["docker\\s+(ps|container\\s+ls)"]}}
+{"id":"gen-docker-002","category":"generation","input":"show all docker containers including stopped ones","expect":{"type":"command","all":["docker\\s+(ps|container\\s+ls)"],"any":["-a"]}}
+{"id":"gen-docker-003","category":"generation","input":"remove all stopped containers","expect":{"type":"command","all":["docker"],"any":["container\\s+prune","\\brm\\b","ps.*-a"],"none":["--volumes"]}}
+{"id":"gen-docker-004","category":"generation","input":"show docker images sorted by size","expect":{"type":"command","all":["docker\\s+images"],"any":["sort","--format","size"]}}
+{"id":"gen-docker-005","category":"generation","input":"how much disk space is docker using","expect":{"type":"command","all":["docker\\s+system\\s+df"]}}
+{"id":"gen-docker-006","category":"generation","input":"get the logs of container web","expect":{"type":"command","all":["docker\\s+logs","web"]}}
+{"id":"gen-docker-007","category":"generation","input":"stop all running containers","expect":{"type":"command","all":["docker"],"any":["stop","kill"]}}
+{"id":"gen-docker-008","category":"generation","input":"open a shell inside the container api","expect":{"type":"command","all":["docker\\s+(exec|run)","api"],"any":["-it","-i","sh","bash"]}}
+{"id":"gen-docker-009","category":"generation","input":"pull the nginx image","expect":{"type":"command","all":["docker\\s+pull","nginx"]}}
+{"id":"gen-docker-010","category":"generation","input":"build a docker image named myapp from the current folder","expect":{"type":"command","all":["docker\\s+build","myapp"],"any":["-t\\s","--tag"]}}
+{"id":"gen-docker-011","category":"generation","input":"list docker volumes","expect":{"type":"command","all":["docker\\s+volume"]}}
+{"id":"gen-docker-012","category":"generation","input":"show resource usage of running containers","expect":{"type":"command","all":["docker\\s+(stats|top)"]}}
+{"id":"gen-docker-013","category":"generation","input":"remove unused docker images","expect":{"type":"command","all":["docker\\s+(image\\s+prune|rmi|system\\s+prune)"]}}
+{"id":"gen-docker-014","category":"generation","input":"start the docker compose stack in the background","expect":{"type":"command","all":["docker(-compose|\\s+compose)\\s+up"],"any":["-d"]}}
+{"id":"gen-docker-015","category":"generation","input":"what is the ip address of container web","expect":{"type":"command","all":["docker\\s+inspect","web"]}}
+{"id":"gen-sys-001","category":"generation","input":"show free disk space","expect":{"type":"command","all":["\\bdf\\b"],"any":["-h"]}}
+{"id":"gen-sys-002","category":"generation","input":"how big is my home folder","expect":{"type":"command","all":["\\bdu\\b"],"any":["-[a-z]*s"]}}
+{"id":"gen-sys-003","category":"generation","input":"which macOS version am I running","expect":{"type":"command","all":["sw_vers|uname|system_profiler"]}}
+{"id":"gen-sys-004","category":"generation","input":"show CPU info","expect":{"type":"command","all":["sysctl|system_profiler|top"],"any":["cpu","machdep"]}}
+{"id":"gen-sys-005","category":"generation","input":"how much RAM do I have","expect":{"type":"command","all":["sysctl|system_profiler|vm_stat|top"],"any":["memsize","hw\\.mem","Memory","vm_stat","free"]}}
+{"id":"gen-sys-006","category":"generation","input":"show battery status","expect":{"type":"command","all":["pmset|system_profiler|ioreg"],"any":["batt","Batt","power"]}}
+{"id":"gen-sys-007","category":"generation","input":"list all mounted drives","expect":{"type":"command","all":["df|mount|diskutil"]}}
+{"id":"gen-sys-008","category":"generation","input":"what's my hostname","expect":{"type":"command","all":["hostname|scutil|uname|sysctl"]}}
+{"id":"gen-sys-009","category":"generation","input":"show how long the system has been up","expect":{"type":"command","all":["uptime"]}}
+{"id":"gen-sys-010","category":"generation","input":"list the USB devices plugged in","expect":{"type":"command","all":["system_profiler|ioreg|lsusb"],"any":["USB","usb"]}}
+{"id":"gen-sys-011","category":"generation","input":"show the 10 largest folders inside /usr","expect":{"type":"command","all":["\\bdu\\b","/usr"],"any":["sort","head","-d"]}}
+{"id":"gen-sys-012","category":"generation","input":"what kernel version is this","expect":{"type":"command","all":["uname"],"any":["-r","-a","-v"]}}
+{"id":"gen-sys-013","category":"generation","input":"display disk usage per partition in human readable units","expect":{"type":"command","all":["\\bdf\\b"],"any":["-h"]}}
+{"id":"gen-sys-014","category":"generation","input":"show me the system load","expect":{"type":"command","all":["uptime|top|vm_stat|sysctl"]}}
+{"id":"gen-sys-015","category":"generation","input":"check whether my disk is failing","expect":{"type":"command","all":["diskutil|smartctl|system_profiler"],"any":["verify","info","smart","SMART","list"]}}
+{"id":"gen-perm-001","category":"generation","input":"make script.sh executable","expect":{"type":"command","all":["chmod","script\\.sh"],"any":["\\+x","7[0-7][0-7]","u\\+x"]}}
+{"id":"gen-perm-002","category":"generation","input":"change the owner of the project folder to me, recursively","expect":{"type":"command","all":["chown","project"],"any":["-R","--recursive"]}}
+{"id":"gen-perm-003","category":"generation","input":"show the permissions of config.yml","expect":{"type":"command","all":["config\\.yml"],"any":["ls","stat"]}}
+{"id":"gen-perm-004","category":"generation","input":"list all users on this machine","expect":{"type":"command","all":["dscl|passwd|getent|users|id"]}}
+{"id":"gen-perm-005","category":"generation","input":"who is logged in right now","expect":{"type":"command","all":["\\bwho\\b|\\bw\\b|users"]}}
+{"id":"gen-perm-006","category":"generation","input":"add user alice to the staff group","expect":{"type":"command","all":["alice"],"any":["staff","usermod","dscl","dseditgroup","gpasswd"]}}
+{"id":"gen-perm-007","category":"generation","input":"remove execute permission from all .sh files","expect":{"type":"command","all":["chmod","\\.sh"],"any":["-x","a-x","ugo-x","-\\+x"]}}
+{"id":"gen-perm-008","category":"generation","input":"make the folder private so only I can read it","expect":{"type":"command","all":["chmod"],"any":["700","go-rwx","o-rwx","go-r","u=rwx"]}}
+{"id":"gen-perm-009","category":"generation","input":"show my current user id and groups","expect":{"type":"command","all":["\\bid\\b|whoami|groups"]}}
+{"id":"gen-perm-010","category":"generation","input":"change the password of user bob","expect":{"type":"command","all":["bob"],"any":["passwd","dscl","sudo"]}}
+{"id":"gen-perm-011","category":"generation","input":"let group members write to the shared folder","expect":{"type":"command","all":["chmod"],"any":["g\\+w","g=rw","775","g\\+rw"]}}
+{"id":"gen-perm-012","category":"generation","input":"set permissions of all folders under . to 755","expect":{"type":"command","all":["755"],"any":["find","chmod"]}}
+{"id":"gen-perm-013","category":"generation","input":"what groups am I in","expect":{"type":"command","all":["\\bid\\b|groups"]}}
+{"id":"gen-perm-014","category":"generation","input":"make data.txt read-only for everyone","expect":{"type":"command","all":["chmod","data\\.txt"],"any":["444","a-w","-w","r--","a=r"]}}
+{"id":"gen-perm-015","category":"generation","input":"remove user bob from the admin group","expect":{"type":"command","all":["bob","admin"],"any":["dseditgroup","gpasswd","deluser","dscl","sudo"]}}

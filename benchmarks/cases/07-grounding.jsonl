@@ -1,0 +1,50 @@
+{"id":"grd-fake-001","category":"grounding","input":"zorbctl set frobnication level to 5","expect":{"type":"grounded","tool":"zorbctl","all":["--frobnicate-level"]}}
+{"id":"grd-fake-002","category":"grounding","input":"zorbctl export the zorb graph to graph.dot","expect":{"type":"grounded","tool":"zorbctl","all":["--export-graph"]}}
+{"id":"grd-fake-003","category":"grounding","input":"zorbctl simulate the orbit without applying it","expect":{"type":"grounded","tool":"zorbctl","all":["--dry-orbit"]}}
+{"id":"grd-fake-004","category":"grounding","input":"zorbctl cap the wibble cycles at 12","expect":{"type":"grounded","tool":"zorbctl","all":["--max-wibble"]}}
+{"id":"grd-fake-005","category":"grounding","input":"zorbctl run quietly with no status output","expect":{"type":"grounded","tool":"zorbctl","all":["--quiet-zorb"]}}
+{"id":"grd-fake-006","category":"grounding","input":"zorbctl snapshot the tether state","expect":{"type":"grounded","tool":"zorbctl","all":["--snap-tether"]}}
+{"id":"grd-fake-007","category":"grounding","input":"zorbctl reverse the spindle direction","expect":{"type":"grounded","tool":"zorbctl","all":["--reverse-spindle"]}}
+{"id":"grd-fake-008","category":"grounding","input":"qlipper cut the stream into glints of 512 bytes","expect":{"type":"grounded","tool":"qlipper","all":["--glint-size"]}}
+{"id":"grd-fake-009","category":"grounding","input":"qlipper keep only glints with sheen above 7","expect":{"type":"grounded","tool":"qlipper","all":["--sheen-threshold"]}}
+{"id":"grd-fake-010","category":"grounding","input":"qlipper discard murky glints","expect":{"type":"grounded","tool":"qlipper","all":["--drop-murk"]}}
+{"id":"grd-fake-011","category":"grounding","input":"qlipper write a glint index to index.txt","expect":{"type":"grounded","tool":"qlipper","all":["--index-glints"]}}
+{"id":"grd-fake-012","category":"grounding","input":"qlipper process two streams in tandem mode","expect":{"type":"grounded","tool":"qlipper","all":["--tandem-mode"]}}
+{"id":"grd-fake-013","category":"grounding","input":"qlipper flush the output every 50 glints","expect":{"type":"grounded","tool":"qlipper","all":["--flush-every"]}}
+{"id":"grd-fake-014","category":"grounding","input":"qlipper set the prism refraction level to 3","expect":{"type":"grounded","tool":"qlipper","all":["--prism-level"]}}
+{"id":"grd-fake-015","category":"grounding","input":"mendaro set stitch density to 8 per centimetre","expect":{"type":"grounded","tool":"mendaro","all":["--stitch-density"]}}
+{"id":"grd-fake-016","category":"grounding","input":"mendaro write the fray report to report.txt","expect":{"type":"grounded","tool":"mendaro","all":["--fray-report"]}}
+{"id":"grd-fake-017","category":"grounding","input":"mendaro seal every cut edge in the fabric folder","expect":{"type":"grounded","tool":"mendaro","all":["--seal-edges"]}}
+{"id":"grd-fake-018","category":"grounding","input":"mendaro undo the last stitch pass","expect":{"type":"grounded","tool":"mendaro","all":["--rewind-thread"]}}
+{"id":"grd-fake-019","category":"grounding","input":"mendaro fail on any weave error","expect":{"type":"grounded","tool":"mendaro","all":["--strict-weave"]}}
+{"id":"grd-fake-020","category":"grounding","input":"mendaro show what would change without changing anything","expect":{"type":"grounded","tool":"mendaro","all":["--dry-mend"]}}
+{"id":"grd-real-001","category":"grounding","input":"jq extract the name field from data.json","expect":{"type":"grounded","tool":"jq","all":["\\.name"]}}
+{"id":"grd-real-002","category":"grounding","input":"jq print the strings without quotes from names.json","expect":{"type":"grounded","tool":"jq","all":["jq\\s+-r"]}}
+{"id":"grd-real-003","category":"grounding","input":"jq count the number of items in list.json","expect":{"type":"grounded","tool":"jq","all":["jq","length"]}}
+{"id":"grd-real-004","category":"grounding","input":"jq keep only the people over 30 in people.json","expect":{"type":"grounded","tool":"jq","all":["jq","select"]}}
+{"id":"grd-real-005","category":"grounding","input":"jq pretty print input.json","expect":{"type":"grounded","tool":"jq","all":["jq\\s+(-[a-zA-Z]+\\s+)*\\."]}}
+{"id":"grd-real-006","category":"grounding","input":"rsync make the backup folder an exact mirror of src, deleting extra files","expect":{"type":"grounded","tool":"rsync","all":["--delete"]}}
+{"id":"grd-real-007","category":"grounding","input":"rsync show progress while copying photos to the backup disk","expect":{"type":"grounded","tool":"rsync","all":["--progress|-[a-zA-Z]*P"]}}
+{"id":"grd-real-008","category":"grounding","input":"rsync skip node_modules when syncing the project","expect":{"type":"grounded","tool":"rsync","all":["--exclude"]}}
+{"id":"grd-real-009","category":"grounding","input":"rsync dry run to see what would be copied","expect":{"type":"grounded","tool":"rsync","all":["-n|--dry-run"]}}
+{"id":"grd-real-010","category":"grounding","input":"rsync compress the data while sending it to a remote host","expect":{"type":"grounded","tool":"rsync","all":["-z|--compress"]}}
+{"id":"grd-real-011","category":"grounding","input":"sqlite3 list the tables in app.db","expect":{"type":"grounded","tool":"sqlite3","all":["\\.tables|sqlite_master"]}}
+{"id":"grd-real-012","category":"grounding","input":"sqlite3 show the schema of users.db","expect":{"type":"grounded","tool":"sqlite3","all":["\\.schema"]}}
+{"id":"grd-real-013","category":"grounding","input":"sqlite3 export the users table from users.db as csv","expect":{"type":"grounded","tool":"sqlite3","all":["-csv|\\.mode\\s+csv"]}}
+{"id":"grd-real-014","category":"grounding","input":"sqlite3 dump the whole app.db as sql text","expect":{"type":"grounded","tool":"sqlite3","all":["\\.dump"]}}
+{"id":"grd-real-015","category":"grounding","input":"openssl generate a 2048 bit rsa private key","expect":{"type":"grounded","tool":"openssl","all":["genrsa|req|genpkey","2048"]}}
+{"id":"grd-real-016","category":"grounding","input":"openssl show the expiry date of cert.pem","expect":{"type":"grounded","tool":"openssl","all":["x509","-enddate"]}}
+{"id":"grd-real-017","category":"grounding","input":"openssl compute a sha256 digest of file.txt","expect":{"type":"grounded","tool":"openssl","all":["dgst|sha256"]}}
+{"id":"grd-real-018","category":"grounding","input":"openssl base64 encode message.txt","expect":{"type":"grounded","tool":"openssl","all":["base64"]}}
+{"id":"grd-real-019","category":"grounding","input":"dig show the MX records for example.com","expect":{"type":"grounded","tool":"dig","all":["\\bdig\\b","MX"]}}
+{"id":"grd-real-020","category":"grounding","input":"dig give just the short answer for github.com","expect":{"type":"grounded","tool":"dig","all":["\\+short"]}}
+{"id":"grd-real-021","category":"grounding","input":"dig ask the resolver at 1.1.1.1 about example.com","expect":{"type":"grounded","tool":"dig","all":["@1\\.1\\.1\\.1"]}}
+{"id":"grd-real-022","category":"grounding","input":"docker show live cpu usage of running containers","expect":{"type":"grounded","tool":"docker","all":["docker\\s+stats"]}}
+{"id":"grd-real-023","category":"grounding","input":"docker map host port 8080 to container port 80","expect":{"type":"grounded","tool":"docker","all":["8080:80|-p\\s*8080"]}}
+{"id":"grd-real-024","category":"grounding","input":"docker list only the container ids","expect":{"type":"grounded","tool":"docker","all":["docker","-q|--quiet"]}}
+{"id":"grd-real-025","category":"grounding","input":"docker remove the dangling images","expect":{"type":"grounded","tool":"docker","all":["docker","prune|rmi"]}}
+{"id":"grd-real-026","category":"grounding","input":"pandoc convert README.md into a pdf file","expect":{"type":"grounded","tool":"pandoc","all":["pandoc","README\\.md","-o|--output"]}}
+{"id":"grd-real-027","category":"grounding","input":"ffmpeg extract the audio of movie.mp4 into an mp3","expect":{"type":"grounded","tool":"ffmpeg","all":["ffmpeg","movie\\.mp4","\\.mp3"]}}
+{"id":"grd-real-028","category":"grounding","input":"kubectl list pods in all namespaces","expect":{"type":"grounded","tool":"kubectl","all":["kubectl\\s+get\\s+pods","-A|--all-namespaces"]}}
+{"id":"grd-real-029","category":"grounding","input":"gh create a pull request as a draft","expect":{"type":"grounded","tool":"gh","all":["gh\\s+pr\\s+create","--draft|-d"]}}
+{"id":"grd-real-030","category":"grounding","input":"helm list releases in all namespaces","expect":{"type":"grounded","tool":"helm","all":["helm\\s+list","-A|--all-namespaces|--all"]}}

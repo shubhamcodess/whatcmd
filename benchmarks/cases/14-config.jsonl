@@ -1,0 +1,30 @@
+{"id":"cfg-bad-001","category":"config","input":"set prefix to 'a b'","expect":{"type":"cli","argv":["config","set","prefix","a b"],"exit":1,"stderr":"prefix must be one word"}}
+{"id":"cfg-bad-002","category":"config","input":"set temperature to 9","expect":{"type":"cli","argv":["config","set","temperature","9"],"exit":1,"stderr":"between 0 and 2"}}
+{"id":"cfg-bad-003","category":"config","input":"set timeoutMs to 10","expect":{"type":"cli","argv":["config","set","timeoutMs","10"],"exit":1,"stderr":"at least 500"}}
+{"id":"cfg-bad-004","category":"config","input":"set an unknown key","expect":{"type":"cli","argv":["config","set","nosuchkey","1"],"exit":1,"stderr":"Unknown key"}}
+{"id":"cfg-bad-005","category":"config","input":"set grounding to maybe","expect":{"type":"cli","argv":["config","set","grounding","maybe"],"exit":1,"stderr":"true or false"}}
+{"id":"cfg-set-model","category":"config","input":"set model","expect":{"type":"cli","argv":["config","set","model","qwen2.5-coder:0.5b"],"exit":0,"stderr":"model = \"qwen2\\.5-coder:0\\.5b\""}}
+{"id":"cfg-set-host","category":"config","input":"set host","expect":{"type":"cli","argv":["config","set","host","127.0.0.1:9999"],"exit":0,"stderr":"host = \"http://127\\.0\\.0\\.1:9999\""}}
+{"id":"cfg-set-temperature","category":"config","input":"set temperature","expect":{"type":"cli","argv":["config","set","temperature","0.5"],"exit":0,"stderr":"temperature = 0\\.5"}}
+{"id":"cfg-set-keepalive","category":"config","input":"set keepAlive","expect":{"type":"cli","argv":["config","set","keepAlive","30m"],"exit":0,"stderr":"keepAlive = \"30m\""}}
+{"id":"cfg-set-timeoutms","category":"config","input":"set timeoutMs","expect":{"type":"cli","argv":["config","set","timeoutMs","45000"],"exit":0,"stderr":"timeoutMs = 45000"}}
+{"id":"cfg-set-prefix","category":"config","input":"set prefix to a comma","expect":{"type":"cli","argv":["config","set","prefix",","],"exit":0,"stderr":"prefix = \",\""}}
+{"id":"cfg-set-grounding","category":"config","input":"set grounding off","expect":{"type":"cli","argv":["config","set","grounding","off"],"exit":0,"stderr":"grounding = false"}}
+{"id":"cfg-set-notes","category":"config","input":"set notes","expect":{"type":"cli","argv":["config","set","notes","prefer ripgrep over grep"],"exit":0,"stderr":"notes = \"prefer ripgrep over grep\""}}
+{"id":"cfg-get-model","category":"config","input":"get model after set","expect":{"type":"cli","setup":[["config","set","model","qwen2.5-coder:0.5b"]],"argv":["config","get","model"],"exit":0,"stdout":"^qwen2\\.5-coder:0\\.5b"}}
+{"id":"cfg-get-keepalive","category":"config","input":"get keepAlive after set","expect":{"type":"cli","setup":[["config","set","keepAlive","30m"]],"argv":["config","get","keepAlive"],"exit":0,"stdout":"^30m"}}
+{"id":"cfg-get-temperature","category":"config","input":"get temperature after set","expect":{"type":"cli","setup":[["config","set","temperature","0.5"]],"argv":["config","get","temperature"],"exit":0,"stdout":"^0\\.5"}}
+{"id":"cfg-get-timeoutms","category":"config","input":"get timeoutMs after set","expect":{"type":"cli","setup":[["config","set","timeoutMs","45000"]],"argv":["config","get","timeoutMs"],"exit":0,"stdout":"^45000"}}
+{"id":"cfg-get-prefix","category":"config","input":"get prefix after set","expect":{"type":"cli","setup":[["config","set","prefix",","]],"argv":["config","get","prefix"],"exit":0,"stdout":"^,"}}
+{"id":"cfg-get-grounding","category":"config","input":"get grounding after set","expect":{"type":"cli","setup":[["config","set","grounding","off"]],"argv":["config","get","grounding"],"exit":0,"stdout":"^false"}}
+{"id":"cfg-get-notes","category":"config","input":"get notes after set","expect":{"type":"cli","setup":[["config","set","notes","prefer ripgrep over grep"]],"argv":["config","get","notes"],"exit":0,"stdout":"^prefer ripgrep over grep"}}
+{"id":"cfg-host-001","category":"config","input":"host 0.0.0.0 normalizes","expect":{"type":"cli","setup":[["config","set","host","0.0.0.0"]],"argv":["config","get","host"],"exit":0,"stdout":"^http://127\\.0\\.0\\.1:11434\\s*$"}}
+{"id":"cfg-host-002","category":"config","input":"host :9000 normalizes","expect":{"type":"cli","setup":[["config","set","host",":9000"]],"argv":["config","get","host"],"exit":0,"stdout":"^http://127\\.0\\.0\\.1:9000\\s*$"}}
+{"id":"cfg-host-003","category":"config","input":"host gpu-box:11434 normalizes","expect":{"type":"cli","setup":[["config","set","host","gpu-box:11434"]],"argv":["config","get","host"],"exit":0,"stdout":"^http://gpu-box:11434\\s*$"}}
+{"id":"cfg-host-004","category":"config","input":"host https URL with trailing slash normalizes","expect":{"type":"cli","setup":[["config","set","host","https://x.example.com/"]],"argv":["config","get","host"],"exit":0,"stdout":"^https://x\\.example\\.com\\s*$"}}
+{"id":"cfg-unset-model","category":"config","input":"unset model","expect":{"type":"cli","setup":[["config","set","model","qwen2.5-coder:0.5b"]],"argv":["config","unset","model"],"exit":0,"stderr":"model reset to default"}}
+{"id":"cfg-unset-prefix","category":"config","input":"unset prefix","expect":{"type":"cli","setup":[["config","set","prefix",","]],"argv":["config","unset","prefix"],"exit":0,"stderr":"prefix reset to default"}}
+{"id":"cfg-path-001","category":"config","input":"show config file path","expect":{"type":"cli","argv":["config","path"],"exit":0,"stdout":"config\\.json\\s*$"}}
+{"id":"cfg-reset-001","category":"config","input":"reset settings keeps profile","expect":{"type":"cli","setup":[["profile"],["config","set","model","qwen2.5-coder:0.5b"]],"argv":["config","reset"],"exit":0,"stderr":"system profile kept"}}
+{"id":"cfg-env-001","category":"config","input":"WHATCMD_MODEL overrides file","expect":{"type":"cli","setup":[["config","set","model","qwen2.5-coder:0.5b"]],"env":{"WHATCMD_MODEL":"qwen2.5-coder:1.5b"},"argv":["config","get","model"],"exit":0,"stdout":"^qwen2\\.5-coder:1\\.5b"}}
+{"id":"cfg-list-001","category":"config","input":"list shows defaults","expect":{"type":"cli","argv":["config","list"],"exit":0,"stdout":"model = \"qwen2\\.5-coder:1\\.5b\""}}

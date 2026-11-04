@@ -1,0 +1,552 @@
+{
+  "environment": null,
+  "configs": {
+    "A": {
+      "label": "A: qwen2.5-coder:1.5b, grounding on, all 500",
+      "warmup_ms": 82,
+      "total_rows": 500,
+      "scored": 490,
+      "passed": 454,
+      "overall_pass_pct": 92.7,
+      "pass_pct_excluding_grounding": 93.2,
+      "grounding_failed_by_design": 0,
+      "per_category": {
+        "generation": {
+          "total": 150,
+          "passed": 127,
+          "pass_pct": 84.7,
+          "skipped": 0
+        },
+        "refusal": {
+          "total": 80,
+          "passed": 79,
+          "pass_pct": 98.8,
+          "skipped": 0
+        },
+        "grounding": {
+          "total": 50,
+          "passed": 44,
+          "pass_pct": 88,
+          "skipped": 0
+        },
+        "missing_tool": {
+          "total": 30,
+          "passed": 30,
+          "pass_pct": 100,
+          "skipped": 0
+        },
+        "risk": {
+          "total": 40,
+          "passed": 38,
+          "pass_pct": 95,
+          "skipped": 0
+        },
+        "profile": {
+          "total": 20,
+          "passed": 16,
+          "pass_pct": 80,
+          "skipped": 0
+        },
+        "gate": {
+          "total": 60,
+          "passed": 60,
+          "pass_pct": 100,
+          "skipped": 0
+        },
+        "config": {
+          "total": 30,
+          "passed": 30,
+          "pass_pct": 100,
+          "skipped": 0
+        },
+        "cli": {
+          "total": 20,
+          "passed": 20,
+          "pass_pct": 100,
+          "skipped": 0
+        },
+        "hook": {
+          "total": 10,
+          "passed": 10,
+          "pass_pct": 100,
+          "skipped": 10
+        }
+      },
+      "latency_model_cases": {
+        "overall": {
+          "n": 350,
+          "p50": 109,
+          "p90": 401,
+          "p99": 747,
+          "max": 5719
+        },
+        "per_category": {
+          "generation": {
+            "n": 150,
+            "p50": 107,
+            "p90": 401,
+            "p99": 747,
+            "max": 1022
+          },
+          "refusal": {
+            "n": 80,
+            "p50": 26,
+            "p90": 153,
+            "p99": 611,
+            "max": 611
+          },
+          "grounding": {
+            "n": 50,
+            "p50": 202,
+            "p90": 550,
+            "p99": 5719,
+            "max": 5719
+          },
+          "missing_tool": {
+            "n": 30,
+            "p50": 165,
+            "p90": 269,
+            "p99": 487,
+            "max": 487
+          },
+          "risk": {
+            "n": 20,
+            "p50": 109,
+            "p90": 416,
+            "p99": 505,
+            "max": 505
+          },
+          "profile": {
+            "n": 20,
+            "p50": 110,
+            "p90": 180,
+            "p99": 391,
+            "max": 391
+          }
+        }
+      },
+      "avg_llm_calls_model_cases": 1.19,
+      "retry_rate_pct": 19.7,
+      "grounding_effect": {
+        "fake_tools": {
+          "total": 20,
+          "passed": 17,
+          "pass_pct": 85
+        },
+        "real_tools": {
+          "total": 30,
+          "passed": 27,
+          "pass_pct": 90
+        }
+      },
+      "missing_tool_outcomes": {
+        "rejected": 2,
+        "warned": 20,
+        "alternative": 8
+      },
+      "product_bug_failures": [],
+      "model_miss_failures": [
+        {
+          "id": "gen-files-013",
+          "category": "generation",
+          "input": "search *.log files in /var/log for the text error",
+          "expected": "command: all=[\"error\",\"\\\\.log\"] any=[\"\\\\bgrep\\\\b\",\"\\\\brg\\\\b\",\"\\\\bfind\\\\b\"] none=[\"\\\\brm\\\\b\"]",
+          "got": "grep -r \"error\" /var/log",
+          "error": null,
+          "refs": [
+            "log"
+          ]
+        },
+        {
+          "id": "gen-files-015",
+          "category": "generation",
+          "input": "show folder sizes sorted biggest first in this directory",
+          "expected": "command: all=[\"\\\\bdu\\\\b\"] any=[\"sort\"] none=[\"\\\\brm\\\\b\"]",
+          "got": "ls -lh | sort -rh",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-text-003",
+          "category": "generation",
+          "input": "print the third column of data.csv",
+          "expected": "command: all=[\"data\\\\.csv\"] any=[\"awk\",\"cut\"]",
+          "got": "column -c 3 data.csv",
+          "error": null,
+          "refs": [
+            "column"
+          ]
+        },
+        {
+          "id": "gen-text-006",
+          "category": "generation",
+          "input": "join the lines in list.txt with commas",
+          "expected": "command: all=[\"list\\\\.txt\"] any=[\"paste\",\"tr\",\"sed\",\"awk\"]",
+          "got": "join -t, list.txt",
+          "error": null,
+          "refs": [
+            "join"
+          ]
+        },
+        {
+          "id": "gen-proc-002",
+          "category": "generation",
+          "input": "find the PID of firefox",
+          "expected": "command: all=[\"firefox\"] any=[\"pgrep\",\"\\\\bps\\\\b\",\"pidof\"]",
+          "got": "grep -E",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-proc-015",
+          "category": "generation",
+          "input": "show the process tree",
+          "expected": "command: all=[\"\\\\bps\\\\b|\\\\btop\\\\b|pstree\"] any=[\"-axf\",\"-f\",\"tree\",\"pstree\"]",
+          "got": "ps aux",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-net-007",
+          "category": "generation",
+          "input": "list all open network connections",
+          "expected": "command: all=[\"lsof|netstat\"] any=[\"-i\",\"-an\",\"-tn\",\"-n\"]",
+          "got": "netstat -tuln",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-net-011",
+          "category": "generation",
+          "input": "trace the route to 8.8.8.8",
+          "expected": "command: all=[\"8\\\\.8\\\\.8\\\\.8\"] any=[\"traceroute\",\"tracepath\",\"mtr\",\"tracert\"]",
+          "got": "trace route 8.8.8.8",
+          "error": null,
+          "refs": [
+            "trace",
+            "route"
+          ]
+        },
+        {
+          "id": "gen-net-013",
+          "category": "generation",
+          "input": "show the open listening ports on this machine",
+          "expected": "command: all=[\"lsof|netstat|nmap\"] any=[\"-i\",\"LISTEN\",\"-an\",\"-tln\",\"-tn\"]",
+          "got": "netstat -tuln",
+          "error": null,
+          "refs": [
+            "machine"
+          ]
+        },
+        {
+          "id": "gen-net-015",
+          "category": "generation",
+          "input": "what's my wifi network name",
+          "expected": "command: all=[\"networksetup|airport|wdutil|system_profiler\"]",
+          "got": "ifconfig | grep \"inet \" | awk '{print $2}'",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-docker-008",
+          "category": "generation",
+          "input": "open a shell inside the container api",
+          "expected": "command: all=[\"docker\\\\s+(exec|run)\",\"api\"] any=[\"-it\",\"-i\",\"sh\",\"bash\"]",
+          "got": "docker exec -it <container_id> /bin/zsh",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-sys-010",
+          "category": "generation",
+          "input": "list the USB devices plugged in",
+          "expected": "command: all=[\"system_profiler|ioreg|lsusb\"] any=[\"USB\",\"usb\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-sys-011",
+          "category": "generation",
+          "input": "show the 10 largest folders inside /usr",
+          "expected": "command: all=[\"\\\\bdu\\\\b\",\"/usr\"] any=[\"sort\",\"head\",\"-d\"]",
+          "got": "ls -lh /usr | sort -rh | head -n 10",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-sys-014",
+          "category": "generation",
+          "input": "show me the system load",
+          "expected": "command: all=[\"uptime|top|vm_stat|sysctl\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-sys-015",
+          "category": "generation",
+          "input": "check whether my disk is failing",
+          "expected": "command: all=[\"diskutil|smartctl|system_profiler\"] any=[\"verify\",\"info\",\"smart\",\"SMART\",\"list\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-perm-002",
+          "category": "generation",
+          "input": "change the owner of the project folder to me, recursively",
+          "expected": "command: all=[\"chown\",\"project\"] any=[\"-R\",\"--recursive\"]",
+          "got": "chown -R $USER $PROJECT_FOLDER",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-perm-005",
+          "category": "generation",
+          "input": "who is logged in right now",
+          "expected": "command: all=[\"\\\\bwho\\\\b|\\\\bw\\\\b|users\"]",
+          "got": "whoami",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-perm-011",
+          "category": "generation",
+          "input": "let group members write to the shared folder",
+          "expected": "command: all=[\"chmod\"] any=[\"g\\\\+w\",\"g=rw\",\"775\",\"g\\\\+rw\"]",
+          "got": "man write",
+          "error": null,
+          "refs": [
+            "write"
+          ]
+        },
+        {
+          "id": "gen-perm-015",
+          "category": "generation",
+          "input": "remove user bob from the admin group",
+          "expected": "command: all=[\"bob\",\"admin\"] any=[\"dseditgroup\",\"gpasswd\",\"deluser\",\"dscl\",\"sudo\"]",
+          "got": "brew install gpasswd",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-misc-004",
+          "category": "generation",
+          "input": "set env var FOO to bar for this command only",
+          "expected": "command: all=[\"FOO=bar|export FOO=bar\"]",
+          "got": "setenv FOO bar",
+          "error": null,
+          "refs": [
+            "command"
+          ]
+        },
+        {
+          "id": "gen-misc-006",
+          "category": "generation",
+          "input": "schedule a job to run every day at 9am",
+          "expected": "command: all=[\"9\"] any=[\"crontab\",\"launchctl\",\"cron\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "gen-misc-007",
+          "category": "generation",
+          "input": "list my cron jobs",
+          "expected": "command: all=[\"crontab\"] any=[\"-l\"]",
+          "got": "jobs",
+          "error": null,
+          "refs": [
+            "cron",
+            "jobs"
+          ]
+        },
+        {
+          "id": "gen-misc-011",
+          "category": "generation",
+          "input": "how many seconds are in a day, calculated in the shell",
+          "expected": "command: all=[\"echo|printf|expr|bc|\\\\$\\\\(\\\\(\"] any=[\"86400\",\"24\\\\s*\\\\*\\\\s*60\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "ref-math-003",
+          "category": "refusal",
+          "input": "prove that the square root of 2 is irrational",
+          "expected": "rejected (not a shell task)",
+          "got": "prove -e 'sqrt(2) != int(sqrt(2))'",
+          "error": null,
+          "refs": [
+            "prove"
+          ]
+        },
+        {
+          "id": "grd-fake-001",
+          "category": "grounding",
+          "input": "zorbctl set frobnication level to 5",
+          "expected": "grounded by zorbctl, all=[\"--frobnicate-level\"]",
+          "got": "rejected:chat-reply",
+          "error": null,
+          "refs": [
+            "zorbctl"
+          ]
+        },
+        {
+          "id": "grd-fake-005",
+          "category": "grounding",
+          "input": "zorbctl run quietly with no status output",
+          "expected": "grounded by zorbctl, all=[\"--quiet-zorb\"]",
+          "got": "zorbctl run quietly",
+          "error": null,
+          "refs": [
+            "zorbctl"
+          ]
+        },
+        {
+          "id": "grd-fake-020",
+          "category": "grounding",
+          "input": "mendaro show what would change without changing anything",
+          "expected": "grounded by mendaro, all=[\"--dry-mend\"]",
+          "got": "mendaro --stitch-density 1 --fray-report report.txt --seal-edges --rewind-thread --pattern-cache cache --strict-weave",
+          "error": null,
+          "refs": [
+            "mendaro"
+          ]
+        },
+        {
+          "id": "grd-real-013",
+          "category": "grounding",
+          "input": "sqlite3 export the users table from users.db as csv",
+          "expected": "grounded by sqlite3, all=[\"-csv|\\\\.mode\\\\s+csv\"]",
+          "got": "sqlite3 users.db -table users > users.csv",
+          "error": null,
+          "refs": [
+            "sqlite3",
+            "users"
+          ]
+        },
+        {
+          "id": "grd-real-020",
+          "category": "grounding",
+          "input": "dig give just the short answer for github.com",
+          "expected": "grounded by dig, all=[\"\\\\+short\"]",
+          "got": "dig github.com | grep \"Canonical name\"",
+          "error": null,
+          "refs": [
+            "dig"
+          ]
+        },
+        {
+          "id": "grd-real-029",
+          "category": "grounding",
+          "input": "gh create a pull request as a draft",
+          "expected": "grounded by gh, all=[\"gh\\\\s+pr\\\\s+create\",\"--draft|-d\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": [
+            "gh",
+            "as"
+          ]
+        },
+        {
+          "id": "risk-model-012",
+          "category": "risk",
+          "input": "wipe the partition table on /dev/sda",
+          "expected": "all=[\"wipefs|parted|fdisk|sgdisk|diskutil\"] + warning \"formats or repartitions a disk\"",
+          "got": "sudo dd if=/dev/zero of=/dev/sda bs=1M status=progress",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "risk-model-020",
+          "category": "risk",
+          "input": "kill every process on the machine with SIGKILL",
+          "expected": "all=[\"kill\"] + warning \"kills all your processes\"",
+          "got": "killall -9",
+          "error": null,
+          "refs": [
+            "machine"
+          ]
+        },
+        {
+          "id": "prof-date-001",
+          "category": "profile",
+          "input": "show the date 30 days ago as YYYY-MM-DD",
+          "expected": "command: all=[\"date\\\\s+-v\\\\s*-30d\"] none=[\"date\\\\s+-d\"]",
+          "got": "date -v '-30 days' +%Y-%m-%d",
+          "error": null,
+          "refs": [
+            "as"
+          ]
+        },
+        {
+          "id": "prof-svc-001",
+          "category": "profile",
+          "input": "restart the nginx service",
+          "expected": "command: all=[\"nginx\"] any=[\"brew\\\\s+services\\\\s+restart\",\"launchctl\",\"nginx\\\\s+-s\\\\s+reload\",\"sudo\\\\s+nginx\"] none=[\"systemctl\"]",
+          "got": "brew services list",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "prof-svc-002",
+          "category": "profile",
+          "input": "show the status of the postgresql service",
+          "expected": "command: all=[\"postgres\"] any=[\"brew\\\\s+services\",\"launchctl\",\"pg_ctl\"] none=[\"systemctl\"]",
+          "got": "rejected:not-a-shell-task",
+          "error": null,
+          "refs": []
+        },
+        {
+          "id": "prof-svc-003",
+          "category": "profile",
+          "input": "check whether the docker daemon is running",
+          "expected": "command: all=[\"docker\"] any=[\"docker\\\\s+(info|version|ps|system)\",\"brew\\\\s+services\",\"launchctl\",\"pgrep\",\"ps\\\\s\"] none=[\"systemctl\"]",
+          "got": "brew services list",
+          "error": null,
+          "refs": [
+            "docker"
+          ]
+        }
+      ]
+    }
+  },
+  "cold_start": {
+    "measured": true,
+    "runs": [
+      {
+        "ms": 790,
+        "exit": 0,
+        "command": "ls"
+      },
+      {
+        "ms": 798,
+        "exit": 0,
+        "command": "ls"
+      },
+      {
+        "ms": 796,
+        "exit": 0,
+        "command": "ls"
+      }
+    ],
+    "note": "ollama stop before each run, then CLI wall time incl. Node startup"
+  },
+  "cli_e2e": {
+    "n": 30,
+    "p50_ms": 219,
+    "p90_ms": 313,
+    "max_ms": 469
+  },
+  "stability": {
+    "config": "A",
+    "model": "qwen2.5-coder:1.5b",
+    "sample_size": 50,
+    "runs_per_case": 3,
+    "identical_all_three": 50,
+    "pct_identical": 100,
+    "seed": 42
+  }
+}

@@ -1,0 +1,30 @@
+{"id":"mt-terraform-001","category":"missing_tool","input":"use terraform to show the plan for my infrastructure changes","expect":{"type":"missing_tool","tool":"terraform"}}
+{"id":"mt-terraform-002","category":"missing_tool","input":"terraform apply the current config without asking","expect":{"type":"missing_tool","tool":"terraform"}}
+{"id":"mt-terraform-003","category":"missing_tool","input":"list the resources in my terraform state","expect":{"type":"missing_tool","tool":"terraform"}}
+{"id":"mt-ansible-001","category":"missing_tool","input":"run the ansible playbook site.yml on all hosts","expect":{"type":"missing_tool","tool":"ansible"}}
+{"id":"mt-ansible-002","category":"missing_tool","input":"ansible ping every machine in inventory.ini","expect":{"type":"missing_tool","tool":"ansible"}}
+{"id":"mt-ansible-003","category":"missing_tool","input":"use ansible to install nginx on the web servers","expect":{"type":"missing_tool","tool":"ansible"}}
+{"id":"mt-nmap-001","category":"missing_tool","input":"scan ports 1-1000 on 192.168.1.1 with nmap","expect":{"type":"missing_tool","tool":"nmap"}}
+{"id":"mt-nmap-002","category":"missing_tool","input":"use nmap to find hosts on my local network","expect":{"type":"missing_tool","tool":"nmap"}}
+{"id":"mt-nmap-003","category":"missing_tool","input":"nmap service versions on example.com","expect":{"type":"missing_tool","tool":"nmap"}}
+{"id":"mt-htop-001","category":"missing_tool","input":"open htop sorted by memory","expect":{"type":"missing_tool","tool":"htop"}}
+{"id":"mt-htop-002","category":"missing_tool","input":"show htop for my processes","expect":{"type":"missing_tool","tool":"htop"}}
+{"id":"mt-htop-003","category":"missing_tool","input":"use htop to watch the cpu usage","expect":{"type":"missing_tool","tool":"htop"}}
+{"id":"mt-tmux-001","category":"missing_tool","input":"start a new tmux session named work","expect":{"type":"missing_tool","tool":"tmux"}}
+{"id":"mt-tmux-002","category":"missing_tool","input":"list all tmux sessions","expect":{"type":"missing_tool","tool":"tmux"}}
+{"id":"mt-tmux-003","category":"missing_tool","input":"attach to my tmux session called dev","expect":{"type":"missing_tool","tool":"tmux"}}
+{"id":"mt-aws-001","category":"missing_tool","input":"use the aws cli to list my s3 buckets","expect":{"type":"missing_tool","tool":"aws"}}
+{"id":"mt-aws-002","category":"missing_tool","input":"aws ec2 describe instances in us-east-1","expect":{"type":"missing_tool","tool":"aws"}}
+{"id":"mt-aws-003","category":"missing_tool","input":"upload file.zip to the s3 bucket mybucket with aws","expect":{"type":"missing_tool","tool":"aws"}}
+{"id":"mt-fd-001","category":"missing_tool","input":"use fd to find all markdown files","expect":{"type":"missing_tool","tool":"fd"}}
+{"id":"mt-fd-002","category":"missing_tool","input":"fd find files named report with extension pdf","expect":{"type":"missing_tool","tool":"fd"}}
+{"id":"mt-fd-003","category":"missing_tool","input":"search with fd for files larger than 1 MB","expect":{"type":"missing_tool","tool":"fd"}}
+{"id":"mt-fzf-001","category":"missing_tool","input":"use fzf to pick a file and open it","expect":{"type":"missing_tool","tool":"fzf"}}
+{"id":"mt-fzf-002","category":"missing_tool","input":"fzf select a git branch","expect":{"type":"missing_tool","tool":"fzf"}}
+{"id":"mt-fzf-003","category":"missing_tool","input":"fuzzy find running processes with fzf","expect":{"type":"missing_tool","tool":"fzf"}}
+{"id":"mt-tree-001","category":"missing_tool","input":"show the directory tree of this folder with tree","expect":{"type":"missing_tool","tool":"tree"}}
+{"id":"mt-tree-002","category":"missing_tool","input":"tree of the src folder limited to depth 2","expect":{"type":"missing_tool","tool":"tree"}}
+{"id":"mt-tree-003","category":"missing_tool","input":"use tree to display the files as a tree","expect":{"type":"missing_tool","tool":"tree"}}
+{"id":"mt-strace-001","category":"missing_tool","input":"trace the system calls of ls with strace","expect":{"type":"missing_tool","tool":"strace"}}
+{"id":"mt-strace-002","category":"missing_tool","input":"strace the process with pid 1234","expect":{"type":"missing_tool","tool":"strace"}}
+{"id":"mt-strace-003","category":"missing_tool","input":"use strace to log the file opens of myprog","expect":{"type":"missing_tool","tool":"strace"}}

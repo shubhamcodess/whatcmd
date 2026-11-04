@@ -1,0 +1,190 @@
+{
+  "summary": {
+    "n": 30,
+    "p50_ms": 217,
+    "p90_ms": 330,
+    "max_ms": 509
+  },
+  "runs": [
+    {
+      "request": "find files larger than 100MB",
+      "ms": 220,
+      "exit": 0,
+      "command": "find . -type f -size +100M"
+    },
+    {
+      "request": "rename all .jpeg files to .jpg",
+      "ms": 291,
+      "exit": 0,
+      "command": "rename *.jpeg *.jpg"
+    },
+    {
+      "request": "list the hidden files in this directory",
+      "ms": 171,
+      "exit": 0,
+      "command": "ls -a"
+    },
+    {
+      "request": "count lines in access.log",
+      "ms": 198,
+      "exit": 0,
+      "command": "wc -l access.log"
+    },
+    {
+      "request": "join the lines in list.txt with commas",
+      "ms": 330,
+      "exit": 0,
+      "command": "join -t, list.txt"
+    },
+    {
+      "request": "what's the longest line in story.txt?",
+      "ms": 428,
+      "exit": 0,
+      "command": "awk 'NR==FNR{max=$NF}NR>FNR{if($NF>max)max=$NF}END{print max}' story.txt story.txt"
+    },
+    {
+      "request": "list all running processes",
+      "ms": 183,
+      "exit": 0,
+      "command": "ps aux"
+    },
+    {
+      "request": "which process is listening on port 3000",
+      "ms": 228,
+      "exit": 0,
+      "command": "lsof -i :3000"
+    },
+    {
+      "request": "show a live view of processes sorted by memory",
+      "ms": 244,
+      "exit": 0,
+      "command": "ps aux --sort=-%mem"
+    },
+    {
+      "request": "what's using port 8080",
+      "ms": 217,
+      "exit": 0,
+      "command": "lsof -i :8080"
+    },
+    {
+      "request": "show the DNS records for github.com",
+      "ms": 208,
+      "exit": 0,
+      "command": "dig github.com"
+    },
+    {
+      "request": "trace the route to 8.8.8.8",
+      "ms": 383,
+      "exit": 0,
+      "command": "trace route 8.8.8.8"
+    },
+    {
+      "request": "compress the folder photos into photos.tar.gz",
+      "ms": 277,
+      "exit": 0,
+      "command": "tar -czvf photos.tar.gz photos"
+    },
+    {
+      "request": "gzip a big file called dump.sql",
+      "ms": 177,
+      "exit": 0,
+      "command": "gzip dump.sql"
+    },
+    {
+      "request": "bzip2 compress notes.txt",
+      "ms": 509,
+      "exit": 0,
+      "command": "bzip2 -c notes.txt"
+    },
+    {
+      "request": "show the last 5 commits",
+      "ms": 181,
+      "exit": 0,
+      "command": "git log -5"
+    },
+    {
+      "request": "list all branches including remote ones",
+      "ms": 202,
+      "exit": 0,
+      "command": "git branch -r"
+    },
+    {
+      "request": "show the commit graph in one line per commit",
+      "ms": 198,
+      "exit": 0,
+      "command": "git log --oneline"
+    },
+    {
+      "request": "list running docker containers",
+      "ms": 253,
+      "exit": 0,
+      "command": "docker ps"
+    },
+    {
+      "request": "get the logs of container web",
+      "ms": 185,
+      "exit": 0,
+      "command": "docker logs web"
+    },
+    {
+      "request": "list docker volumes",
+      "ms": 246,
+      "exit": 0,
+      "command": "docker volume ls"
+    },
+    {
+      "request": "show free disk space",
+      "ms": 182,
+      "exit": 0,
+      "command": "df -h"
+    },
+    {
+      "request": "show battery status",
+      "ms": 210,
+      "exit": 0,
+      "command": "pmset -g batt"
+    },
+    {
+      "request": "show the 10 largest folders inside /usr",
+      "ms": 274,
+      "exit": 0,
+      "command": "ls -lh /usr | sort -rh | head -n 10"
+    },
+    {
+      "request": "make script.sh executable",
+      "ms": 188,
+      "exit": 0,
+      "command": "chmod +x script.sh"
+    },
+    {
+      "request": "add user alice to the staff group",
+      "ms": 318,
+      "exit": 0,
+      "command": "sudo usermod -aG staff alice"
+    },
+    {
+      "request": "let group members write to the shared folder",
+      "ms": 247,
+      "exit": 0,
+      "command": "man write"
+    },
+    {
+      "request": "what's today's date in ISO format",
+      "ms": 187,
+      "exit": 0,
+      "command": "date -I"
+    },
+    {
+      "request": "schedule a job to run every day at 9am",
+      "ms": 124,
+      "exit": 2,
+      "command": ""
+    },
+    {
+      "request": "how many seconds are in a day, calculated in the shell",
+      "ms": 244,
+      "exit": 2,
+      "command": ""
+    }
+  ]
+}

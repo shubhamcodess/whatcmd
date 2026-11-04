@@ -1,0 +1,42 @@
+{"id":"gate-ext-001","category":"gate","input":"ls -la","expect":{"type":"fn","fn":"extractCommand","args":["ls -la"],"equals":"ls -la"}}
+{"id":"gate-ext-002","category":"gate","input":"```bash\nls\n```","expect":{"type":"fn","fn":"extractCommand","args":["```bash\nls\n```"],"equals":"ls"}}
+{"id":"gate-ext-003","category":"gate","input":"```\nfind . -name x\n```","expect":{"type":"fn","fn":"extractCommand","args":["```\nfind . -name x\n```"],"equals":"find . -name x"}}
+{"id":"gate-ext-004","category":"gate","input":"$ git status","expect":{"type":"fn","fn":"extractCommand","args":["$ git status"],"equals":"git status"}}
+{"id":"gate-ext-005","category":"gate","input":"`ls -la /tmp`","expect":{"type":"fn","fn":"extractCommand","args":["`ls -la /tmp`"],"equals":"ls -la /tmp"}}
+{"id":"gate-ext-006","category":"gate","input":"Command: du -sh *","expect":{"type":"fn","fn":"extractCommand","args":["Command: du -sh *"],"equals":"du -sh *"}}
+{"id":"gate-ext-007","category":"gate","input":"command: df -h","expect":{"type":"fn","fn":"extractCommand","args":["command: df -h"],"equals":"df -h"}}
+{"id":"gate-ext-008","category":"gate","input":"\n\n  \nwc -l file.txt\n","expect":{"type":"fn","fn":"extractCommand","args":["\n\n  \nwc -l file.txt\n"],"equals":"wc -l file.txt"}}
+{"id":"gate-ext-009","category":"gate","input":"<empty string> (extract)","expect":{"type":"fn","fn":"extractCommand","args":[""],"equals":""}}
+{"id":"gate-ext-010","category":"gate","input":"   ","expect":{"type":"fn","fn":"extractCommand","args":["   "],"equals":""}}
+{"id":"gate-ext-011","category":"gate","input":"```sh\n\nps aux\n```","expect":{"type":"fn","fn":"extractCommand","args":["```sh\n\nps aux\n```"],"equals":"ps aux"}}
+{"id":"gate-ext-012","category":"gate","input":"cmd: `echo hi`","expect":{"type":"fn","fn":"extractCommand","args":["cmd: `echo hi`"],"equals":"echo hi"}}
+{"id":"gate-ext-013","category":"gate","input":"$ ls | grep foo","expect":{"type":"fn","fn":"extractCommand","args":["$ ls | grep foo"],"equals":"ls | grep foo"}}
+{"id":"gate-ext-014","category":"gate","input":"```\n```","expect":{"type":"fn","fn":"extractCommand","args":["```\n```"],"equals":""}}
+{"id":"gate-ext-015","category":"gate","input":"first line\nsecond line","expect":{"type":"fn","fn":"extractCommand","args":["first line\nsecond line"],"equals":"first line"}}
+{"id":"gate-split-001","category":"gate","input":"a | b && c","expect":{"type":"fn","fn":"splitSegments","args":["a | b && c"],"equals":["a","b","c"]}}
+{"id":"gate-split-002","category":"gate","input":"echo 'a | b' ; ls","expect":{"type":"fn","fn":"splitSegments","args":["echo 'a | b' ; ls"],"equals":["echo 'a | b'","ls"]}}
+{"id":"gate-split-003","category":"gate","input":"cat x 2>&1 | less","expect":{"type":"fn","fn":"splitSegments","args":["cat x 2>&1 | less"],"equals":["cat x 2>&1","less"]}}
+{"id":"gate-split-004","category":"gate","input":"make || echo fail","expect":{"type":"fn","fn":"splitSegments","args":["make || echo fail"],"equals":["make","echo fail"]}}
+{"id":"gate-split-005","category":"gate","input":"cmd1; cmd2","expect":{"type":"fn","fn":"splitSegments","args":["cmd1; cmd2"],"equals":["cmd1","cmd2"]}}
+{"id":"gate-split-006","category":"gate","input":"ls &> out.txt","expect":{"type":"fn","fn":"splitSegments","args":["ls &> out.txt"],"equals":["ls &> out.txt"]}}
+{"id":"gate-split-007","category":"gate","input":"find . -exec rm {} \\;","expect":{"type":"fn","fn":"splitSegments","args":["find . -exec rm {} \\;"],"equals":["find . -exec rm {} \\;"]}}
+{"id":"gate-split-008","category":"gate","input":"echo \"a;b\"","expect":{"type":"fn","fn":"splitSegments","args":["echo \"a;b\""],"equals":["echo \"a;b\""]}}
+{"id":"gate-split-009","category":"gate","input":"a\nb","expect":{"type":"fn","fn":"splitSegments","args":["a\nb"],"equals":["a","b"]}}
+{"id":"gate-split-010","category":"gate","input":"echo a && echo b || echo c","expect":{"type":"fn","fn":"splitSegments","args":["echo a && echo b || echo c"],"equals":["echo a","echo b","echo c"]}}
+{"id":"gate-split-011","category":"gate","input":"printf 'x' >&2","expect":{"type":"fn","fn":"splitSegments","args":["printf 'x' >&2"],"equals":["printf 'x' >&2"]}}
+{"id":"gate-split-012","category":"gate","input":"<empty string> (split)","expect":{"type":"fn","fn":"splitSegments","args":[""],"equals":[]}}
+{"id":"gate-split-013","category":"gate","input":"a|&b","expect":{"type":"fn","fn":"splitSegments","args":["a|&b"],"equals":["a","b"]}}
+{"id":"gate-split-014","category":"gate","input":"grep \"it's\" file | wc","expect":{"type":"fn","fn":"splitSegments","args":["grep \"it's\" file | wc"],"equals":["grep \"it's\" file","wc"]}}
+{"id":"gate-split-015","category":"gate","input":"x=\"a|b\" ; y","expect":{"type":"fn","fn":"splitSegments","args":["x=\"a|b\" ; y"],"equals":["x=\"a|b\"","y"]}}
+{"id":"gate-words-001","category":"gate","input":"sudo -u bob lsof -i","expect":{"type":"fn","fn":"commandWords","args":["sudo -u bob lsof -i"],"equals":["sudo","lsof"]}}
+{"id":"gate-words-002","category":"gate","input":"sudo -E ls","expect":{"type":"fn","fn":"commandWords","args":["sudo -E ls"],"equals":["sudo","ls"]}}
+{"id":"gate-words-003","category":"gate","input":"env FOO=1 BAR=2 make test","expect":{"type":"fn","fn":"commandWords","args":["env FOO=1 BAR=2 make test"],"equals":["env","make"]}}
+{"id":"gate-words-004","category":"gate","input":"FOO=bar npm test","expect":{"type":"fn","fn":"commandWords","args":["FOO=bar npm test"],"equals":["npm"]}}
+{"id":"gate-words-005","category":"gate","input":"nohup ./server.sh &","expect":{"type":"fn","fn":"commandWords","args":["nohup ./server.sh &"],"equals":["nohup","./server.sh"]}}
+{"id":"gate-words-006","category":"gate","input":"time make -j4","expect":{"type":"fn","fn":"commandWords","args":["time make -j4"],"equals":["time","make"]}}
+{"id":"gate-words-007","category":"gate","input":"ls | xargs rm -f","expect":{"type":"fn","fn":"commandWords","args":["ls | xargs rm -f"],"equals":["ls","xargs"]}}
+{"id":"gate-words-008","category":"gate","input":"nice -n 10 gzip big","expect":{"type":"fn","fn":"commandWords","args":["nice -n 10 gzip big"],"equals":["nice","gzip"]}}
+{"id":"gate-words-009","category":"gate","input":"sudo -u www-data -g staff touch x","expect":{"type":"fn","fn":"commandWords","args":["sudo -u www-data -g staff touch x"],"equals":["sudo","touch"]}}
+{"id":"gate-words-010","category":"gate","input":"echo hi && sudo apt install jq","expect":{"type":"fn","fn":"commandWords","args":["echo hi && sudo apt install jq"],"equals":["echo","sudo","apt"]}}
+{"id":"gate-words-011","category":"gate","input":"env -i HOME=/x bash -c 'ls'","expect":{"type":"fn","fn":"commandWords","args":["env -i HOME=/x bash -c 'ls'"],"equals":["env","bash"]}}
+{"id":"gate-words-012","category":"gate","input":"command -v git","expect":{"type":"fn","fn":"commandWords","args":["command -v git"],"equals":["command","git"]}}

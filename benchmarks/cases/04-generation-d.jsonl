@@ -1,0 +1,15 @@
+{"id":"gen-misc-001","category":"generation","input":"what's today's date in ISO format","expect":{"type":"command","all":["\\bdate\\b"],"any":["%Y-%m-%d","%F","-I"]}}
+{"id":"gen-misc-002","category":"generation","input":"show me the date 7 days from now","expect":{"type":"command","all":["\\bdate\\b"],"any":["\\+7d","\\+7","7 days"]}}
+{"id":"gen-misc-003","category":"generation","input":"print the PATH environment variable","expect":{"type":"command","all":["PATH"],"any":["echo","printenv","env"]}}
+{"id":"gen-misc-004","category":"generation","input":"set env var FOO to bar for this command only","expect":{"type":"command","all":["FOO=bar|export FOO=bar"]}}
+{"id":"gen-misc-005","category":"generation","input":"download https://example.com/data.json into my Downloads folder","expect":{"type":"command","all":["curl|wget","example\\.com/data\\.json","Downloads"]}}
+{"id":"gen-misc-006","category":"generation","input":"schedule a job to run every day at 9am","expect":{"type":"command","all":["9"],"any":["crontab","launchctl","cron"]}}
+{"id":"gen-misc-007","category":"generation","input":"list my cron jobs","expect":{"type":"command","all":["crontab"],"any":["-l"]}}
+{"id":"gen-misc-008","category":"generation","input":"show the last 20 commands from my shell history","expect":{"type":"command","all":["history"],"any":["20","tail"]}}
+{"id":"gen-misc-009","category":"generation","input":"print the current working directory","expect":{"type":"command","all":["pwd"]}}
+{"id":"gen-misc-010","category":"generation","input":"show the current time in UTC","expect":{"type":"command","all":["\\bdate\\b"],"any":["-u","UTC","utc"]}}
+{"id":"gen-misc-011","category":"generation","input":"how many seconds are in a day, calculated in the shell","expect":{"type":"command","all":["echo|printf|expr|bc|\\$\\(\\("],"any":["86400","24\\s*\\*\\s*60"]}}
+{"id":"gen-misc-012","category":"generation","input":"unset the variable TOKEN","expect":{"type":"command","all":["unset\\s+TOKEN"]}}
+{"id":"gen-misc-013","category":"generation","input":"list all environment variables that start with AWS","expect":{"type":"command","all":["AWS"],"any":["env","printenv","set"]}}
+{"id":"gen-misc-014","category":"generation","input":"download https://example.com/tool.tar.gz to the current folder","expect":{"type":"command","all":["curl|wget","tool\\.tar\\.gz"]}}
+{"id":"gen-misc-015","category":"generation","input":"how do I print today's day of the week","expect":{"type":"command","all":["\\bdate\\b"],"any":["%a","%A","%u","%w"]}}

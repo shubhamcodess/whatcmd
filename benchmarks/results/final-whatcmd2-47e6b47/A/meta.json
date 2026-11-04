@@ -1,0 +1,7 @@
+{
+  "config": "A",
+  "model": "qwen2.5-coder:1.5b",
+  "grounding": true,
+  "warmup_ms": 67,
+  "started_at": "2026-11-04T18:25:00.071Z"
+}

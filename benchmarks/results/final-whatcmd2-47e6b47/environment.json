@@ -1,0 +1,19 @@
+{
+  "os": "macOS 15.6.1 (build 24G90)",
+  "cpu": "Apple M4 Pro",
+  "cores": 14,
+  "performance_cores": 10,
+  "ram_gb": 48,
+  "gpu": "Chipset Model: Apple M4 Pro",
+  "node": "v22.16.0",
+  "ollama": "ollama version is 0.40.14",
+  "ollama_server": "{\"version\":\"0.40.14\"}",
+  "bash": "GNU bash, version 3.2.57(1)-release (arm64-apple-darwin24)",
+  "bash_path_versions": null,
+  "zsh": "zsh 5.9 (arm64-apple-darwin24.0)",
+  "repo_commit": "ac60e0bcdbe74a20a82ecf47143a31746eaf533a",
+  "repo_branch": "cmdkit-mvp",
+  "npm_test_summary": "# tests 16\n# pass 16\n# fail 0",
+  "profile": "Target system: macOS 15.6.1 (macos, arm64). Shell: zsh. Package manager: brew.\nUse macOS/BSD command flags (e.g. sed -i '', stat -f, date -v), not GNU-only flags.\nInstalled tools: netstat, lsof, fuser, ifconfig, curl, dig, nc, jq, rsync, zip, unzip, git, docker, podman, kubectl, python3, node, ffmpeg.\nNot installed (avoid): ss, ip, wget, rg, fd, fzf, tree, 7z, systemctl, journalctl, magick, htop.",
+  "captured_at": "2026-11-04T16:50:29.796Z"
+}
