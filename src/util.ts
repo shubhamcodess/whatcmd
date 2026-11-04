@@ -42,6 +42,7 @@ export function clearWhichCache(): void {
 export interface RunResult {
   ok: boolean;
   status: number | null;
+  timedOut: boolean;
   stdout: string;
   stderr: string;
 }
@@ -62,6 +63,7 @@ export function run(
   return {
     ok: r.status === 0 && !r.error,
     status: r.status,
+    timedOut: (r.error as NodeJS.ErrnoException | undefined)?.code === "ETIMEDOUT",
     stdout: r.stdout ?? "",
     stderr: r.stderr ?? "",
   };

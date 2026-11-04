@@ -19,7 +19,16 @@ export const BUILTINS = new Set(
 
 /** Prefixes that run another command; we skip them to find the real one. */
 const WRAPPERS = new Set(["sudo", "doas", "env", "nohup", "nice", "ionice", "command", "exec", "builtin", "time"]);
-const SUDO_FLAGS_WITH_ARG = new Set(["-u", "-g", "-h", "-p", "-C", "-D", "-U", "-r", "-t"]);
+/** Wrapper options that take a value, e.g. `nice -n 10 cmd`, `sudo -u bob cmd`. */
+const WRAPPER_FLAGS_WITH_ARG: Record<string, Set<string>> = {
+  sudo: new Set(["-u", "-g", "-h", "-p", "-C", "-D", "-U", "-r", "-t"]),
+  doas: new Set(["-u", "-C"]),
+  nice: new Set(["-n", "--adjustment"]),
+  ionice: new Set(["-c", "-n", "-p", "-t"]),
+  env: new Set(["-u", "--unset", "-C", "--chdir", "-S"]),
+  time: new Set(["-f", "-o", "--format", "--output"]),
+  exec: new Set(["-a"]),
+};
 
 export type RejectReason = "empty" | "not-a-shell-task" | "unparseable" | "chat-reply";
 
@@ -100,7 +109,7 @@ export function commandWords(cmd: string): string[] {
         words.push(t);
         i++;
         while (i < toks.length && (toks[i].startsWith("-") || /^[A-Za-z_][A-Za-z0-9_]*=/.test(toks[i]))) {
-          if ((t === "sudo" || t === "doas") && SUDO_FLAGS_WITH_ARG.has(toks[i])) i++;
+          if (WRAPPER_FLAGS_WITH_ARG[t]?.has(toks[i])) i++;
           i++;
         }
         continue;
@@ -140,10 +149,10 @@ const RISKS: [RegExp, string][] = [
   [/\bmkfs(\.\w+)?\b|\bwipefs\b|\bfdisk\b|\bparted\b/, "formats or repartitions a disk"],
   [/>\s*\/dev\/(sd|nvme|hd|disk|mmcblk)/, "writes directly to a disk device"],
   [/:\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;\s*:/, "fork bomb: will freeze the machine"],
-  [/\bchmod\s+(-[a-zA-Z]+\s+)*0?777\b/, "makes files writable by everyone"],
+  [/\bchmod\s+(-[a-zA-Z]+\s+)*([0-7]?[0-7]{2}[2367]\b|[ugoa]*[ao][ugoa]*\+[rwxXst]*w)/, "makes files writable by everyone"],
   [/\bch(own|mod)\s+(-[a-zA-Z]*R|--recursive)/, "changes ownership/permissions recursively"],
   [/\b(shutdown|reboot|halt|poweroff)\b/, "shuts down or restarts the machine"],
-  [/\b(curl|wget)\b[^|]*\|\s*(sudo\s+)?(ba|z|da)?sh\b/, "runs a script downloaded from the internet"],
+  [/\b(curl|wget)\b[^|]*\|\s*(sudo\s+)?(ba|z|da)?sh\b|\b(ba|z|da)?sh\s+-c\s+["']?\$\(\s*(curl|wget)\b|(\b(ba|z|da)?sh|\bsource|^\.)\s+<\(\s*(curl|wget)\b/, "runs a script downloaded from the internet"],
   [/\bgit\s+(push\b[^|;&]*(--force|-f)\b|reset\s+--hard|clean\s+-[a-z]*f)/, "discards git history or local changes"],
   [/\bkill(all)?\s+(-9|-KILL)\s+-1\b/, "kills all your processes"],
   [/\bsudo\b/, "runs as root"],
@@ -175,5 +184,5 @@ export function check(raw: string, exists: (w: string) => boolean = commandExist
 
 /** A missing first word that doesn't even look like a program name is prose, not a command. */
 export function looksLikeProgramName(word: string): boolean {
-  return /^[a-z0-9][a-z0-9._+-]*$/.test(word);
+  return /^[a-z][a-z0-9._+-]*$/.test(word);
 }

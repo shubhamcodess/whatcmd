@@ -75,12 +75,16 @@ Environment variables override the file: `CMDKIT_MODEL`, `CMDKIT_HOST`, `CMDKIT_
 
 ## Models
 
-| Model | Size | Correct | Non-shell blocked | Typical time |
-| --- | --- | --- | --- | --- |
-| `qwen2.5-coder:1.5b` (default) | 1.0 GB | 21/24 | 15/15 | ~0.5 s |
-| `qwen2.5-coder:0.5b` | 0.4 GB | 14/24 | 15/15 | ~0.3 s |
+500-case benchmark on an Apple M4 Pro (macOS 15, Ollama 0.40, cmdkit 0.1.0 before the fixes listed below):
 
-Measured with `npm run eval` on a 4-core CPU with no GPU, model already loaded. A laptop is usually faster, and a GPU much faster. The first request after the model unloads takes 1–3 s.
+| Model | Overall | Commands correct | Non-shell blocked | Typical time | CLI end-to-end |
+| --- | --- | --- | --- | --- | --- |
+| `qwen2.5-coder:1.5b` (default) | 85% | 74% | 94% | ~110 ms | ~230 ms |
+| `qwen2.5-coder:0.5b` | 62% | 55% | 98% | ~70 ms | |
+
+First request after the model unloads: ~0.8 s. Repeated runs give the same answer (50/50 cases identical over 3 runs).
+
+On the 65-request regression set (`npm run eval`, 4-core CPU without GPU), the fixes made after that benchmark raised `qwen2.5-coder:1.5b` from 28/42 to 37/42 correct and from 19/23 to 20/23 blocked.
 
 ## How it works
 
@@ -94,12 +98,18 @@ request ─► grounding ─► local model ─► gate ─► your prompt line
 1. **Profile.** OS, distro, shell, package manager, GNU/BSD/BusyBox userland, and which common tools are installed. Detected once and stored.
 2. **Grounding.** Words in your request that name an installed program or system package (apt/dnf/pacman/apk) pull in that tool's description, usage line, and the option lines that match your request. The man page is read first; `--help` is the fallback (never for dangerous programs). Results are cached per binary version.
 3. **Generation.** A small local model gets the profile, a few examples and the docs. It must answer with one command or `NONE`.
-4. **Gate.** Output that is `NONE`, does not parse as shell, or is chat text is dropped. If a program in the command isn't installed, the model gets one retry. If it still uses it, the command is shown with a "not installed" warning.
+4. **Gate.** Output that is `NONE`, does not parse as shell, is chat text, repeats the request, or copies an example is dropped.
+5. **Retries (at most 3 model calls).**
+   - **Second chance:** if the model says `NONE` to a request that is clearly about the computer (it mentions files, processes, git, ports, a filename, a path…), it is asked once more with a prompt that has no `NONE` option.
+   - **Fix-up:** if the command uses a program that isn't installed, uses GNU-only flags on macOS (`date -d`, `stat -c`, `grep -P`…), or repeats the request, the model gets one retry with a specific hint. For example: "on macOS use `vm_stat` instead of `free`". Anything still wrong is shown with a warning.
+   - **Auto-fix:** on macOS, `sed -i 's/…'` is rewritten to `sed -i '' 's/…'`.
 
 ## Known limits
 
-- Small models still make mistakes. In the eval they wrote `fuser -t 8080` instead of `lsof -i :8080` and `ls | sort` for "biggest directories". Read the command before pressing Enter. That is why it never runs by itself.
+- Small models still make mistakes. In the eval they wrote `fuser -t 8080` instead of `lsof -i :8080` and `ls | sort` for "biggest directories". On macOS they still sometimes pick Linux tools; when a tool is missing you get a warning. Read the command before pressing Enter. That is why it never runs by itself.
 - The shortcut rebinds Enter in bash (via `bind`) and wraps `accept-line` in zsh. It may conflict with other tools that do the same (e.g. ble.sh).
+- The bash shortcut needs bash 4 or newer. macOS ships bash 3.2, so on a Mac use zsh (the default) or `brew install bash`. `cmdkit init` detects this and says so.
+- Math and translation requests can slip through as `bc` or `echo` commands. The shell really can do the math, so this is a judgment call.
 - fish and Windows shells: use `cmdkit <request>`. There is no shortcut yet.
 - Package-database grounding isn't done for Homebrew (too slow per request); installed commands are still grounded via man/`--help`.
 

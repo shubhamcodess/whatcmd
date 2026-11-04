@@ -26,7 +26,7 @@ async function request(host: string, p: string, init: RequestInit, timeoutMs?: n
   } catch (e) {
     const name = (e as Error)?.name;
     if (name === "TimeoutError" || name === "AbortError")
-      throw new OllamaError(`Ollama did not answer within ${timeoutMs} ms`, "timeout");
+      throw new OllamaError(`Ollama did not answer within ${timeoutMs} ms (the model may still be loading from disk; try again in a moment)`, "timeout");
     throw new OllamaError(`Cannot reach Ollama at ${host}`, "unreachable");
   }
 }

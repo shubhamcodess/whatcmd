@@ -5,15 +5,19 @@ import { cacheDir, DEFAULT_MODEL, loadConfig, saveStored, type Config } from "./
 import { detectProfile, profileHeadline, type Profile } from "./env.js";
 import { generate } from "./generate.js";
 import { getVersion, hasModel, isUp, listModels, pull, type ModelInfo } from "./ollama.js";
-import { installHook, isHookInstalled, isHookShell, rcFile } from "./shell.js";
+import { bashTooOld, installHook, isHookInstalled, isHookShell, rcFile } from "./shell.js";
 import { ask, bold, canPrompt, confirm, cyan, dim, err, fail, formatBytes, green, info, ok, warn } from "./ui.js";
 import { clearWhichCache, which } from "./util.js";
 
 export const RECOMMENDED: { name: string; size: string; note: string }[] = [
   { name: DEFAULT_MODEL, size: "~1.0 GB", note: "recommended: most accurate in our tests, ~0.5 s per command on a laptop CPU" },
-  { name: "qwen2.5-coder:0.5b", size: "~0.4 GB", note: "fastest (~0.25 s), but more wrong answers" },
+  { name: "qwen2.5-coder:0.5b", size: "~0.4 GB", note: "fastest, but much less accurate (62% vs 85% in our 500-case test); not recommended" },
   { name: "qwen2.5-coder:3b", size: "~1.9 GB", note: "for a GPU or fast CPU; slower, not benchmarked yet" },
 ];
+
+const BASH_TOO_OLD =
+  "Your bash is older than 4.0 (macOS ships 3.2), which can't host the /cmdkit shortcut. " +
+  "Use zsh (the macOS default), or install a newer bash: brew install bash. You can still run: cmdkit <request>";
 
 export interface DoctorOptions {
   /** Accept defaults without asking (start Ollama, download the configured model). Never runs the Ollama installer. */
@@ -164,7 +168,8 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
 
   // 5. Shell shortcut.
   if (opts.fromInit) return true;
-  if (isHookShell(profile.shell)) {
+  if (profile.shell === "bash" && bashTooOld()) warn(BASH_TOO_OLD);
+  else if (isHookShell(profile.shell)) {
     if (isHookInstalled(profile.shell, profile.os)) ok(`Shell shortcut is set up: type ${cyan(`${cfg.prefix} <request>`)} at any prompt`);
     else warn(`Shell shortcut not set up yet. Run \`cmdkit init\` to enable ${cfg.prefix} <request>`);
   } else warn(`${profile.shell} has no ${cfg.prefix} shortcut yet (bash and zsh do). Use: cmdkit <request>`);
@@ -180,6 +185,10 @@ export async function init(opts: DoctorOptions): Promise<boolean> {
   err("");
   if (!isHookShell(shell)) {
     warn(`The ${cfg.prefix} shortcut supports bash and zsh; your shell is ${shell}. You can still run: cmdkit <request>`);
+    return ready;
+  }
+  if (shell === "bash" && bashTooOld()) {
+    warn(BASH_TOO_OLD);
     return ready;
   }
   const rc = rcFile(shell, profile.os);

@@ -118,7 +118,7 @@ export function relevantExcerpt(doc: string, ask: string, maxChars = 900): strin
 }
 
 function cacheFile(name: string, binPath: string): string {
-  let key = `v1-${name}`; // bump the version to invalidate caches when doc extraction changes
+  let key = `v2-${name}`; // bump the version to invalidate caches when doc extraction changes
   try {
     key += "-" + Math.floor(fs.statSync(binPath).mtimeMs);
   } catch {}
@@ -136,14 +136,17 @@ export function docFor(name: string, binPath: string): { source: "man" | "help";
   } catch {}
 
   let found: { source: "man" | "help"; text: string } | null = null;
+  let timedOut = false;
   if (which("man")) {
-    const r = run("man", ["-P", "cat", name], { timeoutMs: 1500, env: { MANWIDTH: "100", LANG: "C", MAN_KEEP_FORMATTING: "" } });
+    const r = run("man", ["-P", "cat", name], { timeoutMs: 3000, env: { MANWIDTH: "100", LANG: "C", MAN_KEEP_FORMATTING: "" } });
     // Minimized distro images print a stub instead of the page, so require real man sections.
     if (r.ok && /^(NAME|SYNOPSIS|DESCRIPTION)\s*$/m.test(r.stdout.replace(/.\x08/g, ""))) found = { source: "man", text: r.stdout };
   }
   if (!found && !NO_EXEC.has(name) && !/^mkfs/.test(name)) {
     for (const flag of ["--help", "-h"]) {
-      const r = run(binPath, [flag], { timeoutMs: 1000, env: { LANG: "C", NO_COLOR: "1" } });
+      // First runs of big binaries can be slow (macOS verifies them), so allow 3 s.
+      const r = run(binPath, [flag], { timeoutMs: 3000, env: { LANG: "C", NO_COLOR: "1" } });
+      timedOut ||= r.timedOut;
       const text = r.stdout.length > r.stderr.length ? r.stdout : r.stderr;
       if (text.trim().length > 40) {
         found = { source: "help", text };
@@ -151,10 +154,13 @@ export function docFor(name: string, binPath: string): { source: "man" | "help";
       }
     }
   }
-  try {
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, found ? `${found.source}\n${found.text}` : "");
-  } catch {}
+  // Never cache a timeout as "no docs": the next request should try again.
+  if (found || !timedOut) {
+    try {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, found ? `${found.source}\n${found.text}` : "");
+    } catch {}
+  }
   return found;
 }
 

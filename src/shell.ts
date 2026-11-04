@@ -2,6 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { configDir } from "./config.js";
+import { run } from "./util.js";
 
 export type HookShell = "bash" | "zsh";
 export const isHookShell = (s: string): s is HookShell => s === "bash" || s === "zsh";
@@ -131,4 +132,11 @@ export function uninstallHook(shell: HookShell, osName: string): boolean {
     fs.unlinkSync(hookFile(shell));
   } catch {}
   return true;
+}
+
+/** The bash shortcut needs bash 4+ (READLINE_LINE). macOS ships bash 3.2. */
+export function bashTooOld(bashPath = process.env.SHELL && /bash$/.test(process.env.SHELL) ? process.env.SHELL : "bash"): boolean {
+  const r = run(bashPath, ["-c", "echo ${BASH_VERSINFO[0]}"], { timeoutMs: 2000 });
+  const major = Number(r.stdout.trim());
+  return r.ok && Number.isFinite(major) && major < 4;
 }
