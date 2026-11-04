@@ -2,7 +2,7 @@ import type { Config } from "./config.js";
 import { detectProfile, type Profile } from "./env.js";
 import { check, looksLikeProgramName, type RejectReason, type Verdict } from "./gate.js";
 import { ground, type Reference } from "./ground.js";
-import { alternativeFor, autofix, lint, looksLikeShellTask, type LintIssue } from "./lint.js";
+import { alternativeFor, autofix, isCalculatorAnswer, isDegenerate, isInjection, lint, looksLikeShellTask, type LintIssue } from "./lint.js";
 import { chat, type ChatMessage } from "./ollama.js";
 import { buildMessages, copiesExample, missingHint } from "./prompt.js";
 
@@ -12,6 +12,8 @@ export type Result =
 
 export interface DebugInfo {
   refs: Reference[];
+  /** What grounding found or why it found nothing, per candidate word. */
+  groundNotes: string[];
   outputs: string[];
   /** Why each retry happened. */
   retries: string[];
@@ -42,6 +44,8 @@ interface Checked {
 function evaluate(raw: string, ask: string, profile: Profile): Checked {
   const verdict = check(raw);
   if (!verdict.ok) return { verdict, issues: [], echoed: false };
+  if (isDegenerate(verdict.command)) return { verdict: { ok: false, reason: "unparseable" }, issues: [], echoed: false };
+  if (isCalculatorAnswer(verdict.command, ask)) return { verdict: { ok: false, reason: "chat-reply" }, issues: [], echoed: false };
   const command = autofix(verdict.command, profile);
   const fixed: Verdict = command === verdict.command ? verdict : { ...verdict, command };
   const echoed = echoesRequest(command, ask) || copiesExample(command, ask);
@@ -69,13 +73,14 @@ function fixHint(c: Checked, profile: Profile): string {
 }
 
 export async function generate(ask: string, cfg: Config): Promise<Result> {
-  const debug: DebugInfo = { refs: [], outputs: [], retries: [], timings: {}, messages: [] };
+  const debug: DebugInfo = { refs: [], groundNotes: [], outputs: [], retries: [], timings: {}, messages: [] };
   if (!/[a-z0-9]/i.test(ask)) return { kind: "rejected", reason: "empty", debug };
+  if (isInjection(ask)) return { kind: "rejected", reason: "not-a-shell-task", debug };
 
   const profile = cfg.profile ?? detectProfile();
 
   const t = performance.now();
-  debug.refs = cfg.grounding ? ground(ask, profile) : [];
+  debug.refs = cfg.grounding ? ground(ask, profile, 2, debug.groundNotes) : [];
   debug.timings.groundMs = since(t);
 
   let messages = buildMessages(ask, profile, debug.refs, cfg.notes);
@@ -97,9 +102,10 @@ export async function generate(ask: string, cfg: Config): Promise<Result> {
 
   // Second chance for a NONE on a request that is clearly about this computer.
   if (!best.verdict.ok && best.verdict.reason === "not-a-shell-task" && looksLikeShellTask(ask)) {
-    // A fresh prompt without the NONE option: small models refuse too eagerly when NONE is allowed.
+    // A fresh prompt with extra question-style examples. NONE stays allowed, so real
+    // non-shell questions that slipped past looksLikeShellTask can still be refused.
     debug.retries.push("second-chance");
-    messages = buildMessages(ask, profile, debug.refs, cfg.notes, false);
+    messages = buildMessages(ask, profile, debug.refs, cfg.notes, true);
     debug.messages = messages;
     const again = evaluate(await call(), ask, profile);
     if (again.verdict.ok && !again.echoed) best = again;

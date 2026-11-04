@@ -84,27 +84,58 @@ export function alternativeFor(tool: string, profile: Profile | undefined): stri
 const SHELL_WORDS = new RegExp(
   "\\b(" +
     [
-      "files?", "folders?", "director(y|ies)", "dir", "paths?", "disk", "drives?", "partitions?", "mount\\w*",
-      "process(es)?", "pid", "ports?", "network", "dns", "ip", "host(name)?", "ping", "route", "wifi", "connections?",
-      "cpu", "memory", "ram", "swap", "load", "uptime", "kernel", "battery", "usb", "devices?",
-      "users?", "groups?", "permissions?", "owner", "password", "logged", "sudo", "root",
-      "git", "commits?", "branch(es)?", "repo(sitory)?", "stash", "docker", "containers?", "images?",
-      "cron", "jobs?", "services?", "daemon", "logs?", "env(ironment)?", "variables?", "path",
-      "archive", "zip", "tar", "extract", "compress", "download", "upload", "packages?", "install\\w*",
-      "lines?", "column", "csv", "json", "text", "words?", "rename", "copy", "move", "delete", "search", "grep",
-      "shell", "terminal", "command", "bash", "zsh", "script", "machine", "computer", "mac", "linux",
+      "files?", "folders?", "director(y|ies)", "disk space", "drives?", "partitions?", "mounted",
+      "pid", "ports?", "dns", "ip address", "hostname", "ping", "wifi", "network",
+      "cpu", "ram", "swap", "uptime", "kernel", "battery", "usb",
+      "permissions?", "logged in", "sudo",
+      "git", "commits?", "branch(es)?", "repo(sitory)?", "stash", "docker", "containers?",
+      "cron", "daemon", "env(ironment)? var(iable)?s?",
+      "archive", "zip", "tar", "unzip",
+      "shell", "terminal", "bash", "zsh", "my (computer|machine|mac|laptop)", "this (computer|machine|mac|laptop)",
     ].join("|") +
     ")\\b",
   "i",
 );
 
+/** Prompt-injection phrasing: never treat as a task. */
+export function isInjection(ask: string): boolean {
+  return /\b(ignore|disregard|forget)\b.{0,40}\b(instructions?|prompt|rules|above)\b/i.test(ask);
+}
+
+/**
+ * Commands that only do arithmetic or transform literal text ("echo 60/1.5 | bc", "echo hello | tr …")
+ * are the model answering a question, unless the user asked for it in the shell.
+ */
+export function isCalculatorAnswer(original: string, ask: string): boolean {
+  let cmd = original;
+  if (/\b(shell|terminal|bash|zsh|command line|bc|awk|calculate in)\b/i.test(ask)) return false;
+  // Inline arithmetic like "$(echo 240*15/100 | bc)" or "$((2+2))" counts as literal text.
+  let prev = "";
+  while (prev !== cmd) {
+    prev = cmd;
+    cmd = cmd.replace(/\$\(\s*(echo|printf)\s+[^$()`|]*\|\s*bc(\s+-l)?\s*\)/g, "N").replace(/\$\(\([^()]*\)\)/g, "N");
+  }
+  if (/^(echo|printf)\s+[^|$`<>]*$/.test(cmd) && cmd !== original) return true;
+  if (/^expr\s/.test(cmd)) return true;
+  // echo/printf of literal text (no variables or files) into calculators or text filters only
+  const m = /^(echo|printf)\s+([^|$`<>]*?)\s*((\|\s*(bc|bc -l|tr|sed|awk|rev|cut|wc|python3?|perl)\b[^|<>]*)+)$/.exec(cmd);
+  return Boolean(m && !/[$`]/.test(m[3]));
+}
+
 export function looksLikeShellTask(ask: string): boolean {
-  if (/\b(ignore|disregard|forget)\b.*\b(instructions?|prompt|rules)\b/i.test(ask)) return false; // prompt injection
+  if (isInjection(ask)) return false;
   return (
     SHELL_WORDS.test(ask) ||
-    /\b[\w-]+\.[a-z0-9]{1,5}\b/i.test(ask) || // a filename like report.pdf
+    /\b[\w-]*[a-z][\w-]*\.[a-z][a-z0-9]{0,4}\b/i.test(ask) || // a filename like report.pdf (not "1.5")
     /(^|\s)[~/.][\w./-]*/.test(ask) || // a path
     /\b\d{1,3}(\.\d{1,3}){3}\b/.test(ask) || // an IP address
     /https?:\/\//.test(ask)
   );
+}
+
+/** Small models sometimes loop: "photos photos photos …" or "Rational::Rational::…". */
+export function isDegenerate(cmd: string): boolean {
+  const toks = cmd.split(/[^A-Za-z0-9_]+/).filter(Boolean);
+  if (toks.length < 16) return false;
+  return new Set(toks).size / toks.length < 0.35;
 }

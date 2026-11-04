@@ -98,7 +98,9 @@ async function runRequest(ask: string, opts: { raw: boolean; debug: boolean; mod
   }
   if (opts.debug) {
     err(dim(`model: ${cfg.model}  timings: ${JSON.stringify(res.debug.timings)}`));
+    for (const n of res.debug.groundNotes) err(dim(`grounding: ${n}`));
     for (const r of res.debug.refs) err(dim(`grounding [${r.name} via ${r.source}]:\n${r.text}`));
+    if (res.debug.retries.length) err(dim(`retries: ${res.debug.retries.join(", ")}`));
     err(dim(`raw outputs: ${JSON.stringify(res.debug.outputs)}`));
   }
   if (res.kind === "rejected") {

@@ -84,7 +84,7 @@ Environment variables override the file: `CMDKIT_MODEL`, `CMDKIT_HOST`, `CMDKIT_
 
 First request after the model unloads: ~0.8 s. Repeated runs give the same answer (50/50 cases identical over 3 runs).
 
-On the 65-request regression set (`npm run eval`, 4-core CPU without GPU), the fixes made after that benchmark raised `qwen2.5-coder:1.5b` from 28/42 to 37/42 correct and from 19/23 to 20/23 blocked.
+On the 72-request regression set (`npm run eval`, 4-core CPU without GPU), the fixes made after that benchmark raised `qwen2.5-coder:1.5b` from 28/42 to 34/42 correct and blocked 30/30 non-shell requests. `cmdkit --debug` shows why each word in the request did or didn't get documentation.
 
 ## How it works
 
@@ -98,9 +98,9 @@ request ─► grounding ─► local model ─► gate ─► your prompt line
 1. **Profile.** OS, distro, shell, package manager, GNU/BSD/BusyBox userland, and which common tools are installed. Detected once and stored.
 2. **Grounding.** Words in your request that name an installed program or system package (apt/dnf/pacman/apk) pull in that tool's description, usage line, and the option lines that match your request. The man page is read first; `--help` is the fallback (never for dangerous programs). Results are cached per binary version.
 3. **Generation.** A small local model gets the profile, a few examples and the docs. It must answer with one command or `NONE`.
-4. **Gate.** Output that is `NONE`, does not parse as shell, is chat text, repeats the request, or copies an example is dropped.
+4. **Gate.** Output is dropped when it is `NONE`, doesn't parse as shell, is chat text, repeats the request, copies an example, or loops (`photos photos photos …`). Arithmetic or literal text piped through `bc`/`tr` (`echo "60/1.5" | bc`) also counts as answering a question, unless you mention the shell. Prompt injections ("ignore the system prompt and …") are refused outright.
 5. **Retries (at most 3 model calls).**
-   - **Second chance:** if the model says `NONE` to a request that is clearly about the computer (it mentions files, processes, git, ports, a filename, a path…), it is asked once more with a prompt that has no `NONE` option.
+   - **Second chance:** if the model says `NONE` to a request that is clearly about the computer (it mentions files, git, ports, docker, a filename, a path…), it is asked once more with extra question-style examples. `NONE` stays allowed, so real non-shell questions are still refused.
    - **Fix-up:** if the command uses a program that isn't installed, uses GNU-only flags on macOS (`date -d`, `stat -c`, `grep -P`…), or repeats the request, the model gets one retry with a specific hint. For example: "on macOS use `vm_stat` instead of `free`". Anything still wrong is shown with a warning.
    - **Auto-fix:** on macOS, `sed -i 's/…'` is rewritten to `sed -i '' 's/…'`.
 

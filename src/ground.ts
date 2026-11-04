@@ -126,11 +126,14 @@ function cacheFile(name: string, binPath: string): string {
 }
 
 /** Local docs for a program: man page first (no execution), else `--help`. Cached per binary version. */
-export function docFor(name: string, binPath: string): { source: "man" | "help"; text: string } | null {
+export function docFor(name: string, binPath: string, notes: string[] = []): { source: "man" | "help"; text: string } | null {
   const file = cacheFile(name, binPath);
   try {
     const cached = fs.readFileSync(file, "utf8");
-    if (!cached) return null;
+    if (!cached) {
+      notes.push(`${name}: cached as "no docs" (${file})`);
+      return null;
+    }
     const nl = cached.indexOf("\n");
     return { source: cached.slice(0, nl) as "man" | "help", text: cached.slice(nl + 1) };
   } catch {}
@@ -147,6 +150,7 @@ export function docFor(name: string, binPath: string): { source: "man" | "help";
       // First runs of big binaries can be slow (macOS verifies them), so allow 3 s.
       const r = run(binPath, [flag], { timeoutMs: 3000, env: { LANG: "C", NO_COLOR: "1" } });
       timedOut ||= r.timedOut;
+      if (r.timedOut) notes.push(`${name}: ${flag} timed out after 3000 ms`);
       const text = r.stdout.length > r.stderr.length ? r.stdout : r.stderr;
       if (text.trim().length > 40) {
         found = { source: "help", text };
@@ -202,21 +206,30 @@ export function packageInfo(name: string, pm: string): PackageInfo | null {
   return null; // brew/nix: too slow to query on every request; installed commands are still grounded via docs
 }
 
-export function ground(ask: string, profile: Profile | undefined, maxRefs = 2): Reference[] {
+/** `notes` (optional) collects one line per candidate explaining what happened, for --debug. */
+export function ground(ask: string, profile: Profile | undefined, maxRefs = 2, notes: string[] = []): Reference[] {
   const refs: Reference[] = [];
   let lookups = 0;
   for (const cand of candidates(ask)) {
     if (refs.length >= maxRefs) break;
     const bin = which(cand);
     if (bin) {
-      const doc = docFor(cand, bin);
+      const t = performance.now();
+      const doc = docFor(cand, bin, notes);
       if (doc) refs.push({ name: cand, source: doc.source, text: relevantExcerpt(doc.text, ask) });
+      notes.push(`${cand}: ${bin} -> ${doc ? `docs from ${doc.source}` : "no docs"} (${Math.round(performance.now() - t)} ms)`);
       continue;
     }
-    if (!profile?.packageManager || lookups >= 4 || !/^[a-z][a-z0-9+-]+$/.test(cand)) continue;
+    if (!profile?.packageManager || lookups >= 4 || !/^[a-z][a-z0-9+-]+$/.test(cand)) {
+      notes.push(`${cand}: not on PATH`);
+      continue;
+    }
     lookups++;
     const pkg = packageInfo(cand, profile.packageManager);
-    if (!pkg) continue;
+    if (!pkg) {
+      notes.push(`${cand}: not on PATH, not an installed ${profile.packageManager} package`);
+      continue;
+    }
     let text = `Installed package ${cand}${pkg.version ? ` ${pkg.version}` : ""}: ${pkg.summary}`;
     if (pkg.bins.length) text += `\nProvides commands: ${pkg.bins.slice(0, 12).join(", ")}`;
     const main = pkg.bins.includes(cand) ? cand : pkg.bins[0];

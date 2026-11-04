@@ -3,8 +3,7 @@ import { profilePrompt } from "./env.js";
 import type { Reference } from "./ground.js";
 import type { ChatMessage } from "./ollama.js";
 
-const BASE_RULES = `You convert a request into ONE shell command for the user's system. Output only the command, no explanation, no backticks.`;
-const RULES = `${BASE_RULES}
+const RULES = `You convert a request into ONE shell command for the user's system. Output only the command, no explanation, no backticks.
 If the request is not a task that can be done with a shell command on this computer, output exactly: NONE`;
 
 /** Few-shot turns. Includes NONE examples so the model learns to refuse non-shell requests. */
@@ -16,11 +15,16 @@ export const SHOTS: [string, string][] = [
   ["show disk usage of current folder in human readable form", "du -sh ."],
 ];
 
-/** Extra positive examples for the second-chance prompt, which has no NONE option. */
-const FORCE_SHOTS: [string, string][] = [
+/**
+ * Extra examples for the second-chance prompt: questions about the computer that are shell tasks.
+ * The NONE option stays, so real non-shell questions can still be refused.
+ */
+const SECOND_SHOTS: [string, string][] = [
   ["how long has this machine been up", "uptime"],
+  ["what is the square root of 2", "NONE"],
   ["show who changed each line of main.c", "git blame main.c"],
   ["what are the name servers for example.org", "dig NS example.org"],
+  ["how tall is the Eiffel Tower", "NONE"],
 ];
 
 const COMMON_WORDS = new Set("the and for with all show list this that from into what are how has who each your".split(" "));
@@ -38,8 +42,8 @@ export function copiesExample(command: string, ask: string): boolean {
   );
 }
 
-export function systemPrompt(profile: Profile | undefined, notes: string, allowNone = true): string {
-  const parts = [allowNone ? RULES : BASE_RULES];
+export function systemPrompt(profile: Profile | undefined, notes: string): string {
+  const parts = [RULES];
   if (profile) parts.push(profilePrompt(profile));
   if (notes.trim()) parts.push(`User preferences: ${notes.trim()}`);
   return parts.join("\n\n");
@@ -54,10 +58,10 @@ export function buildMessages(
   profile: Profile | undefined,
   refs: Reference[],
   notes: string,
-  allowNone = true,
+  secondChance = false,
 ): ChatMessage[] {
-  const messages: ChatMessage[] = [{ role: "system", content: systemPrompt(profile, notes, allowNone) }];
-  const shots = allowNone ? SHOTS : [...SHOTS.filter(([, a]) => a !== "NONE"), ...FORCE_SHOTS];
+  const messages: ChatMessage[] = [{ role: "system", content: systemPrompt(profile, notes) }];
+  const shots = secondChance ? [...SHOTS, ...SECOND_SHOTS] : SHOTS;
   for (const [u, a] of shots) messages.push({ role: "user", content: u }, { role: "assistant", content: a });
   let content = ask.trim();
   if (refs.length) {
