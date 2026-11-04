@@ -4,7 +4,7 @@ import { check, looksLikeProgramName, type RejectReason, type Verdict } from "./
 import { ground, type Reference } from "./ground.js";
 import { alternativeFor, autofix, isCalculatorAnswer, isDegenerate, isInjection, lint, looksLikeShellTask, type LintIssue } from "./lint.js";
 import { chat, type ChatMessage } from "./ollama.js";
-import { buildMessages, copiesExample, missingHint } from "./prompt.js";
+import { REFINE_SHOTS, buildMessages, copiesExample, missingHint, refinePrompt } from "./prompt.js";
 
 export type Result =
   | { kind: "command"; command: string; warnings: string[]; debug: DebugInfo }
@@ -39,9 +39,20 @@ interface Checked {
   verdict: Verdict;
   issues: LintIssue[];
   echoed: boolean;
+  /** Refinement returned the same command it was asked to change. */
+  unchanged?: boolean;
 }
 
-function evaluate(raw: string, ask: string, profile: Profile): Checked {
+export interface Refinement {
+  /** The request that produced the command, including earlier changes. */
+  originalAsk: string;
+  /** The command to change (generated, or the user's edited version). */
+  base: string;
+  /** Exit status of `base` if the user ran it. */
+  status?: number;
+}
+
+function evaluate(raw: string, ask: string, profile: Profile, base?: string): Checked {
   const verdict = check(raw);
   if (!verdict.ok) return { verdict, issues: [], echoed: false };
   if (isDegenerate(verdict.command)) return { verdict: { ok: false, reason: "unparseable" }, issues: [], echoed: false };
@@ -49,18 +60,20 @@ function evaluate(raw: string, ask: string, profile: Profile): Checked {
   const command = autofix(verdict.command, profile);
   const fixed: Verdict = command === verdict.command ? verdict : { ...verdict, command };
   const echoed = echoesRequest(command, ask) || copiesExample(command, ask);
-  return { verdict: fixed, issues: lint(command, profile), echoed };
+  const unchanged = base !== undefined && command.trim() === base.trim();
+  return { verdict: fixed, issues: lint(command, profile), echoed, unchanged };
 }
 
 /** Lower is better: used to keep the better of two attempts. */
 function badness(c: Checked): number {
   if (!c.verdict.ok) return 100;
-  return (c.echoed ? 10 : 0) + c.verdict.missing.length * 2 + c.issues.length;
+  return (c.echoed ? 10 : 0) + (c.unchanged ? 5 : 0) + c.verdict.missing.length * 2 + c.issues.length;
 }
 
 function fixHint(c: Checked, profile: Profile): string {
   if (!c.verdict.ok) return "";
   const parts: string[] = [];
+  if (c.unchanged) parts.push("That is the same command. Apply the requested change.");
   if (c.echoed)
     parts.push("That repeats the request instead of giving a command. Use the program's real options (see the documentation above if given).");
   if (c.verdict.missing.length) {
@@ -72,10 +85,27 @@ function fixHint(c: Checked, profile: Profile): string {
   return parts.join(" ");
 }
 
-export async function generate(ask: string, cfg: Config): Promise<Result> {
+/**
+ * `ask` is the request, or with `refine` the change to apply ("only pdfs", "fix that").
+ * Checks judge the original request and the change together, since "only pdfs" alone
+ * isn't a shell task.
+ */
+export async function generate(change: string, cfg: Config, refine?: Refinement): Promise<Result> {
   const debug: DebugInfo = { refs: [], groundNotes: [], outputs: [], retries: [], timings: {}, messages: [] };
-  if (!/[a-z0-9]/i.test(ask)) return { kind: "rejected", reason: "empty", debug };
-  if (isInjection(ask)) return { kind: "rejected", reason: "not-a-shell-task", debug };
+  if (!/[a-z0-9]/i.test(change)) return { kind: "rejected", reason: "empty", debug };
+  if (isInjection(change)) return { kind: "rejected", reason: "not-a-shell-task", debug };
+  const ask = refine ? `${refine.originalAsk}; ${change}` : change;
+  const base = refine?.base;
+  const withRefinement = (m: ChatMessage[]) => {
+    if (!refine) return m;
+    // Replace the request turn with a single "current command + change" message, keeping any local docs.
+    const last = m.pop()!.content;
+    const i = last.lastIndexOf("\n\nRequest: ");
+    const docs = last.startsWith("Local documentation:") && i > 0 ? last.slice(0, i) + "\n\n" : "";
+    for (const [u, a] of REFINE_SHOTS) m.push({ role: "user", content: u }, { role: "assistant", content: a });
+    m.push({ role: "user", content: docs + refinePrompt(refine.base, refine.originalAsk, change, refine.status) });
+    return m;
+  };
 
   const profile = cfg.profile ?? detectProfile();
 
@@ -83,7 +113,7 @@ export async function generate(ask: string, cfg: Config): Promise<Result> {
   debug.refs = cfg.grounding ? ground(ask, profile, 2, debug.groundNotes) : [];
   debug.timings.groundMs = since(t);
 
-  let messages = buildMessages(ask, profile, debug.refs, cfg.notes);
+  let messages = withRefinement(buildMessages(ask, profile, debug.refs, cfg.notes));
   debug.messages = messages;
   const call = async () => {
     const t0 = performance.now();
@@ -95,19 +125,19 @@ export async function generate(ask: string, cfg: Config): Promise<Result> {
   const retry = async (prev: string, hint: string, why: string) => {
     debug.retries.push(why);
     messages.push({ role: "assistant", content: prev }, { role: "user", content: hint });
-    return evaluate(await call(), ask, profile);
+    return evaluate(await call(), ask, profile, base);
   };
 
-  let best = evaluate(await call(), ask, profile);
+  let best = evaluate(await call(), ask, profile, base);
 
   // Second chance for a NONE on a request that is clearly about this computer.
   if (!best.verdict.ok && best.verdict.reason === "not-a-shell-task" && looksLikeShellTask(ask)) {
     // A fresh prompt without the NONE option (small models refuse too eagerly when it's offered).
     // Safe because looksLikeShellTask is narrow and calculator/injection answers are filtered.
     debug.retries.push("second-chance");
-    messages = buildMessages(ask, profile, debug.refs, cfg.notes, true);
+    messages = withRefinement(buildMessages(ask, profile, debug.refs, cfg.notes, true));
     debug.messages = messages;
-    const again = evaluate(await call(), ask, profile);
+    const again = evaluate(await call(), ask, profile, base);
     if (again.verdict.ok && !again.echoed) best = again;
   }
 
@@ -130,6 +160,7 @@ export async function generate(ask: string, cfg: Config): Promise<Result> {
   if (first && !looksLikeProgramName(first)) return { kind: "rejected", reason: "chat-reply", debug };
 
   const warnings = [
+    ...(best.unchanged ? ["the command is the same as before"] : []),
     ...v.missing.map((m) => `${m} is not installed on this system`),
     ...best.issues.map((i) => i.warning),
     ...v.risks,

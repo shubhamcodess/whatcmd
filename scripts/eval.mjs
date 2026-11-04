@@ -36,11 +36,30 @@ for (const ask of cases.invalid) {
   else console.log(`LEAK  ${ask}  =>  ${r.command}`);
 }
 
+// Multi-step refinement: request, then changes; the final command must match.
+let refineOk = 0;
+for (const c of cases.refine ?? []) {
+  let r = await generate(c.steps[0], cfg);
+  let ask = c.steps[0];
+  for (const change of c.steps.slice(1)) {
+    if (r.kind !== "command") break;
+    const t = performance.now();
+    const next = await generate(change, cfg, { originalAsk: ask, base: r.command });
+    times.push(performance.now() - t);
+    ask = `${ask}; ${change}`;
+    r = next;
+  }
+  const pass = r.kind === "command" && c.expect.every((re) => new RegExp(re).test(r.command));
+  refineOk += pass;
+  if (!pass) console.log(`FAIL  ${c.steps.join(" -> ")}  =>  ${r.kind === "command" ? r.command : `(rejected: ${r.reason})`}`);
+}
+
 times.sort((a, b) => a - b);
 const p = (q) => Math.round(times[Math.floor((times.length - 1) * q)]);
 console.log(
   `\nmodel ${cfg.model} | grounding ${cfg.grounding ? "on" : "off"}\n` +
     `valid requests answered correctly: ${validOk}/${cases.valid.length}\n` +
     `non-shell requests blocked:        ${invalidOk}/${cases.invalid.length}\n` +
+    `refinement chains correct:         ${refineOk}/${(cases.refine ?? []).length}\n` +
     `latency p50 ${p(0.5)} ms, p90 ${p(0.9)} ms, max ${p(1)} ms`,
 );
