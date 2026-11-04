@@ -10,6 +10,7 @@ First release candidate, for the initial public version.
 
 ### Added
 
+- Requires Node.js 21 or newer.
 - Plain-English to shell command, run locally through Ollama.
 - `/w <request>` shell shortcut for bash (4 or newer) and zsh. Enter replaces the line with the command; a second Enter runs it.
 - `whatcmd <request>` and `whatcmd --raw -- <request>` for the terminal and for scripts.

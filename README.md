@@ -5,7 +5,7 @@
 whatcmd runs a small language model **on your own machine** through [Ollama](https://ollama.com). No API keys, no accounts, and your requests never leave your computer.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Node](https://img.shields.io/badge/node-%3E%3D18.17-brightgreen)
+![Node](https://img.shields.io/badge/node-%3E%3D21-brightgreen)
 ![Status](https://img.shields.io/badge/status-0.1.0%20pre--release-orange)
 
 ```text
@@ -25,7 +25,7 @@ Most of the time you know what you want to do but not the exact flags. whatcmd t
 
 ## Install
 
-Requirements: Node.js 18.17 or newer, macOS or Linux, and bash or zsh for the shortcut (any shell can use `whatcmd <request>`).
+Requirements: Node.js 21 or newer, macOS or Linux, and bash or zsh for the shortcut (any shell can use `whatcmd <request>`).
 
 Choose one of the two options. Both install the same `whatcmd` command.
 

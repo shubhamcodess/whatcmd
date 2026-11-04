@@ -13,13 +13,13 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=18.17"
+    "node": ">=21"
   },
   "scripts": {
     "build": "tsc -p . && chmod +x dist/cli.js",
     "prepare": "npm run build",
     "prepack": "npm run build",
-    "test": "npm run build && node --test dist/*.test.js",
+    "test": "npm run build && node --test \"dist/**/*.test.js\"",
     "eval": "npm run build && node scripts/eval.mjs",
     "prepublishOnly": "npm test",
     "check": "npm run build && node scripts/check-links.mjs && node scripts/check-pack.mjs"

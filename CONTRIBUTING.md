@@ -21,7 +21,7 @@ npm ci
 npm test
 ```
 
-You need Node.js 18.17 or newer. For `npm run eval` you also need [Ollama](https://ollama.com) running locally with `qwen2.5-coder:1.5b` downloaded.
+You need Node.js 21 or newer. For `npm run eval` you also need [Ollama](https://ollama.com) running locally with `qwen2.5-coder:1.5b` downloaded.
 
 ## Making a change
 
@@ -65,7 +65,7 @@ The package is published to npm as **`@shubhamcodess/whatcmd`**. The scope is pa
 
 **How a release happens**
 
-1. Open a pull request into `main`. CI runs: unit tests on Linux and macOS with Node 18 and 22, the Markdown link check, the package check, and an install of the tarball.
+1. Open a pull request into `main`. CI runs: unit tests on Linux and macOS with Node 21, the Markdown link check, the package check, and an install of the tarball.
 2. Before merging, update `CHANGELOG.md`: move the items under `[Unreleased]` into a new `## [X.Y.Z] - YYYY-MM-DD` section. Bump `version` in `package.json` in the same pull request.
 3. Merge the pull request. The **Release** workflow runs on `main`:
    - If the tag `vX.Y.Z` does not exist yet, it runs the tests and the package check, then publishes to npm with provenance (only if the `NPM_TOKEN` secret exists), then installs the published version from the registry and runs it.
