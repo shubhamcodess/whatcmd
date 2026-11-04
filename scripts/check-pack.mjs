@@ -9,7 +9,13 @@ if (!/^@[^/]+\/[^/]+$/.test(pkg.name)) {
   process.exit(1);
 }
 const out = execFileSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], { encoding: "utf8" });
-const files = JSON.parse(out)[0].files.map((f) => f.path);
+// npm can print lifecycle headers (e.g. "> pkg@ver prepare") before the JSON, so take the array only.
+const start = out.search(/^\[/m);
+if (start < 0) {
+  console.error("npm pack did not print a JSON array:\n" + out.slice(0, 500));
+  process.exit(1);
+}
+const files = JSON.parse(out.slice(start))[0].files.map((f) => f.path);
 const required = ["dist/cli.js", "README.md", "LICENSE", "package.json"];
 const forbidden = [/\.test\.js$/, /^src\//, /^tests?\//, /^benchmarks\//, /^eval\//, /^\.github\//, /\.map$/];
 let problems = 0;
