@@ -1,0 +1,79 @@
+name: CI
+
+# Runs on every pull request and on every push to main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [18, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Build and unit tests (30 tests)
+        run: npm test
+
+  docs:
+    name: Docs links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Relative links and anchors in the Markdown files resolve
+        run: node scripts/check-links.mjs
+
+  package:
+    name: Installable package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Package contents (required files, nothing forbidden, scoped name)
+        run: node scripts/check-pack.mjs
+      - name: Build the tarball and install it into an empty prefix
+        run: |
+          set -euo pipefail
+          npm pack
+          TGZ="$(ls ./*.tgz | head -1)"
+          P="$(mktemp -d)"
+          npm install -g --prefix "$P" "$TGZ"
+          test "$("$P/bin/whatcmd" --version)" = "$(node -p "require('./package.json').version")"
+          "$P/bin/whatcmd" shell zsh | grep -q "whatcmd shell hook"
+          echo "installed tarball runs"
+
+  # Single required status check for branch protection: passes only if every job above passed.
+  gate:
+    name: CI gate
+    if: always()
+    needs: [test, docs, package]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All required jobs succeeded
+        run: |
+          echo "test=${{ needs.test.result }} docs=${{ needs.docs.result }} package=${{ needs.package.result }}"
+          [ "${{ needs.test.result }}" = "success" ] && [ "${{ needs.docs.result }}" = "success" ] && [ "${{ needs.package.result }}" = "success" ]

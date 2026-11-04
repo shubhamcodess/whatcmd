@@ -1,0 +1,77 @@
+name: Deploy site to GitHub Pages
+
+# Builds the landing page in site/ and publishes it with GitHub Pages.
+# Stays off until the site/ folder (with a package.json) exists, so it is safe to merge now.
+# One-time setup: Settings, Pages, Source: "GitHub Actions".
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'README.md'
+      - 'package.json'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Is there a site yet?
+    runs-on: ubuntu-latest
+    outputs:
+      has_site: ${{ steps.check.outputs.has_site }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f site/package.json ]; then echo "has_site=true" >> "$GITHUB_OUTPUT"; else echo "has_site=false" >> "$GITHUB_OUTPUT"; echo "::notice::no site/ folder yet: nothing to deploy"; fi
+
+  build:
+    name: Build site
+    needs: check
+    if: needs.check.outputs.has_site == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Build (base path = the Pages URL path, e.g. /cmdkit/)
+        run: npm run build
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
