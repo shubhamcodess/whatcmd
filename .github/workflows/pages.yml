@@ -27,7 +27,7 @@ jobs:
     outputs:
       has_site: ${{ steps.check.outputs.has_site }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: check
         run: |
           if [ -f site/package.json ]; then echo "has_site=true" >> "$GITHUB_OUTPUT"; else echo "has_site=false" >> "$GITHUB_OUTPUT"; echo "::notice::no site/ folder yet: nothing to deploy"; fi
@@ -45,7 +45,7 @@ jobs:
       run:
         working-directory: site
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 21
