@@ -39,11 +39,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shubhamcodess/cmdkit.git"
+    "url": "git+https://github.com/shubhamcodess/whatcmd.git"
   },
-  "homepage": "https://github.com/shubhamcodess/cmdkit#readme",
+  "homepage": "https://github.com/shubhamcodess/whatcmd#readme",
   "bugs": {
-    "url": "https://github.com/shubhamcodess/cmdkit/issues"
+    "url": "https://github.com/shubhamcodess/whatcmd/issues"
   },
   "publishConfig": {
     "access": "public",
