@@ -82,7 +82,7 @@ test("echoed requests are detected", () => {
 });
 
 test("bash older than 4 is detected (macOS bash 3.2)", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cmdkit-bash-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "whatcmd-bash-"));
   const fake = path.join(dir, "bash");
   fs.writeFileSync(fake, "#!/bin/sh\necho 3\n", { mode: 0o755 });
   assert.equal(bashTooOld(fake), true);

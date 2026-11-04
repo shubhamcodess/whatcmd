@@ -1,10 +1,10 @@
 {
-  "name": "@shubhamcodess/cmdkit",
+  "name": "whatcmd",
   "version": "0.1.0",
   "description": "Type plain English in your terminal, get a shell command back. Runs locally on Ollama, grounded in your own system.",
   "type": "module",
   "bin": {
-    "cmdkit": "dist/cli.js"
+    "whatcmd": "dist/cli.js"
   },
   "files": [
     "dist/**/*.js",
@@ -36,10 +36,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shubhamcodess/cmdkit.git"
+    "url": "git+https://github.com/shubhamcodess/whatcmd.git"
   },
-  "homepage": "https://github.com/shubhamcodess/cmdkit#readme",
-  "bugs": "https://github.com/shubhamcodess/cmdkit/issues",
+  "homepage": "https://github.com/shubhamcodess/whatcmd#readme",
+  "bugs": "https://github.com/shubhamcodess/whatcmd/issues",
   "publishConfig": {
     "access": "public"
   },

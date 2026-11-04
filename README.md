@@ -1,9 +1,9 @@
-# cmdkit
+# whatcmd
 
 Type plain English at your shell prompt, get a real command back. Runs **locally** on [Ollama](https://ollama.com): no API keys, nothing leaves your machine.
 
 ```text
-$ /cmdkit find files bigger than 100MB          ← press Enter
+$ /w find files bigger than 100MB          ← press Enter
 $ find . -type f -size +100M                    ← your line is replaced; Enter again runs it
 ```
 
@@ -16,66 +16,66 @@ $ find . -type f -size +100M                    ← your line is replaced; Enter
 ## Install
 
 ```bash
-npm install -g @shubhamcodess/cmdkit
-cmdkit init
+npm install -g whatcmd
+whatcmd init
 ```
 
-`cmdkit init` walks you through setup:
+`whatcmd init` walks you through setup:
 
 1. Detects your system and saves it to your profile.
 2. Checks Ollama. If it's missing, it shows the install command for your OS and offers to run it. If Ollama is installed but stopped, it offers to start it.
 3. Lets you pick a model (recommended ones below, any model you already have, or any name from the [Ollama library](https://ollama.com/library)) and downloads it.
 4. Runs a test request and shows how fast it is.
-5. Adds the `/cmdkit` shortcut to your `~/.bashrc` or `~/.zshrc`.
+5. Adds the `/w` shortcut to your `~/.bashrc` or `~/.zshrc`.
 
-Open a new terminal and you're done. Requirements: Node 18+, Linux or macOS, bash or zsh for the shortcut. Any shell can use `cmdkit <request>`.
+Open a new terminal and you're done. Requirements: Node 18+, Linux or macOS, bash or zsh for the shortcut. Any shell can use `whatcmd <request>`.
 
 ## Use
 
 | You type | What happens |
 | --- | --- |
-| `/cmdkit <request>` + Enter | Your line is replaced by the command. Enter again runs it. |
-| `cmdkit <request>` | Prints the command and asks "Run it? [y/N]". |
-| `cmdkit --raw <request>` | Prints only the command (for scripts). Exit code 2 if it isn't a shell task. |
+| `/w <request>` + Enter | Your line is replaced by the command. Enter again runs it. |
+| `whatcmd <request>` | Prints the command and asks "Run it? [y/N]". |
+| `whatcmd --raw <request>` | Prints only the command (for scripts). Exit code 2 if it isn't a shell task. |
 
 Quotes are not needed, even with `'`, `>` or `*` in your request: the shortcut reads the line before the shell parses it.
 
 ## Commands
 
 ```text
-cmdkit init                 first-time setup
-cmdkit doctor               check Ollama, model, speed and shortcut; offers fixes
-cmdkit use <model>          switch model (downloads it if needed)
-cmdkit models               list downloaded models
-cmdkit config               show settings
-cmdkit config set <key> <value> | get <key> | unset <key> | path | reset
-cmdkit profile [--refresh]  show (or re-detect) the system info given to the model
-cmdkit shell bash|zsh       print the shell hook, to add it yourself
-cmdkit uninstall            remove the shortcut from your shell config
+whatcmd init                 first-time setup
+whatcmd doctor               check Ollama, model, speed and shortcut; offers fixes
+whatcmd use <model>          switch model (downloads it if needed)
+whatcmd models               list downloaded models
+whatcmd config               show settings
+whatcmd config set <key> <value> | get <key> | unset <key> | path | reset
+whatcmd profile [--refresh]  show (or re-detect) the system info given to the model
+whatcmd shell bash|zsh       print the shell hook, to add it yourself
+whatcmd uninstall            remove the shortcut from your shell config
 ```
 
 Flags: `--debug` (show grounding, prompts and timings), `--model=NAME` (one request with another model), `--yes` (non-interactive `init`/`doctor`).
 
 ## Settings
 
-Stored in `~/.config/cmdkit/config.json`.
+Stored in `~/.config/whatcmd/config.json`.
 
 | Key | Default | |
 | --- | --- | --- |
 | `model` | `qwen2.5-coder:1.5b` | any Ollama model |
 | `host` | `http://127.0.0.1:11434` | Ollama server; also reads `OLLAMA_HOST` |
-| `prefix` | `/cmdkit` | what you type before a request, e.g. `config set prefix ,` |
+| `prefix` | `/w` | what you type before a request, e.g. `config set prefix ,` |
 | `grounding` | `true` | read local docs of tools you mention |
 | `notes` | | extra instructions, e.g. `"prefer ripgrep over grep"` |
 | `keepAlive` | `2h` | how long Ollama keeps the model loaded (`-1` = forever, fastest) |
 | `temperature` | `0` | |
 | `timeoutMs` | `30000` | |
 
-Environment variables override the file: `CMDKIT_MODEL`, `CMDKIT_HOST`, `CMDKIT_CONFIG_DIR`, `NO_COLOR`.
+Environment variables override the file: `WHATCMD_MODEL`, `WHATCMD_HOST`, `WHATCMD_CONFIG_DIR`, `NO_COLOR`.
 
 ## Models
 
-500-case benchmark on an Apple M4 Pro (macOS 15, Ollama 0.40, cmdkit 0.1.0 before the fixes listed below):
+500-case benchmark on an Apple M4 Pro (macOS 15, Ollama 0.40, whatcmd 0.1.0 before the fixes listed below):
 
 | Model | Overall | Commands correct | Non-shell blocked | Typical time | CLI end-to-end |
 | --- | --- | --- | --- | --- | --- |
@@ -84,7 +84,7 @@ Environment variables override the file: `CMDKIT_MODEL`, `CMDKIT_HOST`, `CMDKIT_
 
 First request after the model unloads: ~0.8 s. Repeated runs give the same answer (50/50 cases identical over 3 runs).
 
-On the 72-request regression set (`npm run eval`, 4-core CPU without GPU), the fixes made after that benchmark raised `qwen2.5-coder:1.5b` from 28/42 to 41/48 correct (6 cases added later) and blocked 35/35 non-shell requests. `cmdkit --debug` shows why each word in the request did or didn't get documentation.
+On the 72-request regression set (`npm run eval`, 4-core CPU without GPU), the fixes made after that benchmark raised `qwen2.5-coder:1.5b` from 28/42 to 41/48 correct (6 cases added later) and blocked 35/35 non-shell requests. `whatcmd --debug` shows why each word in the request did or didn't get documentation.
 
 ## How it works
 
@@ -108,9 +108,9 @@ request ─► grounding ─► local model ─► gate ─► your prompt line
 
 - Small models still make mistakes. In the eval they wrote `fuser -t 8080` instead of `lsof -i :8080` and `ls | sort` for "biggest directories". On macOS they still sometimes pick Linux tools; when a tool is missing you get a warning. Read the command before pressing Enter. That is why it never runs by itself.
 - The shortcut rebinds Enter in bash (via `bind`) and wraps `accept-line` in zsh. It may conflict with other tools that do the same (e.g. ble.sh).
-- The bash shortcut needs bash 4 or newer. macOS ships bash 3.2, so on a Mac use zsh (the default) or `brew install bash`. `cmdkit init` detects this and says so.
+- The bash shortcut needs bash 4 or newer. macOS ships bash 3.2, so on a Mac use zsh (the default) or `brew install bash`. `whatcmd init` detects this and says so.
 - Math and translation requests can slip through as `bc` or `echo` commands. The shell really can do the math, so this is a judgment call.
-- fish and Windows shells: use `cmdkit <request>`. There is no shortcut yet.
+- fish and Windows shells: use `whatcmd <request>`. There is no shortcut yet.
 - Package-database grounding isn't done for Homebrew (too slow per request); installed commands are still grounded via man/`--help`.
 
 ## Development

@@ -15,21 +15,21 @@ const VERSION: string = (() => {
   }
 })();
 
-const HELP = `${bold("cmdkit")} — plain English in, shell command out. Runs locally on Ollama.
+const HELP = `${bold("whatcmd")} — plain English in, shell command out. Runs locally on Ollama.
 
 ${bold("Usage")}
-  /cmdkit <request>          at any bash/zsh prompt (after \`cmdkit init\`): the command
+  /w <request>          at any bash/zsh prompt (after \`whatcmd init\`): the command
                              replaces your line; press Enter again to run it
-  cmdkit <request>           print the command and offer to run it
-  cmdkit init                first-time setup: checks Ollama, picks a model, adds /cmdkit
-  cmdkit doctor              check everything works (Ollama, model, speed, shell shortcut)
-  cmdkit use <model>         switch model (downloads it if needed)
-  cmdkit models              list downloaded Ollama models
-  cmdkit config              show settings
-  cmdkit config set <key> <value> | get <key> | unset <key> | path | reset
-  cmdkit profile [--refresh] show (or re-detect) the system info given to the model
-  cmdkit shell bash|zsh      print the shell hook (to add it yourself)
-  cmdkit uninstall           remove the /cmdkit shortcut from your shell config
+  whatcmd <request>           print the command and offer to run it
+  whatcmd init                first-time setup: checks Ollama, picks a model, adds /w
+  whatcmd doctor              check everything works (Ollama, model, speed, shell shortcut)
+  whatcmd use <model>         switch model (downloads it if needed)
+  whatcmd models              list downloaded Ollama models
+  whatcmd config              show settings
+  whatcmd config set <key> <value> | get <key> | unset <key> | path | reset
+  whatcmd profile [--refresh] show (or re-detect) the system info given to the model
+  whatcmd shell bash|zsh      print the shell hook (to add it yourself)
+  whatcmd uninstall           remove the /w shortcut from your shell config
 
 ${bold("Options")}
   --raw          print only the command (for scripts and the shell hook)
@@ -39,13 +39,13 @@ ${bold("Options")}
   --             everything after this is the request
 
 ${bold("Environment")}
-  CMDKIT_MODEL, CMDKIT_HOST (or OLLAMA_HOST), CMDKIT_CONFIG_DIR, NO_COLOR
+  WHATCMD_MODEL, WHATCMD_HOST (or OLLAMA_HOST), WHATCMD_CONFIG_DIR, NO_COLOR
 
 ${bold("Examples")}
-  cmdkit find files bigger than 100MB
-  cmdkit "what's using port 8080"
-  cmdkit config set model qwen2.5-coder:0.5b
-  cmdkit config set notes "prefer ripgrep over grep"
+  whatcmd find files bigger than 100MB
+  whatcmd "what's using port 8080"
+  whatcmd config set model qwen2.5-coder:0.5b
+  whatcmd config set notes "prefer ripgrep over grep"
 `;
 
 function parseArgs(argv: string[]) {
@@ -65,7 +65,7 @@ function parseArgs(argv: string[]) {
   return { flags, values, rest, literal };
 }
 
-/** Subcommands only match their exact shape, so "cmdkit init a git repo" is still a request. */
+/** Subcommands only match their exact shape, so "whatcmd init a git repo" is still a request. */
 function subcommand(rest: string[]): string | null {
   const [a, b] = rest;
   const n = rest.length;
@@ -77,8 +77,8 @@ function subcommand(rest: string[]): string | null {
 }
 
 function explainOllamaError(e: OllamaError, model: string): string {
-  if (e.code === "unreachable") return `${e.message}. Is Ollama running? Run: cmdkit doctor`;
-  if (e.code === "model_missing") return `${e.message}. Run: cmdkit use ${model}`;
+  if (e.code === "unreachable") return `${e.message}. Is Ollama running? Run: whatcmd doctor`;
+  if (e.code === "model_missing") return `${e.message}. Run: whatcmd use ${model}`;
   return e.message;
 }
 
@@ -91,7 +91,7 @@ async function runRequest(ask: string, opts: { raw: boolean; debug: boolean; mod
     res = await generate(ask, cfg);
   } catch (e) {
     if (e instanceof OllamaError) {
-      err(`cmdkit: ${explainOllamaError(e, cfg.model)}`);
+      err(`whatcmd: ${explainOllamaError(e, cfg.model)}`);
       return 1;
     }
     throw e;
@@ -105,12 +105,12 @@ async function runRequest(ask: string, opts: { raw: boolean; debug: boolean; mod
   }
   if (res.kind === "rejected") {
     const why = res.reason === "empty" ? "empty request" : "not a shell task, nothing generated";
-    err(opts.raw ? `cmdkit: ${why}` : yellow(`cmdkit: ${why}`));
+    err(opts.raw ? `whatcmd: ${why}` : yellow(`whatcmd: ${why}`));
     return 2;
   }
   if (opts.raw) {
     process.stdout.write(res.command + "\n");
-    for (const w of res.warnings) err(`cmdkit: ⚠ ${w}`);
+    for (const w of res.warnings) err(`whatcmd: ⚠ ${w}`);
     return 0;
   }
   process.stdout.write(bold(cyan(res.command, process.stdout), process.stdout) + "\n");
@@ -133,18 +133,18 @@ async function configCommand(rest: string[]): Promise<number> {
     const stored = readStored() as Record<string, unknown>;
     err(dim(`# ${configPath()}`));
     for (const k of Object.keys(SETTABLE)) {
-      const src = process.env[`CMDKIT_${k.toUpperCase()}`] ? "env" : k in stored ? "" : "default";
+      const src = process.env[`WHATCMD_${k.toUpperCase()}`] ? "env" : k in stored ? "" : "default";
       process.stdout.write(`${k} = ${JSON.stringify(cfg[k])}${src ? dim(`  (${src})`, process.stdout) : ""}\n`);
     }
     return 0;
   }
   if (action === "get") {
-    if (!key || !SETTABLE[key]) throw new ConfigError(`Usage: cmdkit config get <${Object.keys(SETTABLE).join("|")}>`);
+    if (!key || !SETTABLE[key]) throw new ConfigError(`Usage: whatcmd config get <${Object.keys(SETTABLE).join("|")}>`);
     process.stdout.write(String((loadConfig() as unknown as Record<string, unknown>)[key]) + "\n");
     return 0;
   }
   if (action === "set") {
-    if (!key || !valueParts.length) throw new ConfigError("Usage: cmdkit config set <key> <value>");
+    if (!key || !valueParts.length) throw new ConfigError("Usage: whatcmd config set <key> <value>");
     setKey(key, value);
     if (key === "prefix") (await import("./shell.js")).refreshHookFiles(value);
     err(`${key} = ${JSON.stringify((loadConfig() as unknown as Record<string, unknown>)[key])}`);
@@ -152,13 +152,13 @@ async function configCommand(rest: string[]): Promise<number> {
     if (key === "model") {
       const { listModels, hasModel } = await import("./ollama.js");
       try {
-        if (!hasModel(await listModels(loadConfig().host), value)) err(yellow(`${value} is not downloaded yet. Run: cmdkit use ${value}`));
+        if (!hasModel(await listModels(loadConfig().host), value)) err(yellow(`${value} is not downloaded yet. Run: whatcmd use ${value}`));
       } catch {}
     }
     return 0;
   }
   if (action === "unset") {
-    if (!key) throw new ConfigError("Usage: cmdkit config unset <key>");
+    if (!key) throw new ConfigError("Usage: whatcmd config unset <key>");
     unsetKey(key);
     err(`${key} reset to default (${JSON.stringify((DEFAULTS as unknown as Record<string, unknown>)[key])})`);
     return 0;
@@ -211,7 +211,7 @@ async function main(argv: string[]): Promise<number> {
       const { formatBytes } = await import("./ui.js");
       const cfg = loadConfig();
       const models = await listModels(cfg.host);
-      if (!models.length) err("No models downloaded. Run: cmdkit doctor");
+      if (!models.length) err("No models downloaded. Run: whatcmd doctor");
       for (const m of models)
         process.stdout.write(`${sameModel(m.name, cfg.model) ? "*" : " "} ${m.name.padEnd(28)} ${formatBytes(m.size)}\n`);
       return 0;
@@ -224,7 +224,7 @@ async function main(argv: string[]): Promise<number> {
         saveStored({ profile });
       }
       process.stdout.write(profilePrompt(profile) + "\n");
-      err(dim(`detected ${profile.detectedAt}; re-detect with: cmdkit profile --refresh`));
+      err(dim(`detected ${profile.detectedAt}; re-detect with: whatcmd profile --refresh`));
       return 0;
     }
     case "shell": {
@@ -238,7 +238,7 @@ async function main(argv: string[]): Promise<number> {
       const osName = (loadConfig().profile ?? detectProfile()).os;
       const removed = ["bash", "zsh"].filter((s) => uninstallHook(s as "bash" | "zsh", osName));
       err(removed.length ? `Removed the shortcut from your ${removed.join(" and ")} config.` : "No shortcut was installed.");
-      err(dim("To remove cmdkit itself: npm uninstall -g @shubhamcodess/cmdkit"));
+      err(dim("To remove whatcmd itself: npm uninstall -g whatcmd"));
       return 0;
     }
   }
@@ -249,9 +249,9 @@ async function main(argv: string[]): Promise<number> {
 main(process.argv.slice(2)).then(
   (code) => process.exit(code),
   (e) => {
-    if (e instanceof ConfigError) err(`cmdkit: ${e.message}`);
-    else if (e instanceof OllamaError) err(`cmdkit: ${explainOllamaError(e, loadConfig().model)}`);
-    else err(red(`cmdkit: ${(e as Error)?.stack ?? e}`));
+    if (e instanceof ConfigError) err(`whatcmd: ${e.message}`);
+    else if (e instanceof OllamaError) err(`whatcmd: ${explainOllamaError(e, loadConfig().model)}`);
+    else err(red(`whatcmd: ${(e as Error)?.stack ?? e}`));
     process.exit(1);
   },
 );

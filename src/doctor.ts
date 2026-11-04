@@ -17,8 +17,8 @@ export const RECOMMENDED: { name: string; size: string; note: string }[] = [
 ];
 
 const BASH_TOO_OLD =
-  "Your bash is older than 4.0 (macOS ships 3.2), which can't host the /cmdkit shortcut. " +
-  "Use zsh (the macOS default), or install a newer bash: brew install bash. You can still run: cmdkit <request>";
+  "Your bash is older than 4.0 (macOS ships 3.2), which can't host the /w shortcut. " +
+  "Use zsh (the macOS default), or install a newer bash: brew install bash. You can still run: whatcmd <request>";
 
 export interface DoctorOptions {
   /** Accept defaults without asking (start Ollama, download the configured model). Never runs the Ollama installer. */
@@ -54,7 +54,7 @@ function startServer(bin: string): string {
 }
 
 async function chooseModel(installed: ModelInfo[], current: string): Promise<string> {
-  err(bold("\nChoose a model for cmdkit:"));
+  err(bold("\nChoose a model for whatcmd:"));
   const options: string[] = [];
   for (const r of RECOMMENDED) {
     options.push(r.name);
@@ -98,7 +98,7 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
   let cfg: Config = loadConfig();
   const firstRun = !cfg.profile; // first run: let the user pick a model even if the default exists
   const interactive = canPrompt() && !opts.yes;
-  err(bold("cmdkit doctor\n"));
+  err(bold("whatcmd doctor\n"));
 
   // 1. System profile: goes into every prompt so commands fit this OS and its installed tools.
   let profile = cfg.profile;
@@ -113,7 +113,7 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
   let up = await isUp(cfg.host);
   let bin = which("ollama");
   if (!up && !bin) {
-    fail("Ollama is not installed. cmdkit runs models locally through Ollama.");
+    fail("Ollama is not installed. whatcmd runs models locally through Ollama.");
     const cmd = installCommand(profile);
     if (cmd) info(`install it with:  ${cmd}`);
     info("or download it from https://ollama.com/download");
@@ -124,7 +124,7 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
       up = await waitUp(cfg.host, 8000);
     }
     if (!bin && !up) {
-      info("then run `cmdkit doctor` again.");
+      info("then run `whatcmd doctor` again.");
       return false;
     }
   }
@@ -146,7 +146,7 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
     if (!hasModel(installed, model)) warn(`Model ${model} is not downloaded yet`);
     if (interactive) model = await chooseModel(installed, model);
     else if (!opts.yes) {
-      info(`download it with:  cmdkit use ${model}   (or run \`cmdkit doctor\` in a terminal to pick one)`);
+      info(`download it with:  whatcmd use ${model}   (or run \`whatcmd doctor\` in a terminal to pick one)`);
       return false;
     }
     if (!hasModel(installed, model)) await downloadModel(cfg.host, model);
@@ -173,15 +173,15 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
   if (r.kind === "command" && r2.kind === "command") {
     ok(`Test request answered in ${ms} ms ${dim(`(first call, incl. loading the model: ${loadMs} ms)`)}`);
     info(`"show free disk space" → ${r2.command}`);
-  } else warn(`Model answered, but the test output was rejected (${r.kind === "rejected" ? r.reason : r2.kind === "rejected" ? r2.reason : ""}). Try another model with \`cmdkit use\`.`);
+  } else warn(`Model answered, but the test output was rejected (${r.kind === "rejected" ? r.reason : r2.kind === "rejected" ? r2.reason : ""}). Try another model with \`whatcmd use\`.`);
 
   // 5. Shell shortcut.
   if (opts.fromInit) return true;
   if (profile.shell === "bash" && bashTooOld()) warn(BASH_TOO_OLD);
   else if (isHookShell(profile.shell)) {
     if (isHookInstalled(profile.shell, profile.os)) ok(`Shell shortcut is set up: type ${cyan(`${cfg.prefix} <request>`)} at any prompt`);
-    else warn(`Shell shortcut not set up yet. Run \`cmdkit init\` to enable ${cfg.prefix} <request>`);
-  } else warn(`${profile.shell} has no ${cfg.prefix} shortcut yet (bash and zsh do). Use: cmdkit <request>`);
+    else warn(`Shell shortcut not set up yet. Run \`whatcmd init\` to enable ${cfg.prefix} <request>`);
+  } else warn(`${profile.shell} has no ${cfg.prefix} shortcut yet (bash and zsh do). Use: whatcmd <request>`);
   return true;
 }
 
@@ -193,7 +193,7 @@ export async function init(opts: DoctorOptions): Promise<boolean> {
   const shell = profile.shell;
   err("");
   if (!isHookShell(shell)) {
-    warn(`The ${cfg.prefix} shortcut supports bash and zsh; your shell is ${shell}. You can still run: cmdkit <request>`);
+    warn(`The ${cfg.prefix} shortcut supports bash and zsh; your shell is ${shell}. You can still run: whatcmd <request>`);
     return ready;
   }
   if (shell === "bash" && bashTooOld()) {
@@ -208,7 +208,7 @@ export async function init(opts: DoctorOptions): Promise<boolean> {
     installHook(shell, cfg.prefix, profile.os);
     ok(`Added the shortcut to ${rc}`);
   } else {
-    info(`Skipped. To add it yourself, put this in ${rc}:  eval "$(cmdkit shell ${shell})"`);
+    info(`Skipped. To add it yourself, put this in ${rc}:  eval "$(whatcmd shell ${shell})"`);
     return ready;
   }
   err(`\n${bold("Done.")} Open a new terminal (or run ${cyan(`source ${rc}`)}), then type:`);

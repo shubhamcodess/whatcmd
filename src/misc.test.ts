@@ -5,11 +5,11 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "cmdkit-test-"));
-process.env.CMDKIT_CONFIG_DIR = path.join(tmp, "config");
-process.env.CMDKIT_CACHE_DIR = path.join(tmp, "cache");
-delete process.env.CMDKIT_MODEL;
-delete process.env.CMDKIT_HOST;
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "whatcmd-test-"));
+process.env.WHATCMD_CONFIG_DIR = path.join(tmp, "config");
+process.env.WHATCMD_CACHE_DIR = path.join(tmp, "cache");
+delete process.env.WHATCMD_MODEL;
+delete process.env.WHATCMD_HOST;
 delete process.env.OLLAMA_HOST;
 
 const config = await import("./config.js");
@@ -33,9 +33,9 @@ test("config set / unset / env override", () => {
   assert.equal(c.model, "llama3.2:1b");
   assert.equal(c.grounding, false);
   assert.equal(c.temperature, 0.2);
-  process.env.CMDKIT_MODEL = "from-env";
+  process.env.WHATCMD_MODEL = "from-env";
   assert.equal(config.loadConfig().model, "from-env");
-  delete process.env.CMDKIT_MODEL;
+  delete process.env.WHATCMD_MODEL;
   config.unsetKey("model");
   c = config.loadConfig();
   assert.equal(c.model, config.DEFAULT_MODEL);
@@ -84,13 +84,13 @@ test("prompt keeps system+shots stable and puts docs in the last message", () =>
 });
 
 test("shell hooks are valid bash/zsh and use the prefix", () => {
-  const bash = shell.bashHook("/cmdkit");
+  const bash = shell.bashHook("/w");
   const f = path.join(tmp, "h.bash");
   fs.writeFileSync(f, bash);
   assert.equal(spawnSync("bash", ["-n", f]).status, 0);
-  assert.match(bash, /__cmdkit_prefix='\/cmdkit'/);
+  assert.match(bash, /__whatcmd_prefix='\/w'/);
   const zsh = shell.zshHook(",ai");
-  assert.match(zsh, /__cmdkit_prefix=',ai'/);
+  assert.match(zsh, /__whatcmd_prefix=',ai'/);
   if (spawnSync("zsh", ["--version"]).status === 0) {
     const g = path.join(tmp, "h.zsh");
     fs.writeFileSync(g, zsh);
@@ -105,10 +105,10 @@ test("installHook is idempotent and uninstall removes it", () => {
   process.env.HOME = home;
   try {
     fs.writeFileSync(path.join(home, ".bashrc"), "alias ll='ls -l'\n");
-    assert.equal(shell.installHook("bash", "/cmdkit", "linux").added, true);
-    assert.equal(shell.installHook("bash", "/cmdkit", "linux").added, false);
+    assert.equal(shell.installHook("bash", "/w", "linux").added, true);
+    assert.equal(shell.installHook("bash", "/w", "linux").added, false);
     const rc = fs.readFileSync(path.join(home, ".bashrc"), "utf8");
-    assert.equal(rc.split(">>> cmdkit >>>").length, 2);
+    assert.equal(rc.split(">>> whatcmd >>>").length, 2);
     assert.ok(shell.uninstallHook("bash", "linux"));
     assert.equal(fs.readFileSync(path.join(home, ".bashrc"), "utf8").trim(), "alias ll='ls -l'");
   } finally {
