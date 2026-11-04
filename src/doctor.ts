@@ -4,6 +4,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { cacheDir, DEFAULT_MODEL, loadConfig, saveStored, type Config } from "./config.js";
 import { detectProfile, profileHeadline, type Profile } from "./env.js";
 import { generate } from "./generate.js";
+import { docFor } from "./ground.js";
 import { getVersion, hasModel, isUp, listModels, pull, type ModelInfo } from "./ollama.js";
 import { bashTooOld, installHook, isHookInstalled, isHookShell, rcFile } from "./shell.js";
 import { ask, bold, canPrompt, confirm, cyan, dim, err, fail, formatBytes, green, info, ok, warn } from "./ui.js";
@@ -153,6 +154,14 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
   if (model !== cfg.model) saveStored({ model });
   cfg = loadConfig();
   ok(`Model ${model} is ready`);
+
+  // Pre-load docs of installed tools so the first request never waits on a slow `--help`.
+  let docs = 0;
+  for (const tool of profile.installed) {
+    const p = which(tool);
+    if (p && docFor(tool, p)) docs++;
+  }
+  ok(`Cached local docs for ${docs} installed tools`);
 
   // 4. Real test request (first one also loads the model into memory).
   let t = performance.now();

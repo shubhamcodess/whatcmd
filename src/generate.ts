@@ -102,8 +102,8 @@ export async function generate(ask: string, cfg: Config): Promise<Result> {
 
   // Second chance for a NONE on a request that is clearly about this computer.
   if (!best.verdict.ok && best.verdict.reason === "not-a-shell-task" && looksLikeShellTask(ask)) {
-    // A fresh prompt with extra question-style examples. NONE stays allowed, so real
-    // non-shell questions that slipped past looksLikeShellTask can still be refused.
+    // A fresh prompt without the NONE option (small models refuse too eagerly when it's offered).
+    // Safe because looksLikeShellTask is narrow and calculator/injection answers are filtered.
     debug.retries.push("second-chance");
     messages = buildMessages(ask, profile, debug.refs, cfg.notes, true);
     debug.messages = messages;

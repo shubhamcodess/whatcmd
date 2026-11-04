@@ -16,15 +16,14 @@ export const SHOTS: [string, string][] = [
 ];
 
 /**
- * Extra examples for the second-chance prompt: questions about the computer that are shell tasks.
- * The NONE option stays, so real non-shell questions can still be refused.
+ * Extra examples for the second-chance prompt, which has no NONE option. It only runs when
+ * looksLikeShellTask() says the request is about this computer; arithmetic/text answers and
+ * prompt injections are filtered afterwards, so non-shell questions still produce nothing.
  */
 const SECOND_SHOTS: [string, string][] = [
   ["how long has this machine been up", "uptime"],
-  ["what is the square root of 2", "NONE"],
   ["show who changed each line of main.c", "git blame main.c"],
   ["what are the name servers for example.org", "dig NS example.org"],
-  ["how tall is the Eiffel Tower", "NONE"],
 ];
 
 const COMMON_WORDS = new Set("the and for with all show list this that from into what are how has who each your".split(" "));
@@ -60,8 +59,11 @@ export function buildMessages(
   notes: string,
   secondChance = false,
 ): ChatMessage[] {
-  const messages: ChatMessage[] = [{ role: "system", content: systemPrompt(profile, notes) }];
-  const shots = secondChance ? [...SHOTS, ...SECOND_SHOTS] : SHOTS;
+  const system = systemPrompt(profile, notes);
+  const messages: ChatMessage[] = [
+    { role: "system", content: secondChance ? system.replace(/\nIf the request is not a task[^\n]*NONE/, "") : system },
+  ];
+  const shots = secondChance ? [...SHOTS.filter(([, a]) => a !== "NONE"), ...SECOND_SHOTS] : SHOTS;
   for (const [u, a] of shots) messages.push({ role: "user", content: u }, { role: "assistant", content: a });
   let content = ask.trim();
   if (refs.length) {

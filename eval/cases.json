@@ -301,6 +301,45 @@
       "expect": [
         "pstree|ps\\s+.*(f|--forest|-H)"
       ]
+    },
+    {
+      "ask": "add user alice to the staff group",
+      "expect": [
+        "alice",
+        "staff"
+      ]
+    },
+    {
+      "ask": "what groups am I in",
+      "expect": [
+        "\\bid\\b|groups"
+      ]
+    },
+    {
+      "ask": "show CPU info",
+      "expect": [
+        "lscpu|/proc/cpuinfo|nproc"
+      ]
+    },
+    {
+      "ask": "wher is the file called report.pdf located??",
+      "expect": [
+        "report\\.pdf",
+        "find|locate"
+      ]
+    },
+    {
+      "ask": "schedule a job to run every day at 9am",
+      "expect": [
+        "crontab|cron"
+      ]
+    },
+    {
+      "ask": "let group members write to the shared folder",
+      "expect": [
+        "chmod",
+        "g\\+w|g\\+rw|775|g=rw"
+      ]
     }
   ],
   "invalid": [
@@ -333,6 +372,11 @@
     "prove that the square root of 2 is irrational",
     "should I quit my job",
     "how many users does facebook have",
-    "write a poem with 5 lines"
+    "write a poem with 5 lines",
+    "how much does a tesla cost",
+    "what is the best programming language",
+    "summarize this article for me",
+    "who invented the telephone",
+    "what is a file system in operating systems"
   ]
 }
