@@ -200,7 +200,7 @@ $$(".reveal, .bench").forEach((el) => io.observe(el));
 */
 const SCRIPT = [
   ["com", "# install once"],
-  ["cmd", "npm install -g whatcmd"],
+  ["cmd", "npm install -g @shubhamcodess/whatcmd"],
   ["enter"],
   ["run"],
   ["out", "added 1 package in 2s"],

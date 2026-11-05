@@ -35,14 +35,7 @@
     <header class="nav">
       <div class="nav__row">
         <a class="brand" href="#top" aria-label="whatcmd home">
-          <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" rx="8" fill="#0c0c0b" />
-            <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="#edece8" stroke-opacity=".14" />
-            <path d="M6.5 13.2c1-1.3 2.2-1.3 3.2-.4s2.2.9 3.2-.4" fill="none" stroke="#a8a7a1" stroke-width="1.9" stroke-linecap="round" />
-            <path d="M17.6 9.5l-2.6 13" stroke="#f7703f" stroke-width="2.2" stroke-linecap="round" />
-            <path d="M18.4 13.2l1.4 6.3 1.9-5 1.9 5 1.4-6.3" fill="none" stroke="#edece8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <rect class="brand__caret" x="6" y="23.4" width="6" height="2" rx="1" fill="#f7703f" />
-          </svg>
+          <img class="brand__mark" src="/logo.svg" alt="" width="24" height="24" />
           <span>whatcmd</span>
         </a>
         <nav class="nav__links" aria-label="Main">
@@ -69,7 +62,7 @@
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero__top">
           <div class="hero__title">
-            <a class="pill" href="https://www.npmjs.com/package/whatcmd">
+            <a class="pill" href="https://www.npmjs.com/package/@shubhamcodess/whatcmd">
               <span>v<span data-version>0.1.0</span><span class="pill__more"> · open source · runs locally</span></span>
               <em>npm</em>
             </a>
@@ -85,14 +78,14 @@
           <div class="hero__act" id="install">
             <div class="cmd" role="group" aria-label="Install whatcmd">
               <div class="cmd__tabs" role="tablist" aria-label="Package manager">
-                <button class="cmd__tab" role="tab" aria-selected="true" data-cmd="npm install -g whatcmd">npm</button>
-                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="pnpm add -g whatcmd">pnpm</button>
-                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="yarn global add whatcmd">yarn</button>
-                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="bun add -g whatcmd">bun</button>
-                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="npx whatcmd init">try with npx</button>
+                <button class="cmd__tab" role="tab" aria-selected="true" data-cmd="npm install -g @shubhamcodess/whatcmd">npm</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="pnpm add -g @shubhamcodess/whatcmd">pnpm</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="yarn global add @shubhamcodess/whatcmd">yarn</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="bun add -g @shubhamcodess/whatcmd">bun</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="npx @shubhamcodess/whatcmd init">try with npx</button>
               </div>
               <div class="cmd__row">
-                <code class="cmd__line"><span class="p">$ </span><span data-cmd-text>npm install -g whatcmd</span></code>
+                <code class="cmd__line"><span class="p">$ </span><span data-cmd-text>npm install -g @shubhamcodess/whatcmd</span></code>
                 <button type="button" class="copy" data-copy-from="[data-cmd-text]">
                   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 3.5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
                   <span>Copy</span>
@@ -104,7 +97,7 @@
               </p>
             </div>
             <div class="hero__btns">
-              <a class="btn btn--solid star" href="https://github.com/shubhamcodess/whatcmd" aria-label="Star whatcmd on GitHub">
+              <a class="btn btn--line star" href="https://github.com/shubhamcodess/whatcmd" aria-label="Star whatcmd on GitHub">
                 <svg class="star__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.84 5.76 6.36.92-4.6 4.49 1.09 6.33L12 17.31 6.31 20.3l1.09-6.33-4.6-4.49 6.36-.92z" fill="currentColor"/></svg>
                 <span>Star on GitHub</span>
                 <span class="star__count" data-stars hidden></span>
@@ -275,13 +268,7 @@
       <div class="foot__grid">
         <div class="foot__brand">
           <a class="brand" href="#top">
-            <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
-              <rect width="32" height="32" rx="8" fill="#0c0c0b" />
-              <path d="M6.5 13.2c1-1.3 2.2-1.3 3.2-.4s2.2.9 3.2-.4" fill="none" stroke="#a8a7a1" stroke-width="1.9" stroke-linecap="round" />
-              <path d="M17.6 9.5l-2.6 13" stroke="#f7703f" stroke-width="2.2" stroke-linecap="round" />
-              <path d="M18.4 13.2l1.4 6.3 1.9-5 1.9 5 1.4-6.3" fill="none" stroke="#edece8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              <rect x="6" y="23.4" width="6" height="2" rx="1" fill="#f7703f" />
-            </svg>
+            <img class="brand__mark" src="/logo.svg" alt="" width="24" height="24" />
             <span>whatcmd</span>
           </a>
           <p>Suggests commands; never runs them for you. Read before you press Enter. Provided as-is under the MIT license.</p>
@@ -290,7 +277,7 @@
           <h4>Project</h4>
           <ul>
             <li><a href="https://github.com/shubhamcodess/whatcmd">Source on GitHub</a></li>
-            <li><a href="https://www.npmjs.com/package/whatcmd">npm package</a></li>
+            <li><a href="https://www.npmjs.com/package/@shubhamcodess/whatcmd">npm package</a></li>
             <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CHANGELOG.md">Changelog</a></li>
             <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/EVALS.md">How we evaluate</a></li>
           </ul>
