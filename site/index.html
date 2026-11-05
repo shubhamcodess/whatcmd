@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0c0b" media="(prefers-color-scheme: dark)" />
+    <title>whatcmd</title>
+    <meta
+      name="description"
+      content="Type plain English at your prompt, get the right shell command on your line. Runs locally on Ollama, grounded in your OS and installed tools, never runs anything by itself."
+    />
+    <meta property="og:title" content="whatcmd: stop googling shell commands" />
+    <meta property="og:description" content="Plain English in, the right command out. Local, grounded, and it never runs anything by itself." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("wc-theme");
+          if (t !== "light" && t !== "dark") {
+            t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.setAttribute("data-theme", t);
+          document.documentElement.classList.add("js");
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <div class="bgfield" aria-hidden="true"><canvas></canvas></div>
+
+    <header class="nav">
+      <div class="nav__row">
+        <a class="brand" href="#top" aria-label="whatcmd home">
+          <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="#0c0c0b" />
+            <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="#edece8" stroke-opacity=".14" />
+            <path d="M6.5 13.2c1-1.3 2.2-1.3 3.2-.4s2.2.9 3.2-.4" fill="none" stroke="#a8a7a1" stroke-width="1.9" stroke-linecap="round" />
+            <path d="M17.6 9.5l-2.6 13" stroke="#f7703f" stroke-width="2.2" stroke-linecap="round" />
+            <path d="M18.4 13.2l1.4 6.3 1.9-5 1.9 5 1.4-6.3" fill="none" stroke="#edece8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <rect class="brand__caret" x="6" y="23.4" width="6" height="2" rx="1" fill="#f7703f" />
+          </svg>
+          <span>whatcmd</span>
+        </a>
+        <nav class="nav__links" aria-label="Main">
+          <span class="nav__anchors">
+            <a href="#install">Install</a>
+            <a href="#features">Features</a>
+            <a href="#evals">Evals</a>
+            <span class="nav__sep" aria-hidden="true"></span>
+          </span>
+          <a href="https://github.com/shubhamcodess/whatcmd" aria-label="whatcmd on GitHub">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span class="nav__stars" data-stars hidden></span>
+          </a>
+          <button type="button" class="theme" aria-label="Switch colour theme">
+            <svg class="theme__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg class="theme__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="frame" id="top">
+      <!-- HERO -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__top">
+          <div class="hero__title">
+            <a class="pill" href="https://www.npmjs.com/package/whatcmd">
+              <span>v<span data-version>0.1.0</span><span class="pill__more"> · open source · runs locally</span></span>
+              <em>npm</em>
+            </a>
+            <h1 id="hero-title">Stop <span class="cut">googling</span> shell commands.</h1>
+          </div>
+          <div class="hero__subwrap">
+            <p class="hero__sub">
+              Type what you want in plain English at your prompt. whatcmd puts the right command on your line,
+              written for <em>your</em> OS and the tools you actually have installed. It runs on a local model,
+              nothing leaves your machine, and nothing runs until you press Enter.
+            </p>
+          </div>
+          <div class="hero__act" id="install">
+            <div class="cmd" role="group" aria-label="Install whatcmd">
+              <div class="cmd__tabs" role="tablist" aria-label="Package manager">
+                <button class="cmd__tab" role="tab" aria-selected="true" data-cmd="npm install -g whatcmd">npm</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="pnpm add -g whatcmd">pnpm</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="yarn global add whatcmd">yarn</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="bun add -g whatcmd">bun</button>
+                <button class="cmd__tab" role="tab" aria-selected="false" data-cmd="npx whatcmd init">try with npx</button>
+              </div>
+              <div class="cmd__row">
+                <code class="cmd__line"><span class="p">$ </span><span data-cmd-text>npm install -g whatcmd</span></code>
+                <button type="button" class="copy" data-copy-from="[data-cmd-text]">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 3.5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <p class="cmd__hint">
+                Then run <code>whatcmd init</code> once. Needs Node 21+ and <a href="https://ollama.com/download">Ollama</a>;
+                <code>init</code> checks both and downloads the model.
+              </p>
+            </div>
+            <div class="hero__btns">
+              <a class="btn btn--solid star" href="https://github.com/shubhamcodess/whatcmd" aria-label="Star whatcmd on GitHub">
+                <svg class="star__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.84 5.76 6.36.92-4.6 4.49 1.09 6.33L12 17.31 6.31 20.3l1.09-6.33-4.6-4.49 6.36-.92z" fill="currentColor"/></svg>
+                <span>Star on GitHub</span>
+                <span class="star__count" data-stars hidden></span>
+              </a>
+              <a class="btn btn--line" href="#evals">See the evals</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__stage">
+          <figure class="term mac" aria-label="Animated demo: installing whatcmd and using it in a terminal">
+            <div class="term__bar">
+              <span class="mac__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="mac__title">zsh · ~/projects/site</span>
+              <span class="mac__hint" aria-hidden="true">demo · loops</span>
+            </div>
+            <div class="term__body">
+              <div class="term__scroll" data-term></div>
+            </div>
+            <figcaption class="term__foot">
+              <span>Commands land on your prompt. You press Enter, or edit them first.</span>
+              <button type="button" class="copy" data-replay>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 109.3-4M12.5 1.5V4.5H9.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Replay</span>
+              </button>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="sec" id="features" aria-labelledby="features-title">
+        <div class="sec__head">
+          <h2 id="features-title">A copilot for the prompt, not a chatbot.</h2>
+          <p class="sub">Small, fast and deliberately boring: one request, one command, on your line. The interesting part is everything that keeps that command correct and safe.</p>
+        </div>
+        <ul class="tiles">
+          <li class="tile reveal" style="--d: 0">
+            <span class="tile__k">01 · prefill, never run</span>
+            <h3>Nothing runs until you press Enter</h3>
+            <p>The command replaces your typed line. Check it, edit it, or run it. whatcmd never executes anything by itself.</p>
+            <code class="tile__ex"><span class="p">$ </span>/w kill whatever is on port 3000 <span class="t-cut">↵</span><br /><span class="p">$ </span>lsof -ti :3000 | xargs kill</code>
+          </li>
+          <li class="tile reveal" style="--d: 1">
+            <span class="tile__k">02 · knows your system</span>
+            <h3>Commands for your OS, not someone's blog</h3>
+            <p>Detects OS, distro, shell, package manager, GNU vs BSD flags and which tools you have. On a Mac you get <code>sed -i ''</code> and <code>vm_stat</code>, not Linux-only flags.</p>
+          </li>
+          <li class="tile reveal" style="--d: 2">
+            <span class="tile__k">03 · grounded in local docs</span>
+            <h3>Reads the man page of the tool you named</h3>
+            <p>Mention <code>jq</code>, <code>ffmpeg</code> or <code>kubectl</code> and the relevant lines of its man page or <code>--help</code> go into the prompt, so flags match your installed version.</p>
+          </li>
+          <li class="tile reveal" style="--d: 0">
+            <span class="tile__k">04 · says nothing when it should</span>
+            <h3>Not a shell task? No output.</h3>
+            <p>"tell me a joke" or "what is 15% of 240" produce nothing. Chat replies, calculator answers and prompt injections are filtered before they reach your line.</p>
+          </li>
+          <li class="tile reveal" style="--d: 1">
+            <span class="tile__k">05 · warns before damage</span>
+            <h3>Flags the commands that bite</h3>
+            <p><code>rm -r</code>, <code>dd</code>, <code>mkfs</code>, <code>curl | sh</code>, force pushes, world-writable <code>chmod</code> and placeholders like <code>/path/to</code> come with a warning.</p>
+          </li>
+          <li class="tile reveal" style="--d: 2">
+            <span class="tile__k">06 · refine with /w+ <b class="soon">v1.1</b></span>
+            <h3>Keep shaping the last command</h3>
+            <p><code>/w+ only pdfs</code>, <code>/w+ then zip them</code>, <code>/w+ fix that</code>. Up to five refinements per tab, then it asks you to start fresh.</p>
+          </li>
+        </ul>
+        <div class="facts reveal">
+          <div><b>local</b><span>Ollama + qwen2.5-coder, no API keys, no telemetry</span></div>
+          <div><b>bash · zsh</b><span>one shortcut: <code>/w &lt;request&gt;</code>, prefix configurable</span></div>
+          <div><b>macOS · Linux</b><span>Windows shells can use <code>whatcmd &lt;request&gt;</code></span></div>
+          <div><b>MIT</b><span>open source, ~25 kB package</span></div>
+        </div>
+      </section>
+
+      <!-- EVALS -->
+      <section class="sec" id="evals" aria-labelledby="evals-title">
+        <div class="sec__head">
+          <h2 id="evals-title">Measured on 500 cases, not promised.</h2>
+          <p class="sub">
+            Every release candidate runs the same 500-case benchmark: command generation, refusals, grounding,
+            safety, OS fit, plus the CLI, config and shell hook. The numbers below are copied from the latest
+            report, run on an Apple M4 Pro with Ollama 0.40.14 and the default model.
+          </p>
+        </div>
+
+        <div class="bench" data-seen="false">
+          <div class="bench__head" aria-hidden="true"><span>category</span><span>pass rate · qwen2.5-coder:1.5b</span><span>score</span></div>
+          <div class="bench__row" style="--k: 0.927; --d: 0">
+            <div class="bench__name">Overall<small>all scored cases</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>454</b> / 490 passed</span><span>10 bash hook cases skipped: macOS ships bash 3.2</span></div></div>
+            <div class="bench__pct">92.7%</div>
+          </div>
+          <div class="bench__row" style="--k: 0.988; --d: 1">
+            <div class="bench__name">Refuses non-shell questions<small>refusal</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>79</b> / 80</span><span>jokes, trivia, math, injections</span></div></div>
+            <div class="bench__pct">98.8%</div>
+          </div>
+          <div class="bench__row" style="--k: 0.847; --d: 2">
+            <div class="bench__name">Writes the right command<small>generation</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>127</b> / 150</span><span>files, text, processes, network, git, docker…</span></div></div>
+            <div class="bench__pct">84.7%</div>
+          </div>
+          <div class="bench__row" style="--k: 0.88; --d: 3">
+            <div class="bench__name">Uses your installed tools' docs<small>grounding</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>44</b> / 50</span><span>incl. made-up tools only the docs describe</span></div></div>
+            <div class="bench__pct">88%</div>
+          </div>
+          <div class="bench__row" style="--k: 0.95; --d: 4">
+            <div class="bench__name">Warns on dangerous commands<small>risk</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>38</b> / 40</span><span>rm -r, dd, curl | sh, force push…</span></div></div>
+            <div class="bench__pct">95%</div>
+          </div>
+          <div class="bench__row" style="--k: 1; --d: 5">
+            <div class="bench__name">Handles tools you don't have<small>missing_tool</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>30</b> / 30</span><span>picks an alternative or warns, never silent</span></div></div>
+            <div class="bench__pct">100%</div>
+          </div>
+          <div class="bench__row" style="--k: 0.8; --d: 6">
+            <div class="bench__name">Fits your OS<small>profile</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>16</b> / 20</span><span>BSD flags, brew services, pbcopy…</span></div></div>
+            <div class="bench__pct">80%</div>
+          </div>
+          <div class="bench__row" style="--k: 1; --d: 7">
+            <div class="bench__name">CLI, config, gate, shell hook<small>deterministic</small></div>
+            <div class="bench__bars"><div class="bench__track"><i></i></div><div class="bench__nums"><span><b>120</b> / 120</span><span>exit codes, settings, output checks, zsh hook</span></div></div>
+            <div class="bench__pct">100%</div>
+          </div>
+          <div class="bench__foot cap">
+            <span class="key"><i></i> passed</span>
+            <span class="key"><i class="cut"></i> failed</span>
+            <a class="link" href="https://github.com/shubhamcodess/whatcmd/tree/main/benchmarks">All 500 cases, harness and raw results on GitHub →</a>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat reveal" style="--d: 0"><b>121 ms</b><span>typical model answer (p50)</span></div>
+          <div class="stat reveal" style="--d: 1"><b>217 ms</b><span>end to end incl. Node startup</span></div>
+          <div class="stat reveal" style="--d: 2"><b>0.8 s</b><span>first request after the model unloads</span></div>
+          <div class="stat reveal" style="--d: 3"><b>50 / 50</b><span>identical output across 3 re-runs</span></div>
+        </div>
+
+        <div class="compare">
+          <div class="compare__card reveal" style="--d: 0">
+            <h3>Grounding is doing real work</h3>
+            <p class="cap">20 cases on made-up CLIs whose flags exist only in their <code>--help</code></p>
+            <div class="vs"><span>docs on</span><div class="vs__bar"><i style="--k: 0.85"></i></div><b>85%</b></div>
+            <div class="vs vs--off"><span>docs off</span><div class="vs__bar"><i style="--k: 0"></i></div><b>0%</b></div>
+          </div>
+          <div class="compare__card reveal" style="--d: 1">
+            <h3>Why the 1.5b model is the default</h3>
+            <p class="cap">the same 150 command-generation cases</p>
+            <div class="vs"><span>1.5b</span><div class="vs__bar"><i style="--k: 0.847"></i></div><b>84.7%</b></div>
+            <div class="vs vs--off"><span>0.5b</span><div class="vs__bar"><i style="--k: 0.66"></i></div><b>66%</b></div>
+          </div>
+        </div>
+        <p class="cap evals__note">
+          One machine, one Ollama version. Small local models still make mistakes, which is exactly why whatcmd
+          never runs a command for you. Read it, then press Enter.
+        </p>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="frame foot-wrap">
+      <div class="foot__grid">
+        <div class="foot__brand">
+          <a class="brand" href="#top">
+            <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+              <rect width="32" height="32" rx="8" fill="#0c0c0b" />
+              <path d="M6.5 13.2c1-1.3 2.2-1.3 3.2-.4s2.2.9 3.2-.4" fill="none" stroke="#a8a7a1" stroke-width="1.9" stroke-linecap="round" />
+              <path d="M17.6 9.5l-2.6 13" stroke="#f7703f" stroke-width="2.2" stroke-linecap="round" />
+              <path d="M18.4 13.2l1.4 6.3 1.9-5 1.9 5 1.4-6.3" fill="none" stroke="#edece8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <rect x="6" y="23.4" width="6" height="2" rx="1" fill="#f7703f" />
+            </svg>
+            <span>whatcmd</span>
+          </a>
+          <p>Suggests commands; never runs them for you. Read before you press Enter. Provided as-is under the MIT license.</p>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="https://github.com/shubhamcodess/whatcmd">Source on GitHub</a></li>
+            <li><a href="https://www.npmjs.com/package/whatcmd">npm package</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CHANGELOG.md">Changelog</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/EVALS.md">How we evaluate</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contribute</h4>
+          <ul>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/issues/new">Report a bug or wrong command</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CONTRIBUTING.md">Contributing guide</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/SECURITY.md">Security policy</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Built with</h4>
+          <ul class="foot__stack">
+            <li>TypeScript · Node 21+</li>
+            <li>Ollama · qwen2.5-coder</li>
+            <li>bash &amp; zsh hooks</li>
+            <li>Site: Vite, vanilla JS</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot">
+        <span>© 2026 Shubham Prakash</span>
+        <ul>
+          <li><a href="https://github.com/shubhamcodess">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/shubham-prakash-dev/">LinkedIn</a></li>
+        </ul>
+      </div>
+    </footer>
+  </body>
+</html>
