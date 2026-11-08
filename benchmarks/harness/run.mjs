@@ -1,5 +1,6 @@
 // Runs cases for one config. Usage:
-//   node harness/run.mjs --config=A --model=qwen2.5-coder:1.5b --grounding=on [--categories=a,b] [--limit=N]
+//   node harness/run.mjs --config=A --model=qwen2.5-coder:1.5b --grounding=on [--web=on] [--categories=a,b] [--limit=N]
+// Config D = A with --web=on (web lookup through tiny-browse), model-based cases only.
 // Hook cases are run by harness/hooks.py and appended to the same results.jsonl.
 import fs from "node:fs";
 import path from "node:path";
@@ -13,7 +14,7 @@ const BIN = path.join(ROOT, "bin");
 const CLI = path.join(REPO, "dist", "cli.js");
 const SANDBOX = path.join(ROOT, "sandbox");
 const CASE_TIMEOUT = 60000;
-const MODEL_CATS = new Set(["generation", "refusal", "grounding", "missing_tool", "profile"]);
+const MODEL_CATS = new Set(["generation", "refusal", "grounding", "missing_tool", "profile", "cloud"]);
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => {
   const m = /^--([^=]+)(?:=(.*))?$/.exec(a);
@@ -22,6 +23,7 @@ const args = Object.fromEntries(process.argv.slice(2).map((a) => {
 const config = args.config;
 const model = args.model;
 const grounding = args.grounding === "on";
+const web = args.web === "on";
 if (!config || !model || !args.grounding) {
   console.error("usage: run.mjs --config=A --model=M --grounding=on|off [--categories=a,b] [--limit=N]");
   process.exit(2);
@@ -31,7 +33,7 @@ const limit = args.limit ? Number(args.limit) : Infinity;
 
 // ---- isolation: sandbox PATH, sandbox config/cache, no inherited whatcmd env ----
 process.env.PATH = `${BIN}:${process.env.PATH}`;
-for (const k of ["WHATCMD_HOST", "WHATCMD_MODEL", "OLLAMA_HOST", "WHATCMD_CONFIG_DIR", "WHATCMD_CACHE_DIR"]) delete process.env[k];
+for (const k of ["WHATCMD_HOST", "WHATCMD_MODEL", "OLLAMA_HOST", "WHATCMD_CONFIG_DIR", "WHATCMD_CACHE_DIR", "WHATCMD_WEB"]) delete process.env[k];
 const CFG_DIR = path.join(SANDBOX, config, "config");
 const CACHE_DIR = path.join(SANDBOX, config, "cache");
 fs.mkdirSync(CFG_DIR, { recursive: true });
@@ -46,7 +48,7 @@ const gate = await import(path.join(REPO, "dist", "gate.js"));
 const FN = { extractCommand: gate.extractCommand, splitSegments: gate.splitSegments, commandWords: gate.commandWords, check: gate.check, riskWarnings: gate.riskWarnings };
 
 const profile = detectProfile();
-writeStored({ model, grounding, profile, timeoutMs: CASE_TIMEOUT, host: "http://127.0.0.1:11434", prefix: "/w", temperature: 0, keepAlive: "2h", notes: "" });
+writeStored({ model, grounding, web, profile, timeoutMs: CASE_TIMEOUT, host: "http://127.0.0.1:11434", prefix: "/w", temperature: 0, keepAlive: "2h", notes: "" });
 const cfg = loadConfig();
 
 const RESULTS_ROOT = process.env.BENCH_RESULTS || path.join(ROOT, "results");
@@ -73,7 +75,7 @@ function loadCases() {
 // Which cases this config runs. B and C: model-based only (generation, refusal, grounding, missing_tool, risk-model, profile).
 function selected(c) {
   if (c.category === "hook") return false; // run by hooks.py
-  if (config === "B" || config === "C") {
+  if (config === "B" || config === "C" || config === "D") {
     if (MODEL_CATS.has(c.category)) return true;
     return c.category === "risk" && c.expect.type === "risk";
   }
@@ -172,8 +174,8 @@ async function main() {
   const w0 = performance.now();
   await withTimeout(generate("list files", cfg), CASE_TIMEOUT);
   const warmup_ms = Math.round(performance.now() - w0);
-  fs.writeFileSync(path.join(resultsDir, "meta.json"), JSON.stringify({ config, model, grounding, warmup_ms, started_at: new Date().toISOString() }, null, 2) + "\n");
-  console.log(`config ${config}: model=${model} grounding=${grounding} warmup_ms=${warmup_ms}`);
+  fs.writeFileSync(path.join(resultsDir, "meta.json"), JSON.stringify({ config, model, grounding, web, warmup_ms, started_at: new Date().toISOString() }, null, 2) + "\n");
+  console.log(`config ${config}: model=${model} grounding=${grounding} web=${web} warmup_ms=${warmup_ms}`);
 
   let cases = loadCases().filter(selected).filter((c) => !onlyCats || onlyCats.has(c.category));
   if (args.limit) cases = cases.slice(0, limit);

@@ -36,12 +36,14 @@ ${bold("Options")}
   --raw          print only the command (for scripts and the shell hook)
   --refine       apply the request as a change to this terminal's last command
   --debug        show grounding, prompts and timings
+  --web          look up docs on the web for this request (needs tiny-browse)
+  --no-web       stay fully local for this request
   --yes, -y      accept defaults without asking (doctor/init)
   --model=NAME   use this model for one request (or with doctor/init: switch to it)
   --             everything after this is the request
 
 ${bold("Environment")}
-  WHATCMD_MODEL, WHATCMD_HOST (or OLLAMA_HOST), WHATCMD_CONFIG_DIR, NO_COLOR
+  WHATCMD_MODEL, WHATCMD_HOST (or OLLAMA_HOST), WHATCMD_WEB=1|0, WHATCMD_CONFIG_DIR, NO_COLOR
 
 ${bold("Examples")}
   whatcmd find files bigger than 100MB
@@ -88,6 +90,8 @@ interface RequestOptions {
   raw: boolean;
   debug: boolean;
   model?: string;
+  /** Per-request override of the `web` setting. */
+  web?: boolean;
   refine: boolean;
   /** Terminal session id (the shell's PID); defaults to the parent process. */
   session?: string;
@@ -100,6 +104,7 @@ async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
   const { loadSession, saveSession, refineBase, MAX_REFINES } = await import("./session.js");
   const cfg = loadConfig();
   if (opts.model) cfg.model = opts.model;
+  if (opts.web !== undefined) cfg.web = opts.web;
   const sid = opts.session || String(process.ppid);
 
   let session = opts.refine ? loadSession(sid) : null;
@@ -137,7 +142,8 @@ async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
       err(dim(`model: ${cfg.model}  timings: ${JSON.stringify(res.debug.timings)}`));
       if (refine) err(dim(`refining: ${JSON.stringify(refine)}`));
       for (const n of res.debug.groundNotes) err(dim(`grounding: ${n}`));
-      for (const r of res.debug.refs) err(dim(`grounding [${r.name} via ${r.source}]:\n${r.text}`));
+      for (const n of res.debug.webNotes) err(dim(n));
+      for (const r of res.debug.refs) err(dim(`grounding [${r.name} via ${r.source}${r.url ? ` ${r.url}` : ""}]:\n${r.text}`));
       if (res.debug.retries.length) err(dim(`retries: ${res.debug.retries.join(", ")}`));
       err(dim(`raw outputs: ${JSON.stringify(res.debug.outputs)}`));
     }
@@ -153,13 +159,17 @@ async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
       : { ask: change.trim(), command: res.command, turns: 0, lastSeen, at: 0 };
     saveSession(sid, session);
 
+    const webRef = res.debug.refs.find((r) => r.source === "web");
+    const webNote = webRef ? `used web docs from ${webRef.url ? new URL(webRef.url).hostname : "a web search"}` : "";
     if (opts.raw) {
       process.stdout.write(res.command + "\n");
+      if (webNote) err(`whatcmd: ${webNote}`);
       for (const w of res.warnings) err(`whatcmd: ⚠ ${w}`);
       if (refine) err(`whatcmd: refinement ${session.turns}/${MAX_REFINES}`);
       return 0;
     }
     process.stdout.write(bold(cyan(res.command, process.stdout), process.stdout) + "\n");
+    if (webNote) err(dim(webNote));
     for (const w of res.warnings) err(yellow(`⚠ ${w}`));
     if (!canPrompt() || !process.stdout.isTTY) return 0;
 
@@ -304,6 +314,7 @@ async function main(argv: string[]): Promise<number> {
     raw: flags.has("--raw"),
     debug: flags.has("--debug"),
     model: values.model,
+    web: flags.has("--no-web") ? false : flags.has("--web") ? true : undefined,
     refine: flags.has("--refine"),
     session: values.session,
     lastCmd: values["last-cmd"],

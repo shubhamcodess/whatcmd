@@ -175,7 +175,15 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
     info(`"show free disk space" → ${r2.command}`);
   } else warn(`Model answered, but the test output was rejected (${r.kind === "rejected" ? r.reason : r2.kind === "rejected" ? r2.reason : ""}). Try another model with \`whatcmd use\`.`);
 
-  // 5. Shell shortcut.
+  // 5. Web lookup (optional).
+  if (cfg.web) {
+    const { checkBrowse } = await import("./browse.js");
+    const b = await checkBrowse(cfg);
+    if (b.ok) ok(`Web lookup is on: tiny-browse starts ${dim(`(${b.detail})`)}`);
+    else warn(`Web lookup is on, but ${b.detail}`);
+  } else info("Web lookup is off (fully local). To look up docs online when unsure: whatcmd config set web true");
+
+  // 6. Shell shortcut.
   if (opts.fromInit) return true;
   if (profile.shell === "bash" && bashTooOld()) warn(BASH_TOO_OLD);
   else if (isHookShell(profile.shell)) {

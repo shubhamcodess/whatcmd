@@ -12,8 +12,10 @@ import { run, which } from "./util.js";
 
 export interface Reference {
   name: string;
-  source: "man" | "help" | "package";
+  source: "man" | "help" | "package" | "web";
   text: string;
+  /** For web references: the page it came from. */
+  url?: string;
 }
 
 // Words that are ordinary English in requests (some are also program names).
@@ -63,7 +65,7 @@ export function candidates(ask: string): string[] {
   return out;
 }
 
-function stems(text: string): Set<string> {
+export function stems(text: string): Set<string> {
   const s = new Set<string>();
   for (const w of text.toLowerCase().match(/[a-z][a-z0-9]{2,}/g) ?? []) if (!STOP.has(w)) s.add(w.slice(0, 5));
   return s;
