@@ -56,3 +56,18 @@ test("hooks handle the + prefix and pass session, status and last command", () =
   assert.match(b, /__whatcmd_hook\(\) \{\n  local st=\$\?/);
   assert.match(z, /__whatcmd_accept_line\(\) \{\n  local st=\$\?/);
 });
+
+test("hooks show a spinner after the typed line and clear a rejected line on the next Enter", () => {
+  for (const h of [shell.bashHook("/w"), shell.zshHook("/w")]) {
+    assert.match(h, /frames=\(⠋ ⠙ ⠹/, "unicode spinner");
+    assert.match(h, /frames=\('\|' '\/' '-' '\\'\)/, "ASCII spinner when the locale isn't UTF-8");
+    assert.match(h, /while kill -0 "?\$pid"? 2>\/dev\/null/, "animates until whatcmd exits");
+    assert.match(h, /__whatcmd_clear=(\$line|\$BUFFER) && msg\+="  \(Enter clears the line\)"/);
+  }
+  const z = shell.zshHook("/w");
+  assert.match(z, /POSTDISPLAY="  /, "zsh draws the spinner after the buffer");
+  assert.match(z, /\} always \{\n    POSTDISPLAY=\n    kill \$pid/, "Ctrl-C clears the spinner and stops whatcmd");
+  const b = shell.bashHook("/w");
+  assert.match(b, /trap 'kill "\$pid" 2>\/dev\/null' INT/, "Ctrl-C stops whatcmd");
+  assert.match(b, /READLINE_LINE= READLINE_POINT=0/, "Enter on a rejected line clears it");
+});

@@ -101,7 +101,7 @@ Open a new terminal and type `/w <request>`.
 
 | You type | What happens |
 | --- | --- |
-| `/w <request>` then Enter | Your line is replaced by the command. Press Enter again to run it. |
+| `/w <request>` then Enter | A spinner shows after your request while it works, then your line is replaced by the command. Press Enter again to run it. If nothing was generated, the next Enter clears the line. |
 | `whatcmd <request>` | Prints the command and asks `[r]un, re[f]ine, [q]uit?`. |
 | `whatcmd --raw -- <request>` | Prints only the command, for scripts. Exit code `2` if it isn't a shell task. |
 
