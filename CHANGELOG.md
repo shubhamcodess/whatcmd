@@ -4,6 +4,19 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.2.0] - unreleased
+
+### Added
+
+- Refine with `/w+ <change>`: changes this terminal's last command (or your edited version of it), up to 5 times, with the last exit status for "fix that". Direct mode asks `[r]un, re[f]ine, [q]uit?`.
+- Optional web lookup through tiny-browse, off by default: `web` config key, `--web` / `--no-web`, `WHATCMD_WEB`. Once per request, triggered by a tool with a known reference page (kubectl, helm, gcloud, az, gh, kind, kustomize, istioctl, argocd, eksctl), by the model answering `SEARCH: …`, or by an answer that still fails. Reference pages are cached for 7 days; a blocked search is remembered for an hour only.
+- `whatcmd doctor` checks that tiny-browse starts when web lookup is on.
+- `benchmarks/cases/17-cloud-cli.jsonl` (40 kubectl, helm, gcloud, docker, kind, kustomize and gh cases), harness config D (web on), and `npm run eval:web` for a quick before/after.
+
+### Changed
+
+- Requires Node.js 22 or newer (tiny-browse needs it; Node 21 is end of life).
+
 ## [0.1.0] - 2026-11-05
 
 First release candidate, for the initial public version.

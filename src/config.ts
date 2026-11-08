@@ -18,6 +18,12 @@ export interface Config {
   grounding: boolean;
   /** Free-text notes added to every prompt, e.g. "prefer ripgrep over grep". */
   notes: string;
+  /** Look up docs on the web (via tiny-browse) when local docs aren't enough. Sends queries to search engines. */
+  web: boolean;
+  /** How to start tiny-browse: a command or a path to its cli.js. Empty = the installed dependency, then PATH. */
+  webCommand: string;
+  /** Max time for one web lookup, including starting tiny-browse. */
+  webTimeoutMs: number;
   /** Detected system profile (set by `whatcmd init` / `whatcmd profile --refresh`). */
   profile?: Profile;
 }
@@ -33,6 +39,9 @@ export const DEFAULTS: Config = {
   prefix: "/w",
   grounding: true,
   notes: "",
+  web: false,
+  webCommand: "",
+  webTimeoutMs: 10000,
 };
 
 type KeyType = "string" | "number" | "boolean";
@@ -45,6 +54,9 @@ export const SETTABLE: Record<string, { type: KeyType; help: string }> = {
   prefix: { type: "string", help: "shell trigger, default /w" },
   grounding: { type: "boolean", help: "use local docs of tools you mention" },
   notes: { type: "string", help: "extra instructions added to every prompt" },
+  web: { type: "boolean", help: "look up docs on the web via tiny-browse when unsure (off = fully local)" },
+  webCommand: { type: "string", help: "command or cli.js path that starts tiny-browse" },
+  webTimeoutMs: { type: "number", help: "max time for one web lookup" },
 };
 
 export function configDir(): string {
@@ -98,6 +110,9 @@ export function loadConfig(): Config {
   if (!stored.host && process.env.OLLAMA_HOST) c.host = process.env.OLLAMA_HOST;
   if (process.env.WHATCMD_HOST) c.host = process.env.WHATCMD_HOST;
   if (process.env.WHATCMD_MODEL) c.model = process.env.WHATCMD_MODEL;
+  const web = process.env.WHATCMD_WEB;
+  if (web && /^(1|true|on|yes)$/i.test(web)) c.web = true;
+  else if (web && /^(0|false|off|no)$/i.test(web)) c.web = false;
   try {
     c.host = normalizeHost(c.host);
   } catch {
@@ -115,6 +130,7 @@ export function coerce(key: string, raw: string): string | number | boolean {
     const n = Number(raw);
     if (!Number.isFinite(n)) throw new ConfigError(`${key} must be a number`);
     if (key === "temperature" && (n < 0 || n > 2)) throw new ConfigError("temperature must be between 0 and 2");
+    if (key === "webTimeoutMs" && n < 1000) throw new ConfigError("webTimeoutMs must be at least 1000");
     if (key === "timeoutMs" && n < 500) throw new ConfigError("timeoutMs must be at least 500");
     return n;
   }
