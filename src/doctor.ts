@@ -6,7 +6,7 @@ import { detectProfile, profileHeadline, type Profile } from "./env.js";
 import { generate } from "./generate.js";
 import { docFor } from "./ground.js";
 import { getVersion, hasModel, isUp, listModels, pull, type ModelInfo } from "./ollama.js";
-import { bashTooOld, installHook, isHookInstalled, isHookShell, rcFile } from "./shell.js";
+import { bashTooOld, installHook, isHookInstalled, isHookShell, rcFile, refreshHookFiles } from "./shell.js";
 import { ask, bold, canPrompt, confirm, cyan, dim, err, fail, formatBytes, green, info, ok, warn } from "./ui.js";
 import { clearWhichCache, which } from "./util.js";
 
@@ -187,7 +187,10 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
   if (opts.fromInit) return true;
   if (profile.shell === "bash" && bashTooOld()) warn(BASH_TOO_OLD);
   else if (isHookShell(profile.shell)) {
-    if (isHookInstalled(profile.shell, profile.os)) ok(`Shell shortcut is set up: type ${cyan(`${cfg.prefix} <request>`)} at any prompt`);
+    if (isHookInstalled(profile.shell, profile.os)) {
+      refreshHookFiles(cfg.prefix); // pick up hook changes from a newer whatcmd
+      ok(`Shell shortcut is set up: type ${cyan(`${cfg.prefix} <request>`)} at any prompt`);
+    }
     else warn(`Shell shortcut not set up yet. Run \`whatcmd init\` to enable ${cfg.prefix} <request>`);
   } else warn(`${profile.shell} has no ${cfg.prefix} shortcut yet (bash and zsh do). Use: whatcmd <request>`);
   return true;
