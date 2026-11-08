@@ -84,3 +84,20 @@ export function missingHint(missing: string[], profile: Profile | undefined): st
     ` If the request is not a shell task, output exactly: NONE`
   );
 }
+
+/** One-message refinement prompt: small models keep the base command better this way than in a chat. */
+export function refinePrompt(base: string, madeFor: string, change: string, status?: number): string {
+  const ran =
+    status === undefined ? "" : status === 0 ? "\nI ran it and it succeeded." : `\nI ran it and it failed with exit status ${status}.`;
+  return (
+    `Current command: ${base}\nIt was made for: ${madeFor}${ran}\nChange: ${change.trim()}\n` +
+    "Keep every part of the current command that the change doesn't affect. Output the complete new command."
+  );
+}
+
+/** Fixed examples for refinement (kept identical between requests for prompt caching). */
+export const REFINE_SHOTS: [string, string][] = [
+  [refinePrompt("ls -la", "list all files including hidden ones", "only .txt files"), "ls -la *.txt"],
+  [refinePrompt("du -sh *", "show the size of each item here", "biggest first"), "du -sh * | sort -rh"],
+  [refinePrompt("grep -rn TODO src", "find TODO comments in src", "then count them"), "grep -rn TODO src | wc -l"],
+];

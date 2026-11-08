@@ -101,7 +101,7 @@ Open a new terminal and type `/w <request>`.
 | You type | What happens |
 | --- | --- |
 | `/w <request>` then Enter | Your line is replaced by the command. Press Enter again to run it. |
-| `whatcmd <request>` | Prints the command and asks "Run it? [y/N]". |
+| `whatcmd <request>` | Prints the command and asks `[r]un, re[f]ine, [q]uit?`. |
 | `whatcmd --raw -- <request>` | Prints only the command, for scripts. Exit code `2` if it isn't a shell task. |
 
 No quotes needed, even with `'`, `>` or `*` in the request: the shortcut reads your line before the shell parses it.
@@ -110,6 +110,21 @@ No quotes needed, even with `'`, `>` or `*` in the request: the shortcut reads y
 whatcmd "what's using port 8080"
 whatcmd --raw -- list the 5 biggest folders in this directory
 ```
+
+### Refine the last command
+
+```text
+$ /w find files bigger than 100MB      → find . -type f -size +100M
+$ /w+ only pdfs                        → find . -type f -size +100M -name "*.pdf"
+$ /w+ only in ~/Downloads              → find ~/Downloads -type f -size +100M -name "*.pdf"
+$ /w+ show only the top 3              → … | head -n 3
+```
+
+- `/w+ <change>` changes the last command from this terminal tab; `/w` always starts fresh.
+- If you edited and ran the command before refining, your edited version is the one that gets changed.
+- After a failed run, `/w+ fix that` knows the exit status.
+- Up to 5 refinements, then whatcmd asks you to start fresh with the full request. The context expires after 15 minutes and is never shared between tabs.
+- Without the shortcut, `whatcmd <request>` asks `[r]un, re[f]ine, [q]uit?` after each command.
 
 ### Commands
 

@@ -378,5 +378,139 @@
     "summarize this article for me",
     "who invented the telephone",
     "what is a file system in operating systems"
+  ],
+  "refine": [
+    {
+      "steps": [
+        "find files bigger than 100MB",
+        "only pdfs"
+      ],
+      "expect": [
+        "find",
+        "-size\\s+\\+100M",
+        "\\.pdf"
+      ]
+    },
+    {
+      "steps": [
+        "find files bigger than 100MB",
+        "only pdfs",
+        "only in ~/Downloads"
+      ],
+      "expect": [
+        "find\\s+~/Downloads",
+        "\\+100M",
+        "\\.pdf"
+      ]
+    },
+    {
+      "steps": [
+        "list files in this folder",
+        "include hidden ones"
+      ],
+      "expect": [
+        "ls",
+        "-[a-zA-Z]*a"
+      ]
+    },
+    {
+      "steps": [
+        "list files in this folder",
+        "include hidden ones",
+        "newest first"
+      ],
+      "expect": [
+        "ls",
+        "-[a-zA-Z]*a",
+        "-[a-zA-Z]*t"
+      ]
+    },
+    {
+      "steps": [
+        "search for TODO in src",
+        "make it case insensitive"
+      ],
+      "expect": [
+        "(grep|rg)",
+        "-[a-zA-Z]*i",
+        "TODO",
+        "src"
+      ]
+    },
+    {
+      "steps": [
+        "search for TODO in src",
+        "make it case insensitive",
+        "then count the matches"
+      ],
+      "expect": [
+        "(grep|rg)",
+        "TODO",
+        "wc\\s+-l|-c"
+      ]
+    },
+    {
+      "steps": [
+        "show running docker containers",
+        "include stopped ones too"
+      ],
+      "expect": [
+        "docker\\s+(ps|container ls)",
+        "-a|--all"
+      ]
+    },
+    {
+      "steps": [
+        "compress the folder logs into logs.tar.gz",
+        "use bzip2 instead"
+      ],
+      "expect": [
+        "tar",
+        "-[a-zA-Z]*j|--bzip2",
+        "logs"
+      ]
+    },
+    {
+      "steps": [
+        "show the last 20 lines of app.log",
+        "keep following it"
+      ],
+      "expect": [
+        "tail",
+        "-f|-F|--follow",
+        "app\\.log"
+      ]
+    },
+    {
+      "steps": [
+        "show git commits from the last week",
+        "only mine"
+      ],
+      "expect": [
+        "git log",
+        "--author"
+      ]
+    },
+    {
+      "steps": [
+        "count lines in all .js files",
+        "exclude node_modules"
+      ],
+      "expect": [
+        "node_modules",
+        "\\.js",
+        "wc"
+      ]
+    },
+    {
+      "steps": [
+        "download https://example.com/a.zip",
+        "save it as b.zip"
+      ],
+      "expect": [
+        "example\\.com/a\\.zip",
+        "b\\.zip"
+      ]
+    }
   ]
 }

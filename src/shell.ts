@@ -21,21 +21,30 @@ export function bashHook(prefix: string): string {
 [[ $- == *i* ]] || return 0
 __whatcmd_prefix='${prefix}'
 __whatcmd_hook() {
-  if [[ $READLINE_LINE == "$__whatcmd_prefix "* ]]; then
-    local ask=\${READLINE_LINE#"$__whatcmd_prefix "} out
-    if ! command -v whatcmd >/dev/null 2>&1; then
-      printf 'whatcmd: not found on PATH\\n' >&2
-    else
-      out=$(command whatcmd --raw -- "$ask")
-      if [[ -n $out ]]; then
-        READLINE_LINE=$out
-        READLINE_POINT=\${#READLINE_LINE}
-      fi
-    fi
-    bind '"\\C-x\\C-j": ""'
+  local st=$? line=$READLINE_LINE ask out last
+  local -a extra=()
+  if [[ $line == "$__whatcmd_prefix+ "* ]]; then
+    ask=\${line#"$__whatcmd_prefix+ "}
+    extra=(--refine)
+  elif [[ $line == "$__whatcmd_prefix "* ]]; then
+    ask=\${line#"$__whatcmd_prefix "}
   else
     bind '"\\C-x\\C-j": accept-line'
+    return
   fi
+  # The last command run in this shell and its exit status (used by /w+ "fix that").
+  last=$(HISTTIMEFORMAT= builtin history 1); last=\${last#*[0-9]  }
+  extra+=("--last-status=$st" "--last-cmd=$last")
+  if ! command -v whatcmd >/dev/null 2>&1; then
+    printf 'whatcmd: not found on PATH\\n' >&2
+  else
+    out=$(command whatcmd --raw "--session=$$" "\${extra[@]}" -- "$ask")
+    if [[ -n $out ]]; then
+      READLINE_LINE=$out
+      READLINE_POINT=\${#READLINE_LINE}
+    fi
+  fi
+  bind '"\\C-x\\C-j": ""'
 }
 for __whatcmd_map in emacs vi-insert; do
   bind -m "$__whatcmd_map" -x '"\\C-x\\C-k": __whatcmd_hook'
@@ -51,24 +60,33 @@ export function zshHook(prefix: string): string {
 [[ -o interactive ]] || return 0
 typeset -g __whatcmd_prefix='${prefix}'
 __whatcmd_accept_line() {
-  if [[ $BUFFER == "$__whatcmd_prefix "* ]]; then
-    local ask=\${BUFFER#"$__whatcmd_prefix "} out msg
-    local errf="\${TMPDIR:-/tmp}/w.$$.err"
-    if (( ! $+commands[whatcmd] )); then
-      zle -M "whatcmd: not found on PATH"
-      return 0
-    fi
-    out=$(command whatcmd --raw -- "$ask" 2>"$errf")
-    msg=$(<"$errf"); rm -f "$errf"
-    if [[ -n $out ]]; then
-      BUFFER=$out
-      CURSOR=\${#BUFFER}
-    fi
-    zle redisplay
-    [[ -n $msg ]] && zle -M "$msg"
+  local st=$? ask out msg
+  local -a extra
+  if [[ $BUFFER == "$__whatcmd_prefix+ "* ]]; then
+    ask=\${BUFFER#"$__whatcmd_prefix+ "}
+    extra=(--refine)
+  elif [[ $BUFFER == "$__whatcmd_prefix "* ]]; then
+    ask=\${BUFFER#"$__whatcmd_prefix "}
+  else
+    zle .accept-line
+    return
+  fi
+  # The last command run in this shell and its exit status (used by /w+ "fix that").
+  extra+=("--last-status=$st" "--last-cmd=$(fc -ln -1 2>/dev/null)")
+  if (( ! $+commands[whatcmd] )); then
+    zle -M "whatcmd: not found on PATH"
     return 0
   fi
-  zle .accept-line
+  local errf="\${TMPDIR:-/tmp}/whatcmd.$$.err"
+  out=$(command whatcmd --raw "--session=$$" "\${extra[@]}" -- "$ask" 2>"$errf")
+  msg=$(<"$errf"); rm -f "$errf"
+  if [[ -n $out ]]; then
+    BUFFER=$out
+    CURSOR=\${#BUFFER}
+  fi
+  zle redisplay
+  [[ -n $msg ]] && zle -M "$msg"
+  return 0
 }
 zle -N accept-line __whatcmd_accept_line
 `;
