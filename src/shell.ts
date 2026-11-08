@@ -77,7 +77,7 @@ __whatcmd_hook() {
       READLINE_POINT=\${#READLINE_LINE}
     else
       # Only after a real "nothing generated" message (not after Ctrl-C).
-      [[ -n $msg ]] && __whatcmd_clear=$line && msg+="  (Enter clears the line)"
+      [[ -n $msg ]] && __whatcmd_clear=$line && msg+="  (press Return to clear)"
     fi
     [[ -n $msg ]] && printf '\\n%s\\n' "$msg" >&2
   fi
@@ -160,7 +160,7 @@ __whatcmd_accept_line() {
     CURSOR=\${#BUFFER}
   else
     # Only after a real "nothing generated" message (not after Ctrl-C).
-    [[ -n $msg ]] && __whatcmd_clear=$BUFFER && msg+="  (Enter clears the line)"
+    [[ -n $msg ]] && __whatcmd_clear=$BUFFER && msg+="  (press Return to clear)"
   fi
   zle redisplay
   [[ -n $msg ]] && zle -M "$msg"

@@ -62,7 +62,7 @@ test("hooks show a spinner after the typed line and clear a rejected line on the
     assert.match(h, /frames=\(⠋ ⠙ ⠹/, "unicode spinner");
     assert.match(h, /frames=\('\|' '\/' '-' '\\'\)/, "ASCII spinner when the locale isn't UTF-8");
     assert.match(h, /while kill -0 "?\$pid"? 2>\/dev\/null/, "animates until whatcmd exits");
-    assert.match(h, /__whatcmd_clear=(\$line|\$BUFFER) && msg\+="  \(Enter clears the line\)"/);
+    assert.match(h, /__whatcmd_clear=(\$line|\$BUFFER) && msg\+="  \(press Return to clear\)"/);
   }
   const z = shell.zshHook("/w");
   assert.match(z, /POSTDISPLAY="  /, "zsh draws the spinner after the buffer");
