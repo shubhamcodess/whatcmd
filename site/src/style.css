@@ -523,6 +523,31 @@ h3 { letter-spacing: -0.015em; font-size: 1rem; font-weight: 560; line-height: 1
 .powered:hover svg { translate: 1px -1px; }
 .hero__subwrap { display: grid; justify-items: start; }
 
+/* ---------- link preview card ---------- */
+.lp {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  width: 272px;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 18px 44px -14px #0006, 0 2px 8px -2px #0002;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.96);
+  transform-origin: top left;
+  transition: opacity 0.14s, transform 0.18s var(--ease), visibility 0s 0.14s;
+}
+.lp--on { opacity: 1; visibility: visible; transform: none; transition: opacity 0.14s, transform 0.18s var(--ease), visibility 0s; }
+.lp img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; background: #0d1117; }
+.lp__body { padding: 10px 12px 12px; display: grid; gap: 3px; font-size: 0.78rem; color: var(--text-2); line-height: 1.45; }
+.lp__body b { color: var(--text); font-size: 0.875rem; font-weight: 560; }
+.lp__url { font-family: var(--mono); font-size: 0.68rem; color: var(--text-3); }
+
 /* ---------- what's new ---------- */
 .news { display: grid; gap: 16px; }
 @media (width >= 900px) { .news { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
