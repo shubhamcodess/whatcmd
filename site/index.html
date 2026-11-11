@@ -41,7 +41,9 @@
         <nav class="nav__links" aria-label="Main">
           <span class="nav__anchors">
             <a href="#install">Install</a>
+            <a href="#new">What's new</a>
             <a href="#features">Features</a>
+            <a href="#how">How it works</a>
             <a href="#evals">Evals</a>
             <span class="nav__sep" aria-hidden="true"></span>
           </span>
@@ -63,7 +65,7 @@
         <div class="hero__top">
           <div class="hero__title">
             <a class="pill" href="https://www.npmjs.com/package/@shubhamcodess/whatcmd">
-              <span>v<span data-version>0.1.0</span><span class="pill__more"> · open source · runs locally</span></span>
+              <span>v<span data-version>0.1.0</span><span class="pill__more"> · open source · local-first</span></span>
               <em>npm</em>
             </a>
             <h1 id="hero-title">Stop <span class="cut">googling</span> shell commands.</h1>
@@ -74,6 +76,10 @@
               written for <em>your</em> OS and the tools you actually have installed. It runs on a local model,
               looks a command up on the web only when the local answer fails, and nothing runs until you press Enter.
             </p>
+            <a class="powered" href="https://github.com/shubhamcodess/tiny-browse#readme">
+              <span>Web lookup powered by <b>tiny-browse</b></span>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
           </div>
           <div class="hero__act" id="install">
             <div class="cmd" role="group" aria-label="Install whatcmd">
@@ -128,6 +134,39 @@
         </div>
       </section>
 
+      <!-- WHAT'S NEW -->
+      <section class="sec" id="new" aria-labelledby="new-title">
+        <div class="sec__head">
+          <span class="cap">v<span data-version>1.0.0</span> · first stable release</span>
+          <h2 id="new-title">What's new in 1.0</h2>
+          <p class="sub">Keep shaping a command instead of retyping it, and get the hard ones right with the official docs, without giving up the local-first default.</p>
+        </div>
+        <ul class="news">
+          <li class="news__card reveal" style="--d: 0">
+            <span class="tile__k">refine · /w+</span>
+            <h3>Change the last command in place</h3>
+            <p>Say what to change and whatcmd edits this terminal's last command, or your edited version of it. After a failed run, <code>/w+ fix that</code> knows the exit status.</p>
+            <code class="tile__ex"><span class="p">$ </span>/w find files bigger than 100MB <span class="t-cut">↵</span><br /><span class="p">$ </span>/w+ only pdfs <span class="t-cut">↵</span><br /><span class="p">$ </span>find . -type f -name '*.pdf' -size +100M</code>
+          </li>
+          <li class="news__card reveal" style="--d: 1">
+            <span class="tile__k">web lookup · tiny-browse</span>
+            <h3>Looks it up only when the local answer fails</h3>
+            <p>When the model doesn't know a tool, like <code>kubectl</code>, whose <code>--help</code> lists no flags, or its answer fails the checks, whatcmd reads the official docs and tries again. Correct answers never touch the network.</p>
+            <code class="tile__ex"><span class="p">$ </span>/w kubectl show rollout history of deployment web <span class="t-cut">↵</span><br /><span class="p">$ </span>kubectl rollout history deployment/web<br /><span class="t-dim">used web docs from kubernetes.io</span></code>
+          </li>
+          <li class="news__card reveal" style="--d: 2">
+            <span class="tile__k">shortcut polish</span>
+            <h3>A spinner, and Enter to clear</h3>
+            <p>A small spinner shows while whatcmd works (Ctrl-C stops it). When nothing was generated, the next Enter clears the line so you can type again.</p>
+          </li>
+        </ul>
+        <p class="cap news__note">
+          Cloud-CLI benchmark (40 kubectl, helm, gcloud… cases): 22 / 40 local only, 26 / 40 with web lookup.
+          Everyday, refusal and refinement cases score the same either way.
+          <a class="link" href="https://github.com/shubhamcodess/whatcmd/blob/main/CHANGELOG.md">Full changelog →</a>
+        </p>
+      </section>
+
       <!-- FEATURES -->
       <section class="sec" id="features" aria-labelledby="features-title">
         <div class="sec__head">
@@ -162,16 +201,54 @@
             <p><code>rm -r</code>, <code>dd</code>, <code>mkfs</code>, <code>curl | sh</code>, force pushes, world-writable <code>chmod</code> and placeholders like <code>/path/to</code> come with a warning.</p>
           </li>
           <li class="tile reveal" style="--d: 2">
-            <span class="tile__k">06 · refine with /w+ <b class="soon">v1.1</b></span>
+            <span class="tile__k">06 · refine with /w+ <b class="soon">new in 1.0</b></span>
             <h3>Keep shaping the last command</h3>
             <p><code>/w+ only pdfs</code>, <code>/w+ then zip them</code>, <code>/w+ fix that</code>. Up to five refinements per tab, then it asks you to start fresh.</p>
           </li>
         </ul>
         <div class="facts reveal">
-          <div><b>local</b><span>Ollama + qwen2.5-coder, no API keys, no telemetry</span></div>
+          <div><b>local-first</b><span>Ollama + qwen2.5-coder, no API keys, no telemetry</span></div>
           <div><b>bash · zsh</b><span>one shortcut: <code>/w &lt;request&gt;</code>, prefix configurable</span></div>
           <div><b>macOS · Linux</b><span>Windows shells can use <code>whatcmd &lt;request&gt;</code></span></div>
           <div><b>MIT</b><span>open source, ~25 kB package</span></div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="sec" id="how" aria-labelledby="how-title">
+        <div class="sec__head">
+          <h2 id="how-title">How it works</h2>
+          <p class="sub">Every request goes through the same short pipeline. The web is the last resort, not the first step.</p>
+        </div>
+        <ol class="steps">
+          <li class="step reveal" style="--d: 0"><span class="step__n">1</span><div><h3>Profile</h3><p>OS, distro, shell, package manager, GNU or BSD flags and installed tools, detected once and stored.</p></div></li>
+          <li class="step reveal" style="--d: 1"><span class="step__n">2</span><div><h3>Grounding</h3><p>Tools your request names pull in the matching lines of their man page or <code>--help</code>, cached per version.</p></div></li>
+          <li class="step reveal" style="--d: 2"><span class="step__n">3</span><div><h3>Local model</h3><p>Ollama gets the profile, a few examples and the docs, and must answer with one command or <code>NONE</code>.</p></div></li>
+          <li class="step reveal" style="--d: 3"><span class="step__n">4</span><div><h3>Gate and retries</h3><p>Chat text, echoes, loops and missing tools are caught. A targeted hint gets one more try.</p></div></li>
+          <li class="step step--web reveal" style="--d: 4"><span class="step__n">5</span><div><h3>Web lookup, only if it still fails</h3><p>The model said it doesn't know, or the answer still fails: tiny-browse fetches the docs, and the model answers again.</p></div></li>
+          <li class="step reveal" style="--d: 5"><span class="step__n">6</span><div><h3>Your prompt line</h3><p>The command lands on your line with any risk warnings. You read it, then press Enter.</p></div></li>
+        </ol>
+
+        <div class="tb reveal">
+          <div class="tb__head">
+            <span class="tile__k">built on</span>
+            <h3>tiny-browse: web search and page reading for agents</h3>
+            <p>
+              tiny-browse is a separate open-source package by the same author: it searches the web in the Chrome you already
+              have and returns clean Markdown within a token budget. It ships as an MCP server and as a Node.js library with
+              zero dependencies. whatcmd installs it as a dependency and calls the library in the same process.
+            </p>
+            <a class="powered" href="https://github.com/shubhamcodess/tiny-browse#readme">
+              <span>tiny-browse on GitHub</span>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <ul class="tb__list">
+            <li><b>Reference pages first</b><span>For kubectl, helm, gcloud, az, gh and others, the official cheat sheet is read over plain HTTP: no Chrome, no search engine. Cached for 7 days; matching lines are picked locally.</span></li>
+            <li><b>Then a search</b><span>Otherwise one web search, reading the top 2 results, and only the lines that mention your tool go to the model, labelled as examples.</span></li>
+            <li><b>Polite by design</b><span>tiny-browse's shared rate limits apply (Google: 8 s apart, 20 an hour). whatcmd searches at most once per request, never retries a block, and pauses for 15 minutes when every engine refuses.</span></li>
+            <li><b>What leaves your machine</b><span>The tool name and plain words of the request. Paths, flags, <code>key=value</code> pairs and long numbers are removed. Turn it off with <code>whatcmd config set web false</code>.</span></li>
+          </ul>
         </div>
       </section>
 
@@ -295,6 +372,7 @@
           <ul class="foot__stack">
             <li>TypeScript · Node 22+</li>
             <li>Ollama · qwen2.5-coder</li>
+            <li><a href="https://github.com/shubhamcodess/tiny-browse#readme">tiny-browse</a> (web lookup)</li>
             <li>bash &amp; zsh hooks</li>
             <li>Site: Vite, vanilla JS</li>
           </ul>
