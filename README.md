@@ -144,7 +144,7 @@ whatcmd config set web false        # stay fully local (or per request: --no-web
 whatcmd doctor                      # browser found? search engines rate-limited right now?
 ```
 
-On the 40 cloud-CLI benchmark cases (`npm run eval:web`, `qwen2.5-coder:1.5b`, cold cache): **22 / 40 correct with web off, 26 / 40 with web on**, with 7 requests looked up. Median time 387 ms → 307 ms, p95 1.8 s → 1.3 s. The 48 everyday cases, the 35 refusal cases and the 12 refinement chains score the same with web on and off (35 / 48, 34 / 35, 12 / 12), because the model gets those right locally and no lookup happens. The cost of looking up only after a failure: a wrong answer that passes every check (a plausible but wrong `kubectl` flag) isn't looked up.
+On the 40 cloud-CLI benchmark cases (`npm run eval:web`, `qwen2.5-coder:1.5b`, cold cache): **22 / 40 correct with web off, 25 / 40 with web on**, with 5 requests looked up. Median time 282 ms → 204 ms, p95 0.9 s → 1.3 s. The 48 everyday cases, the 35 refusal cases and the 12 refinement chains score the same with web on and off (35 / 48, 34 / 35, 12 / 12), because the model gets those right locally and no lookup happens. The cost of looking up only after a failure: a wrong answer that passes every check (a plausible but wrong `kubectl` flag) isn't looked up.
 
 It runs at most once per request, and only after the model failed:
 
