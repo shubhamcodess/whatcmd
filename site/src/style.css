@@ -271,14 +271,30 @@ h3 { letter-spacing: -0.015em; font-size: 1rem; font-weight: 560; line-height: 1
 .hero__sub em { font-style: normal; color: var(--text); }
 .claim {
   color: var(--text);
-  font-weight: 560;
   text-decoration: underline dotted;
-  text-decoration-color: var(--text-3);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 0.28em;
+  text-decoration-color: color-mix(in srgb, var(--text-3) 70%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
   transition: text-decoration-color 0.15s;
 }
 .claim:hover { text-decoration-color: var(--cut); }
+.powered--hero { margin-top: 2px; }
+.relink {
+  align-items: center;
+  gap: 4px;
+  display: inline-flex;
+  width: fit-content;
+  transition: color 0.15s;
+}
+.relink span {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--text-3);
+  text-underline-offset: 0.35em;
+}
+.relink svg { width: 13px; height: 13px; transition: translate 0.15s var(--ease); }
+.relink:hover { color: var(--text); }
+.relink:hover span { text-decoration-color: currentColor; }
+.relink:hover svg { translate: 1px -1px; }
 /* a claim's target briefly lights up after the jump */
 .tile:target, .step:target { animation: claim-hit 1.6s var(--ease); }
 @keyframes claim-hit { 0%, 30% { background: color-mix(in srgb, var(--cut) 10%, var(--panel)); } }
