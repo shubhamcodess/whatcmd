@@ -6,7 +6,7 @@ import { detectProfile, profileHeadline, type Profile } from "./env.js";
 import { generate } from "./generate.js";
 import { docFor } from "./ground.js";
 import { getVersion, hasModel, isUp, listModels, pull, type ModelInfo } from "./ollama.js";
-import { bashTooOld, installHook, isHookInstalled, isHookShell, rcFile } from "./shell.js";
+import { bashTooOld, installHook, isHookInstalled, isHookShell, rcFile, refreshHookFiles } from "./shell.js";
 import { ask, bold, canPrompt, confirm, cyan, dim, err, fail, formatBytes, green, info, ok, warn } from "./ui.js";
 import { clearWhichCache, which } from "./util.js";
 
@@ -175,11 +175,25 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
     info(`"show free disk space" → ${r2.command}`);
   } else warn(`Model answered, but the test output was rejected (${r.kind === "rejected" ? r.reason : r2.kind === "rejected" ? r2.reason : ""}). Try another model with \`whatcmd use\`.`);
 
-  // 5. Shell shortcut.
+  // 5. Web lookup (optional).
+  if (cfg.web) {
+    const { checkBrowse } = await import("./browse.js");
+    const checks = await checkBrowse();
+    const bad = checks.filter((c) => !c.ok);
+    if (!bad.length) ok("Web lookup is on (only for requests the local answer gets wrong)");
+    else warn(`Web lookup is on, but: ${bad.map((c) => `${c.name}: ${c.detail}`).join("; ")}`);
+    for (const c of checks) info(dim(`tiny-browse ${c.name}: ${c.detail}`));
+    info(dim("To stay fully local: whatcmd config set web false"));
+  } else info("Web lookup is off (fully local). To look up docs online when the local answer fails: whatcmd config set web true");
+
+  // 6. Shell shortcut.
   if (opts.fromInit) return true;
   if (profile.shell === "bash" && bashTooOld()) warn(BASH_TOO_OLD);
   else if (isHookShell(profile.shell)) {
-    if (isHookInstalled(profile.shell, profile.os)) ok(`Shell shortcut is set up: type ${cyan(`${cfg.prefix} <request>`)} at any prompt`);
+    if (isHookInstalled(profile.shell, profile.os)) {
+      refreshHookFiles(cfg.prefix); // pick up hook changes from a newer whatcmd
+      ok(`Shell shortcut is set up: type ${cyan(`${cfg.prefix} <request>`)} at any prompt`);
+    }
     else warn(`Shell shortcut not set up yet. Run \`whatcmd init\` to enable ${cfg.prefix} <request>`);
   } else warn(`${profile.shell} has no ${cfg.prefix} shortcut yet (bash and zsh do). Use: whatcmd <request>`);
   return true;

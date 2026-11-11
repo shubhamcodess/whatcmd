@@ -1,0 +1,40 @@
+{"id": "cld-001", "category": "cloud", "input": "kubectl list pods in all namespaces", "expect": {"type": "command", "all": ["kubectl\\s+get\\s+(pods?|po)\\b", "(-A\\b|--all-namespaces)"]}}
+{"id": "cld-002", "category": "cloud", "input": "kubectl show logs of pod web-1 and keep following", "expect": {"type": "command", "all": ["kubectl\\s+logs\\b", "web-1", "(-f\\b|--follow)"]}}
+{"id": "cld-003", "category": "cloud", "input": "kubectl show the last 50 log lines of pod api", "expect": {"type": "command", "all": ["kubectl\\s+logs\\b", "\\bapi\\b", "--tail[= ]50"]}}
+{"id": "cld-004", "category": "cloud", "input": "kubectl show logs of the previous crashed container of pod api", "expect": {"type": "command", "all": ["kubectl\\s+logs\\b", "(-p\\b|--previous)"]}}
+{"id": "cld-005", "category": "cloud", "input": "kubectl get a shell inside pod web-1", "expect": {"type": "command", "all": ["kubectl\\s+exec\\b", "web-1", "-(it|ti)\\b|-i\\s+-t|--stdin", "\\b(sh|bash)\\b"]}}
+{"id": "cld-006", "category": "cloud", "input": "kubectl scale deployment web to 5 replicas", "expect": {"type": "command", "all": ["kubectl\\s+scale\\b", "(deployment[ /]web|deploy[ /]web)", "--replicas[= ]5"]}}
+{"id": "cld-007", "category": "cloud", "input": "kubectl show rollout history of deployment web", "expect": {"type": "command", "all": ["kubectl\\s+rollout\\s+history\\b", "web"]}}
+{"id": "cld-008", "category": "cloud", "input": "kubectl undo the last rollout of deployment web", "expect": {"type": "command", "all": ["kubectl\\s+rollout\\s+undo\\b", "web"]}}
+{"id": "cld-009", "category": "cloud", "input": "kubectl restart deployment web", "expect": {"type": "command", "all": ["kubectl\\s+rollout\\s+restart\\b", "web"]}}
+{"id": "cld-010", "category": "cloud", "input": "kubectl watch rollout status of deployment web", "expect": {"type": "command", "all": ["kubectl\\s+rollout\\s+status\\b", "web"]}}
+{"id": "cld-011", "category": "cloud", "input": "kubectl forward local port 8080 to port 80 of service web", "expect": {"type": "command", "all": ["kubectl\\s+port-forward\\b", "(svc|service)/web", "8080:80"]}}
+{"id": "cld-012", "category": "cloud", "input": "kubectl show cpu and memory usage of pods", "expect": {"type": "command", "all": ["kubectl\\s+top\\s+(pods?|po)\\b"]}}
+{"id": "cld-013", "category": "cloud", "input": "kubectl list pods with their node and ip", "expect": {"type": "command", "all": ["kubectl\\s+get\\s+(pods?|po)\\b", "-o\\s*wide|--output[= ]wide"]}}
+{"id": "cld-014", "category": "cloud", "input": "kubectl list pods sorted by restart count", "expect": {"type": "command", "all": ["kubectl\\s+get\\s+(pods?|po)\\b", "--sort-by"]}}
+{"id": "cld-015", "category": "cloud", "input": "kubectl list pods with label app=web", "expect": {"type": "command", "all": ["kubectl\\s+get\\s+(pods?|po)\\b", "(-l|--selector)[= ]?\\s*['\\\"]?app=web"]}}
+{"id": "cld-016", "category": "cloud", "input": "kubectl list events sorted by time", "expect": {"type": "command", "all": ["kubectl\\s+get\\s+events\\b", "--sort-by"]}}
+{"id": "cld-017", "category": "cloud", "input": "kubectl switch to context staging", "expect": {"type": "command", "all": ["kubectl\\s+config\\s+use-context\\s+staging"]}}
+{"id": "cld-018", "category": "cloud", "input": "kubectl list all contexts", "expect": {"type": "command", "all": ["kubectl\\s+config\\s+get-contexts\\b"]}}
+{"id": "cld-019", "category": "cloud", "input": "kubectl set the default namespace to dev for the current context", "expect": {"type": "command", "all": ["kubectl\\s+config\\s+set-context\\b", "--namespace[= ]dev"]}}
+{"id": "cld-020", "category": "cloud", "input": "kubectl get pod web-1 as yaml", "expect": {"type": "command", "all": ["kubectl\\s+get\\s+(pod|po)\\s+web-1", "-o\\s*yaml|--output[= ]yaml"]}}
+{"id": "cld-021", "category": "cloud", "input": "kubectl drain node node-1 ignoring daemonsets", "expect": {"type": "command", "all": ["kubectl\\s+drain\\s+node-1", "--ignore-daemonsets"]}}
+{"id": "cld-022", "category": "cloud", "input": "kubectl mark node node-1 unschedulable", "expect": {"type": "command", "all": ["kubectl\\s+cordon\\s+node-1"]}}
+{"id": "cld-023", "category": "cloud", "input": "kubectl copy /tmp/a.txt from pod web-1 to here", "expect": {"type": "command", "all": ["kubectl\\s+cp\\b", "web-1:/tmp/a\\.txt"]}}
+{"id": "cld-024", "category": "cloud", "input": "kubectl show what apply of deploy.yaml would change", "expect": {"type": "command", "all": ["kubectl\\s+diff\\b", "-f\\s*deploy\\.yaml"]}}
+{"id": "cld-025", "category": "cloud", "input": "kubectl delete all pods in namespace test", "expect": {"type": "command", "all": ["kubectl\\s+delete\\s+(pods?|po)\\b", "--all\\b", "(-n|--namespace)[= ]?\\s*test"]}}
+{"id": "cld-026", "category": "cloud", "input": "kubectl explain the fields of a deployment spec", "expect": {"type": "command", "all": ["kubectl\\s+explain\\s+deployment"]}}
+{"id": "cld-027", "category": "cloud", "input": "helm list releases in all namespaces", "expect": {"type": "command", "all": ["helm\\s+(list|ls)\\b", "(-A\\b|--all-namespaces)"]}}
+{"id": "cld-028", "category": "cloud", "input": "helm show the values used by release web", "expect": {"type": "command", "all": ["helm\\s+get\\s+values\\s+web"]}}
+{"id": "cld-029", "category": "cloud", "input": "helm roll back release web to revision 2", "expect": {"type": "command", "all": ["helm\\s+rollback\\s+web\\s+2"]}}
+{"id": "cld-030", "category": "cloud", "input": "helm show history of release web", "expect": {"type": "command", "all": ["helm\\s+history\\s+web"]}}
+{"id": "cld-031", "category": "cloud", "input": "helm render chart ./chart locally without installing", "expect": {"type": "command", "all": ["helm\\s+template\\b", "\\./chart"]}}
+{"id": "cld-032", "category": "cloud", "input": "helm upgrade release web with chart ./chart or install it if missing", "expect": {"type": "command", "all": ["helm\\s+upgrade\\b", "(--install|-i)\\b", "web", "\\./chart"]}}
+{"id": "cld-033", "category": "cloud", "input": "gcloud list compute instances", "expect": {"type": "command", "all": ["gcloud\\s+compute\\s+instances\\s+list"]}}
+{"id": "cld-034", "category": "cloud", "input": "gcloud set the default project to my-proj", "expect": {"type": "command", "all": ["gcloud\\s+config\\s+set\\s+project\\s+my-proj"]}}
+{"id": "cld-035", "category": "cloud", "input": "gcloud get credentials for gke cluster prod in region us-central1", "expect": {"type": "command", "all": ["gcloud\\s+container\\s+clusters\\s+get-credentials\\s+prod", "--(region|zone)[= ]us-central1"]}}
+{"id": "cld-036", "category": "cloud", "input": "docker remove all stopped containers", "expect": {"type": "command", "all": ["docker\\s+(container\\s+prune|rm\\b)"]}}
+{"id": "cld-037", "category": "cloud", "input": "docker show disk usage of images containers and volumes", "expect": {"type": "command", "all": ["docker\\s+system\\s+df"]}}
+{"id": "cld-038", "category": "cloud", "input": "kind create a cluster named dev", "expect": {"type": "command", "all": ["kind\\s+create\\s+cluster\\b", "--name[= ]dev"]}}
+{"id": "cld-039", "category": "cloud", "input": "kustomize build the overlay in overlays/prod", "expect": {"type": "command", "all": ["(kustomize\\s+build|kubectl\\s+kustomize)\\s+overlays/prod"]}}
+{"id": "cld-040", "category": "cloud", "input": "gh list open pull requests in this repo", "expect": {"type": "command", "all": ["gh\\s+pr\\s+list"]}}

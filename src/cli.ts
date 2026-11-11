@@ -5,7 +5,7 @@ import {
   ConfigError, DEFAULTS, SETTABLE, configPath, loadConfig, readStored, saveStored, setKey, unsetKey, writeStored,
 } from "./config.js";
 import { OllamaError } from "./ollama.js";
-import { bold, canPrompt, confirm, cyan, dim, err, red, yellow } from "./ui.js";
+import { ask as ask_, bold, canPrompt, confirm, cyan, dim, err, red, yellow } from "./ui.js";
 
 const VERSION: string = (() => {
   try {
@@ -18,8 +18,9 @@ const VERSION: string = (() => {
 const HELP = `${bold("whatcmd")} — plain English in, shell command out. Runs locally on Ollama.
 
 ${bold("Usage")}
-  /w <request>          at any bash/zsh prompt (after \`whatcmd init\`): the command
+  /w <request>               at any bash/zsh prompt (after \`whatcmd init\`): the command
                              replaces your line; press Enter again to run it
+  /w+ <change>               refine the last command ("only pdfs", "fix that"); up to 5 times
   whatcmd <request>           print the command and offer to run it
   whatcmd init                first-time setup: checks Ollama, picks a model, adds /w
   whatcmd doctor              check everything works (Ollama, model, speed, shell shortcut)
@@ -33,13 +34,16 @@ ${bold("Usage")}
 
 ${bold("Options")}
   --raw          print only the command (for scripts and the shell hook)
+  --refine       apply the request as a change to this terminal's last command
   --debug        show grounding, prompts and timings
+  --web          allow a web lookup for this request (on by default)
+  --no-web       stay fully local for this request
   --yes, -y      accept defaults without asking (doctor/init)
   --model=NAME   use this model for one request (or with doctor/init: switch to it)
   --             everything after this is the request
 
 ${bold("Environment")}
-  WHATCMD_MODEL, WHATCMD_HOST (or OLLAMA_HOST), WHATCMD_CONFIG_DIR, NO_COLOR
+  WHATCMD_MODEL, WHATCMD_HOST (or OLLAMA_HOST), WHATCMD_WEB=1|0, WHATCMD_CONFIG_DIR, NO_COLOR
 
 ${bold("Examples")}
   whatcmd find files bigger than 100MB
@@ -82,43 +86,110 @@ function explainOllamaError(e: OllamaError, model: string): string {
   return e.message;
 }
 
-async function runRequest(ask: string, opts: { raw: boolean; debug: boolean; model?: string }): Promise<number> {
-  const { generate } = await import("./generate.js");
+interface RequestOptions {
+  raw: boolean;
+  debug: boolean;
+  model?: string;
+  /** Per-request override of the `web` setting. */
+  web?: boolean;
+  refine: boolean;
+  /** Terminal session id (the shell's PID); defaults to the parent process. */
+  session?: string;
+  lastCmd?: string;
+  lastStatus?: number;
+}
+
+async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
+  const { generate, webRefOf } = await import("./generate.js");
+  const { loadSession, saveSession, refineBase, MAX_REFINES } = await import("./session.js");
   const cfg = loadConfig();
   if (opts.model) cfg.model = opts.model;
-  let res;
-  try {
-    res = await generate(ask, cfg);
-  } catch (e) {
-    if (e instanceof OllamaError) {
-      err(`whatcmd: ${explainOllamaError(e, cfg.model)}`);
-      return 1;
-    }
-    throw e;
-  }
-  if (opts.debug) {
-    err(dim(`model: ${cfg.model}  timings: ${JSON.stringify(res.debug.timings)}`));
-    for (const n of res.debug.groundNotes) err(dim(`grounding: ${n}`));
-    for (const r of res.debug.refs) err(dim(`grounding [${r.name} via ${r.source}]:\n${r.text}`));
-    if (res.debug.retries.length) err(dim(`retries: ${res.debug.retries.join(", ")}`));
-    err(dim(`raw outputs: ${JSON.stringify(res.debug.outputs)}`));
-  }
-  if (res.kind === "rejected") {
-    const why = res.reason === "empty" ? "empty request" : "not a shell task, nothing generated";
-    err(opts.raw ? `whatcmd: ${why}` : yellow(`whatcmd: ${why}`));
+  if (opts.web !== undefined) cfg.web = opts.web;
+  const sid = opts.session || String(process.ppid);
+
+  let session = opts.refine ? loadSession(sid) : null;
+  if (opts.refine && !session) {
+    err(`whatcmd: nothing to refine yet. Start with: ${cfg.prefix} <request>`);
     return 2;
   }
-  if (opts.raw) {
-    process.stdout.write(res.command + "\n");
-    for (const w of res.warnings) err(`whatcmd: ⚠ ${w}`);
-    return 0;
+  let lastCmd = opts.lastCmd;
+  let lastStatus = opts.lastStatus;
+  let change = ask;
+
+  for (;;) {
+    if (session && session.turns >= MAX_REFINES) {
+      err(`whatcmd: refined ${MAX_REFINES} times. Start fresh: ${cfg.prefix} <full request>`);
+      return 2;
+    }
+    const refine = session
+      ? (() => {
+          const b = refineBase(session.command, lastCmd, lastStatus, session.lastSeen);
+          return { originalAsk: session.ask, base: b.command, status: b.status, web: session.web };
+        })()
+      : undefined;
+
+    let res;
+    try {
+      res = await generate(change, cfg, refine);
+    } catch (e) {
+      if (e instanceof OllamaError) {
+        err(`whatcmd: ${explainOllamaError(e, cfg.model)}`);
+        return 1;
+      }
+      throw e;
+    }
+    if (opts.debug) {
+      err(dim(`model: ${cfg.model}  timings: ${JSON.stringify(res.debug.timings)}`));
+      if (refine) err(dim(`refining: ${JSON.stringify(refine)}`));
+      for (const n of res.debug.groundNotes) err(dim(`grounding: ${n}`));
+      for (const n of res.debug.webNotes) err(dim(n));
+      for (const r of res.debug.refs) err(dim(`grounding [${r.name} via ${r.source}${r.url ? ` ${r.url}` : ""}]:\n${r.text}`));
+      if (res.debug.retries.length) err(dim(`retries: ${res.debug.retries.join(", ")}`));
+      err(dim(`raw outputs: ${JSON.stringify(res.debug.outputs)}`));
+    }
+    if (res.kind === "rejected") {
+      const why = res.reason === "empty" ? "empty request" : "not a shell task, nothing generated";
+      err(opts.raw ? `whatcmd: ${why}` : yellow(`whatcmd: ${why}`));
+      return 2;
+    }
+
+    const lastSeen = lastCmd?.trim();
+    session = refine
+      ? { ask: `${refine.originalAsk}; ${change.trim()}`, command: res.command, turns: (session?.turns ?? 0) + 1, lastSeen, web: webRefOf(res.debug), at: 0 }
+      : { ask: change.trim(), command: res.command, turns: 0, lastSeen, web: webRefOf(res.debug), at: 0 };
+    saveSession(sid, session);
+
+    const webRef = res.debug.refs.find((r) => r.source === "web");
+    const paused = res.debug.webNotes.find((n) => n.startsWith("web: paused"));
+    const webNote = webRef
+      ? `used web docs from ${webRef.url ? new URL(webRef.url).hostname : "a web search"}`
+      : paused
+        ? "web search paused (search engines rate-limited), used local docs only"
+        : "";
+    if (opts.raw) {
+      process.stdout.write(res.command + "\n");
+      if (webNote) err(`whatcmd: ${webNote}`);
+      for (const w of res.warnings) err(`whatcmd: ⚠ ${w}`);
+      if (refine) err(`whatcmd: refinement ${session.turns}/${MAX_REFINES}`);
+      return 0;
+    }
+    process.stdout.write(bold(cyan(res.command, process.stdout), process.stdout) + "\n");
+    if (webNote) err(dim(webNote));
+    for (const w of res.warnings) err(yellow(`⚠ ${w}`));
+    if (!canPrompt() || !process.stdout.isTTY) return 0;
+
+    const left = MAX_REFINES - session.turns;
+    const choice = (await ask_(`[r]un, re[f]ine${left < MAX_REFINES ? ` (${left} left)` : ""}, [q]uit? `)).toLowerCase();
+    if (choice === "r" || choice === "run") {
+      const shell = process.env.SHELL || "/bin/sh";
+      return spawnSync(shell, ["-c", res.command], { stdio: "inherit" }).status ?? 1;
+    }
+    if (choice !== "f" && choice !== "refine") return 0;
+    change = await ask_("Change: ");
+    if (!change.trim()) return 0;
+    lastCmd = undefined;
+    lastStatus = undefined;
   }
-  process.stdout.write(bold(cyan(res.command, process.stdout), process.stdout) + "\n");
-  for (const w of res.warnings) err(yellow(`⚠ ${w}`));
-  if (!canPrompt() || !process.stdout.isTTY) return 0;
-  if (!(await confirm("Run it?", false))) return 0;
-  const shell = process.env.SHELL || "/bin/sh";
-  return spawnSync(shell, ["-c", res.command], { stdio: "inherit" }).status ?? 1;
 }
 
 async function configCommand(rest: string[]): Promise<number> {
@@ -243,7 +314,17 @@ async function main(argv: string[]): Promise<number> {
     }
   }
 
-  return runRequest(rest.join(" "), { raw: flags.has("--raw"), debug: flags.has("--debug"), model: values.model });
+  const status = values["last-status"] !== undefined ? Number(values["last-status"]) : undefined;
+  return runRequest(rest.join(" "), {
+    raw: flags.has("--raw"),
+    debug: flags.has("--debug"),
+    model: values.model,
+    web: flags.has("--no-web") ? false : flags.has("--web") ? true : undefined,
+    refine: flags.has("--refine"),
+    session: values.session,
+    lastCmd: values["last-cmd"],
+    lastStatus: Number.isFinite(status) ? status : undefined,
+  });
 }
 
 main(process.argv.slice(2)).then(

@@ -12,6 +12,13 @@
     />
     <meta property="og:title" content="whatcmd: stop googling shell commands" />
     <meta property="og:description" content="Plain English in, the right command out. Local, grounded, and it never runs anything by itself." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shubhamcodess.github.io/whatcmd/" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/shubhamcodess/whatcmd/main/docs/assets/social-preview.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content="whatcmd: stop googling shell commands. npm i -g @shubhamcodess/whatcmd" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       (function () {
@@ -41,17 +48,23 @@
         <nav class="nav__links" aria-label="Main">
           <span class="nav__anchors">
             <a href="#install">Install</a>
+            <a href="#new">What's new</a>
             <a href="#features">Features</a>
+            <a href="#how">How it works</a>
             <a href="#evals">Evals</a>
             <span class="nav__sep" aria-hidden="true"></span>
           </span>
-          <a href="https://github.com/shubhamcodess/whatcmd" aria-label="whatcmd on GitHub">
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <a href="https://github.com/shubhamcodess/whatcmd" target="_blank" rel="noopener" aria-label="whatcmd on GitHub">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
             <span class="nav__stars" data-stars hidden></span>
           </a>
+          <a href="https://www.npmjs.com/package/@shubhamcodess/whatcmd" target="_blank" rel="noopener" aria-label="whatcmd on npm" title="npm">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z"/></svg>
+            <span class="nav__stars" data-downloads hidden></span>
+          </a>
           <button type="button" class="theme" aria-label="Switch colour theme">
-            <svg class="theme__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            <svg class="theme__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <svg width="16" height="16" class="theme__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg width="16" height="16" class="theme__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
           </button>
         </nav>
       </div>
@@ -62,18 +75,24 @@
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero__top">
           <div class="hero__title">
-            <a class="pill" href="https://www.npmjs.com/package/@shubhamcodess/whatcmd">
-              <span>v<span data-version>0.1.0</span><span class="pill__more"> · open source · runs locally</span></span>
+            <a class="pill" href="https://www.npmjs.com/package/@shubhamcodess/whatcmd" target="_blank" rel="noopener">
+              <span>v<span data-version>0.1.0</span><span class="pill__more"> · open source · local-first</span></span>
               <em>npm</em>
             </a>
             <h1 id="hero-title">Stop <span class="cut">googling</span> shell commands.</h1>
           </div>
           <div class="hero__subwrap">
             <p class="hero__sub">
-              Type what you want in plain English at your prompt. whatcmd puts the right command on your line,
-              written for <em>your</em> OS and the tools you actually have installed. It runs on a local model,
-              nothing leaves your machine, and nothing runs until you press Enter.
+              Type what you want in plain English, get the command on your prompt, fitted to
+              <a class="claim" href="#f-system">your OS and installed tools</a>. It runs on a
+              <a class="claim" href="#evals">local model</a>, checks the web
+              <a class="claim" href="#how-web">only when that fails</a>, and
+              <a class="claim" href="#f-enter">nothing runs until you press Enter</a>.
             </p>
+            <a class="powered powered--hero" href="https://github.com/shubhamcodess/tiny-browse#readme" data-preview="tiny-browse" target="_blank" rel="noopener">
+              <span>Web lookup powered by <b>tiny-browse</b></span>
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
           </div>
           <div class="hero__act" id="install">
             <div class="cmd" role="group" aria-label="Install whatcmd">
@@ -87,18 +106,18 @@
               <div class="cmd__row">
                 <code class="cmd__line"><span class="p">$ </span><span data-cmd-text>npm install -g @shubhamcodess/whatcmd</span></code>
                 <button type="button" class="copy" data-copy-from="[data-cmd-text]">
-                  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 3.5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 3.5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
                   <span>Copy</span>
                 </button>
               </div>
               <p class="cmd__hint">
-                Then run <code>whatcmd init</code> once. Needs Node 21+ and <a href="https://ollama.com/download">Ollama</a>;
+                Then run <code>whatcmd init</code> once. Needs Node 22+ and <a href="https://ollama.com/download" target="_blank" rel="noopener">Ollama</a>;
                 <code>init</code> checks both and downloads the model.
               </p>
             </div>
             <div class="hero__btns">
-              <a class="btn btn--line star" href="https://github.com/shubhamcodess/whatcmd" aria-label="Star whatcmd on GitHub">
-                <svg class="star__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.84 5.76 6.36.92-4.6 4.49 1.09 6.33L12 17.31 6.31 20.3l1.09-6.33-4.6-4.49 6.36-.92z" fill="currentColor"/></svg>
+              <a class="btn btn--line star" href="https://github.com/shubhamcodess/whatcmd" target="_blank" rel="noopener" aria-label="Star whatcmd on GitHub">
+                <svg width="16" height="16" class="star__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.84 5.76 6.36.92-4.6 4.49 1.09 6.33L12 17.31 6.31 20.3l1.09-6.33-4.6-4.49 6.36-.92z" fill="currentColor"/></svg>
                 <span>Star on GitHub</span>
                 <span class="star__count" data-stars hidden></span>
               </a>
@@ -120,12 +139,48 @@
             <figcaption class="term__foot">
               <span>Commands land on your prompt. You press Enter, or edit them first.</span>
               <button type="button" class="copy" data-replay>
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 109.3-4M12.5 1.5V4.5H9.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 109.3-4M12.5 1.5V4.5H9.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span>Replay</span>
               </button>
             </figcaption>
           </figure>
         </div>
+      </section>
+
+      <!-- WHAT'S NEW -->
+      <section class="sec" id="new" aria-labelledby="new-title">
+        <div class="sec__head">
+          <a class="cap relink" href="https://github.com/shubhamcodess/whatcmd/releases/tag/v1.0.0" target="_blank" rel="noopener">
+            <span>v<span data-version>1.0.0</span> · first stable release · release notes</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <h2 id="new-title">What's new in 1.0</h2>
+          <p class="sub">Keep shaping a command instead of retyping it, and get the hard ones right with the official docs, without giving up the local-first default.</p>
+        </div>
+        <ul class="news">
+          <li class="news__card reveal" style="--d: 0">
+            <span class="tile__k">refine · /w+</span>
+            <h3>Change the last command in place</h3>
+            <p>Say what to change and whatcmd edits this terminal's last command, or your edited version of it. After a failed run, <code>/w+ fix that</code> knows the exit status.</p>
+            <code class="tile__ex"><span class="p">$ </span>/w find files bigger than 100MB <span class="t-cut">↵</span><br /><span class="p">$ </span>/w+ only pdfs <span class="t-cut">↵</span><br /><span class="p">$ </span>find . -type f -name '*.pdf' -size +100M</code>
+          </li>
+          <li class="news__card reveal" style="--d: 1">
+            <span class="tile__k">web lookup · tiny-browse</span>
+            <h3>Looks it up only when the local answer fails</h3>
+            <p>When the model doesn't know a tool, like <code>kubectl</code>, whose <code>--help</code> lists no flags, or its answer fails the checks, whatcmd reads the official docs and tries again. Correct answers never touch the network.</p>
+            <code class="tile__ex"><span class="p">$ </span>/w kubectl show rollout history of deployment web <span class="t-cut">↵</span><br /><span class="p">$ </span>kubectl rollout history deployment/web<br /><span class="t-dim">used web docs from kubernetes.io</span></code>
+          </li>
+          <li class="news__card reveal" style="--d: 2">
+            <span class="tile__k">shortcut polish</span>
+            <h3>A spinner, and Enter to clear</h3>
+            <p>A small spinner shows while whatcmd works (Ctrl-C stops it). When nothing was generated, the next Enter clears the line so you can type again.</p>
+          </li>
+        </ul>
+        <p class="cap news__note">
+          Cloud-CLI benchmark (40 kubectl, helm, gcloud… cases): 22 / 40 local only, 25 / 40 with web lookup.
+          Everyday, refusal and refinement cases score the same either way.
+          <a class="link" href="https://github.com/shubhamcodess/whatcmd/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Full changelog →</a>
+        </p>
       </section>
 
       <!-- FEATURES -->
@@ -135,13 +190,13 @@
           <p class="sub">Small, fast and deliberately boring: one request, one command, on your line. The interesting part is everything that keeps that command correct and safe.</p>
         </div>
         <ul class="tiles">
-          <li class="tile reveal" style="--d: 0">
+          <li class="tile reveal" style="--d: 0" id="f-enter">
             <span class="tile__k">01 · prefill, never run</span>
             <h3>Nothing runs until you press Enter</h3>
             <p>The command replaces your typed line. Check it, edit it, or run it. whatcmd never executes anything by itself.</p>
             <code class="tile__ex"><span class="p">$ </span>/w kill whatever is on port 3000 <span class="t-cut">↵</span><br /><span class="p">$ </span>lsof -ti :3000 | xargs kill</code>
           </li>
-          <li class="tile reveal" style="--d: 1">
+          <li class="tile reveal" style="--d: 1" id="f-system">
             <span class="tile__k">02 · knows your system</span>
             <h3>Commands for your OS, not someone's blog</h3>
             <p>Detects OS, distro, shell, package manager, GNU vs BSD flags and which tools you have. On a Mac you get <code>sed -i ''</code> and <code>vm_stat</code>, not Linux-only flags.</p>
@@ -162,16 +217,54 @@
             <p><code>rm -r</code>, <code>dd</code>, <code>mkfs</code>, <code>curl | sh</code>, force pushes, world-writable <code>chmod</code> and placeholders like <code>/path/to</code> come with a warning.</p>
           </li>
           <li class="tile reveal" style="--d: 2">
-            <span class="tile__k">06 · refine with /w+ <b class="soon">v1.1</b></span>
+            <span class="tile__k">06 · refine with /w+ <b class="soon">new in 1.0</b></span>
             <h3>Keep shaping the last command</h3>
             <p><code>/w+ only pdfs</code>, <code>/w+ then zip them</code>, <code>/w+ fix that</code>. Up to five refinements per tab, then it asks you to start fresh.</p>
           </li>
         </ul>
         <div class="facts reveal">
-          <div><b>local</b><span>Ollama + qwen2.5-coder, no API keys, no telemetry</span></div>
+          <div><b>local-first</b><span>Ollama + qwen2.5-coder, no API keys, no telemetry</span></div>
           <div><b>bash · zsh</b><span>one shortcut: <code>/w &lt;request&gt;</code>, prefix configurable</span></div>
           <div><b>macOS · Linux</b><span>Windows shells can use <code>whatcmd &lt;request&gt;</code></span></div>
           <div><b>MIT</b><span>open source, ~25 kB package</span></div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="sec" id="how" aria-labelledby="how-title">
+        <div class="sec__head">
+          <h2 id="how-title">How it works</h2>
+          <p class="sub">Every request goes through the same short pipeline. The web is the last resort, not the first step.</p>
+        </div>
+        <ol class="steps">
+          <li class="step reveal" style="--d: 0"><span class="step__n">1</span><div><h3>Profile</h3><p>OS, distro, shell, package manager, GNU or BSD flags and installed tools, detected once and stored.</p></div></li>
+          <li class="step reveal" style="--d: 1"><span class="step__n">2</span><div><h3>Grounding</h3><p>Tools your request names pull in the matching lines of their man page or <code>--help</code>, cached per version.</p></div></li>
+          <li class="step reveal" style="--d: 2"><span class="step__n">3</span><div><h3>Local model</h3><p>Ollama gets the profile, a few examples and the docs, and must answer with one command or <code>NONE</code>.</p></div></li>
+          <li class="step reveal" style="--d: 3"><span class="step__n">4</span><div><h3>Gate and retries</h3><p>Chat text, echoes, loops and missing tools are caught. A targeted hint gets one more try.</p></div></li>
+          <li class="step step--web reveal" style="--d: 4" id="how-web"><span class="step__n">5</span><div><h3>Web lookup, only if it still fails</h3><p>The model said it doesn't know, or the answer still fails: tiny-browse fetches the docs, and the model answers again.</p></div></li>
+          <li class="step reveal" style="--d: 5"><span class="step__n">6</span><div><h3>Your prompt line</h3><p>The command lands on your line with any risk warnings. You read it, then press Enter.</p></div></li>
+        </ol>
+
+        <div class="tb reveal">
+          <div class="tb__head">
+            <span class="tile__k">built on</span>
+            <h3>tiny-browse: web search and page reading for agents</h3>
+            <p>
+              tiny-browse is a separate open-source package by the same author: it searches the web in the Chrome you already
+              have and returns clean Markdown within a token budget. It ships as an MCP server and as a Node.js library with
+              zero dependencies. whatcmd installs it as a dependency and calls the library in the same process.
+            </p>
+            <a class="powered" href="https://github.com/shubhamcodess/tiny-browse#readme" data-preview="tiny-browse" target="_blank" rel="noopener">
+              <span>tiny-browse on GitHub</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <ul class="tb__list">
+            <li><b>Reference pages first</b><span>For kubectl, helm, gcloud, az, gh and others, the official cheat sheet is read over plain HTTP: no Chrome, no search engine. Cached for 7 days; matching lines are picked locally.</span></li>
+            <li><b>Then a search</b><span>Otherwise one web search, reading the top 2 results, and only the lines that mention your tool go to the model, labelled as examples.</span></li>
+            <li><b>Polite by design</b><span>tiny-browse's shared rate limits apply (Google: 8 s apart, 20 an hour). whatcmd searches at most once per request, never retries a block, and pauses for 15 minutes when every engine refuses.</span></li>
+            <li><b>What leaves your machine</b><span>The tool name and plain words of the request. Paths, flags, <code>key=value</code> pairs and long numbers are removed. Turn it off with <code>whatcmd config set web false</code>.</span></li>
+          </ul>
         </div>
       </section>
 
@@ -231,7 +324,7 @@
           <div class="bench__foot cap">
             <span class="key"><i></i> passed</span>
             <span class="key"><i class="cut"></i> failed</span>
-            <a class="link" href="https://github.com/shubhamcodess/whatcmd/tree/main/benchmarks">All 500 cases, harness and raw results on GitHub →</a>
+            <a class="link" href="https://github.com/shubhamcodess/whatcmd/tree/main/benchmarks" target="_blank" rel="noopener">All 500 cases, harness and raw results on GitHub →</a>
           </div>
         </div>
 
@@ -276,25 +369,26 @@
         <div>
           <h4>Project</h4>
           <ul>
-            <li><a href="https://github.com/shubhamcodess/whatcmd">Source on GitHub</a></li>
-            <li><a href="https://www.npmjs.com/package/@shubhamcodess/whatcmd">npm package</a></li>
-            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CHANGELOG.md">Changelog</a></li>
-            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/EVALS.md">How we evaluate</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd" target="_blank" rel="noopener">Source on GitHub</a></li>
+            <li><a href="https://www.npmjs.com/package/@shubhamcodess/whatcmd" target="_blank" rel="noopener">npm package</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/EVALS.md" target="_blank" rel="noopener">How we evaluate</a></li>
           </ul>
         </div>
         <div>
           <h4>Contribute</h4>
           <ul>
-            <li><a href="https://github.com/shubhamcodess/whatcmd/issues/new">Report a bug or wrong command</a></li>
-            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CONTRIBUTING.md">Contributing guide</a></li>
-            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/SECURITY.md">Security policy</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/issues/new" target="_blank" rel="noopener">Report a bug or wrong command</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing guide</a></li>
+            <li><a href="https://github.com/shubhamcodess/whatcmd/blob/main/SECURITY.md" target="_blank" rel="noopener">Security policy</a></li>
           </ul>
         </div>
         <div>
           <h4>Built with</h4>
           <ul class="foot__stack">
-            <li>TypeScript · Node 21+</li>
+            <li>TypeScript · Node 22+</li>
             <li>Ollama · qwen2.5-coder</li>
+            <li><a href="https://github.com/shubhamcodess/tiny-browse#readme" data-preview="tiny-browse" target="_blank" rel="noopener">tiny-browse</a> (web lookup)</li>
             <li>bash &amp; zsh hooks</li>
             <li>Site: Vite, vanilla JS</li>
           </ul>
@@ -303,10 +397,19 @@
       <div class="foot">
         <span>© 2026 Shubham Prakash</span>
         <ul>
-          <li><a href="https://github.com/shubhamcodess">GitHub</a></li>
-          <li><a href="https://www.linkedin.com/in/shubham-prakash-dev/">LinkedIn</a></li>
+          <li><a href="https://github.com/shubhamcodess" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/shubham-prakash-dev/" target="_blank" rel="noopener">LinkedIn</a></li>
         </ul>
       </div>
     </footer>
+    <!-- Link preview card: follows the pointer over links with data-preview="tiny-browse" -->
+    <div class="lp" id="lp-tiny-browse" role="tooltip" aria-hidden="true">
+      <img src="https://raw.githubusercontent.com/shubhamcodess/tiny-browse/main/assets/social-preview.png" alt="" width="1280" height="640" decoding="async" />
+      <div class="lp__body">
+        <span class="lp__url">github.com/shubhamcodess/tiny-browse</span>
+        <b>tiny-browse</b>
+        <span data-lp-desc="shubhamcodess/tiny-browse">Give any AI agent the web, in 126 kB. MCP server and Node.js library, zero dependencies.</span>
+      </div>
+    </div>
   </body>
 </html>

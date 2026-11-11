@@ -1,6 +1,6 @@
 {
   "name": "@shubhamcodess/whatcmd",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Type plain English in your terminal, get a shell command back. Runs locally on Ollama, grounded in your own system.",
   "type": "module",
   "bin": {
@@ -13,7 +13,7 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=21"
+    "node": ">=22"
   },
   "scripts": {
     "build": "tsc -p . && chmod +x dist/cli.js",
@@ -22,7 +22,8 @@
     "test": "npm run build && node --test \"dist/**/*.test.js\"",
     "eval": "npm run build && node scripts/eval.mjs",
     "prepublishOnly": "npm test",
-    "check": "npm run build && node scripts/check-links.mjs && node scripts/check-pack.mjs"
+    "check": "npm run build && node scripts/check-links.mjs && node scripts/check-pack.mjs",
+    "eval:web": "npm run build && node scripts/web-eval.mjs"
   },
   "keywords": [
     "cli",
@@ -52,5 +53,8 @@
   "devDependencies": {
     "@types/node": "^22.10.0",
     "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@shubhamcodess/tiny-browse": "^0.1.0"
   }
 }

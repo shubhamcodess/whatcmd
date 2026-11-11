@@ -92,6 +92,84 @@ $$(".reveal, .bench").forEach((el) => io.observe(el));
   });
 })();
 
+/* ---------- link preview card that follows the pointer ---------- */
+(() => {
+  // Only for a mouse or trackpad: touch has no hover, and a tap just opens the link.
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const GAP = 18;
+  $$("[data-preview]").forEach((link) => {
+    const card = document.getElementById(`lp-${link.dataset.preview}`);
+    if (!card) return;
+    const place = (x, y) => {
+      const w = card.offsetWidth, h = card.offsetHeight;
+      // Right of and below the pointer; flip when it would leave the window.
+      const left = x + GAP + w > innerWidth - 8 ? x - GAP - w : x + GAP;
+      const top = y + GAP + h > innerHeight - 8 ? y - GAP - h : y + GAP;
+      card.style.translate = `${Math.max(8, left)}px ${Math.max(8, top)}px`;
+    };
+    // The image comes straight from the repo; the text is the repo's live description,
+    // fetched on first hover (cached per session), with the built-in text as fallback.
+    const desc = card.querySelector("[data-lp-desc]");
+    let asked = false;
+    const loadDesc = async () => {
+      if (asked || !desc) return;
+      asked = true;
+      const repo = desc.dataset.lpDesc;
+      let text;
+      try {
+        text = sessionStorage.getItem(`wc-desc-${repo}`);
+      } catch {}
+      if (!text) {
+        try {
+          const r = await fetch(`https://api.github.com/repos/${repo}`, { headers: { accept: "application/vnd.github+json" } });
+          if (r.ok) text = (await r.json()).description;
+          if (text) sessionStorage.setItem(`wc-desc-${repo}`, text);
+        } catch {}
+      }
+      if (text) desc.textContent = text;
+    };
+    link.addEventListener("pointerenter", (e) => {
+      loadDesc();
+      place(e.clientX, e.clientY);
+      card.classList.add("lp--on");
+    });
+    link.addEventListener("pointermove", (e) => place(e.clientX, e.clientY));
+    link.addEventListener("pointerleave", () => card.classList.remove("lp--on"));
+    link.addEventListener("click", () => card.classList.remove("lp--on"));
+  });
+  addEventListener("scroll", () => $$(".lp--on").forEach((c) => c.classList.remove("lp--on")), { passive: true });
+})();
+
+/* ---------- npm downloads (total since first publish) ---------- */
+(async () => {
+  const fmt = (n) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "")}k` : String(n));
+  const PKG = "@shubhamcodess/whatcmd";
+  const SINCE = "2026-11-04"; // first publish
+  let n;
+  try {
+    n = Number(sessionStorage.getItem("wc-downloads"));
+  } catch {}
+  if (!n) {
+    try {
+      // npm caps a point range at 18 months, so count from whichever is later
+      const today = new Date().toISOString().slice(0, 10);
+      const cap = new Date(Date.now() - 540 * 864e5).toISOString().slice(0, 10);
+      const from = SINCE > cap ? SINCE : cap;
+      const r = await fetch(`https://api.npmjs.org/downloads/point/${from}:${today}/${PKG}`);
+      if (r.ok) n = (await r.json()).downloads;
+      try {
+        if (n) sessionStorage.setItem("wc-downloads", String(n));
+      } catch {}
+    } catch {}
+  }
+  if (!n) return; // no count (or the API failed): the button still links to npm
+  $$("[data-downloads]").forEach((el) => {
+    el.textContent = `↓ ${fmt(n)}`;
+    el.title = `${n.toLocaleString()} npm downloads`;
+    el.hidden = false;
+  });
+})();
+
 /* ---------- background dot field (same as mcp-token-optimizer) ---------- */
 (() => {
   const canvas = $(".bgfield canvas");

@@ -9,12 +9,12 @@ const FINAL = process.argv.includes("--final");
 
 const EXPECTED = {
   generation: 150, refusal: 80, grounding: 50, missing_tool: 30, risk: 40,
-  profile: 20, gate: 60, config: 30, cli: 20, hook: 20,
+  profile: 20, gate: 60, config: 30, cli: 20, hook: 20, cloud: 40,
 };
 const TYPE_FOR = {
   generation: ["command"], refusal: ["rejected"], grounding: ["grounded"],
   missing_tool: ["missing_tool"], risk: ["risk", "fn"], profile: ["command"],
-  gate: ["fn"], config: ["cli"], cli: ["cli"], hook: ["hook"],
+  gate: ["fn"], config: ["cli"], cli: ["cli"], hook: ["hook"], cloud: ["command"],
 };
 
 const errors = [];
