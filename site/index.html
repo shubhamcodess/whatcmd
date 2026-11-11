@@ -76,9 +76,11 @@
           </div>
           <div class="hero__subwrap">
             <p class="hero__sub">
-              Type what you want in plain English at your prompt. whatcmd puts the right command on your line,
-              written for <em>your</em> OS and the tools you actually have installed. It runs on a local model,
-              looks a command up on the web only when the local answer fails, and nothing runs until you press Enter.
+              Type what you want in plain English, get the command on your prompt, fitted to
+              <a class="claim" href="#f-system">your OS and installed tools</a>. It runs on a
+              <a class="claim" href="#evals">local model</a>, checks the web
+              <a class="claim" href="#how-web">only when that fails</a>, and
+              <a class="claim" href="#f-enter">nothing runs until you press Enter</a>.
             </p>
             <a class="powered" href="https://github.com/shubhamcodess/tiny-browse#readme">
               <span>Web lookup powered by <b>tiny-browse</b></span>
@@ -178,13 +180,13 @@
           <p class="sub">Small, fast and deliberately boring: one request, one command, on your line. The interesting part is everything that keeps that command correct and safe.</p>
         </div>
         <ul class="tiles">
-          <li class="tile reveal" style="--d: 0">
+          <li class="tile reveal" style="--d: 0" id="f-enter">
             <span class="tile__k">01 · prefill, never run</span>
             <h3>Nothing runs until you press Enter</h3>
             <p>The command replaces your typed line. Check it, edit it, or run it. whatcmd never executes anything by itself.</p>
             <code class="tile__ex"><span class="p">$ </span>/w kill whatever is on port 3000 <span class="t-cut">↵</span><br /><span class="p">$ </span>lsof -ti :3000 | xargs kill</code>
           </li>
-          <li class="tile reveal" style="--d: 1">
+          <li class="tile reveal" style="--d: 1" id="f-system">
             <span class="tile__k">02 · knows your system</span>
             <h3>Commands for your OS, not someone's blog</h3>
             <p>Detects OS, distro, shell, package manager, GNU vs BSD flags and which tools you have. On a Mac you get <code>sed -i ''</code> and <code>vm_stat</code>, not Linux-only flags.</p>
@@ -229,7 +231,7 @@
           <li class="step reveal" style="--d: 1"><span class="step__n">2</span><div><h3>Grounding</h3><p>Tools your request names pull in the matching lines of their man page or <code>--help</code>, cached per version.</p></div></li>
           <li class="step reveal" style="--d: 2"><span class="step__n">3</span><div><h3>Local model</h3><p>Ollama gets the profile, a few examples and the docs, and must answer with one command or <code>NONE</code>.</p></div></li>
           <li class="step reveal" style="--d: 3"><span class="step__n">4</span><div><h3>Gate and retries</h3><p>Chat text, echoes, loops and missing tools are caught. A targeted hint gets one more try.</p></div></li>
-          <li class="step step--web reveal" style="--d: 4"><span class="step__n">5</span><div><h3>Web lookup, only if it still fails</h3><p>The model said it doesn't know, or the answer still fails: tiny-browse fetches the docs, and the model answers again.</p></div></li>
+          <li class="step step--web reveal" style="--d: 4" id="how-web"><span class="step__n">5</span><div><h3>Web lookup, only if it still fails</h3><p>The model said it doesn't know, or the answer still fails: tiny-browse fetches the docs, and the model answers again.</p></div></li>
           <li class="step reveal" style="--d: 5"><span class="step__n">6</span><div><h3>Your prompt line</h3><p>The command lands on your line with any risk warnings. You read it, then press Enter.</p></div></li>
         </ol>
 

@@ -269,6 +269,19 @@ h3 { letter-spacing: -0.015em; font-size: 1rem; font-weight: 560; line-height: 1
 }
 .hero__sub { color: var(--text-2); text-wrap: pretty; max-width: 46ch; font-size: clamp(1.0625rem, 1.4vw, 1.1875rem); line-height: 1.55; }
 .hero__sub em { font-style: normal; color: var(--text); }
+.claim {
+  color: var(--text);
+  font-weight: 560;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--text-3);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.28em;
+  transition: text-decoration-color 0.15s;
+}
+.claim:hover { text-decoration-color: var(--cut); }
+/* a claim's target briefly lights up after the jump */
+.tile:target, .step:target { animation: claim-hit 1.6s var(--ease); }
+@keyframes claim-hit { 0%, 30% { background: color-mix(in srgb, var(--cut) 10%, var(--panel)); } }
 .hero__act { gap: 12px; min-width: 0; display: grid; }
 .hero__btns { flex-wrap: wrap; gap: 10px; display: flex; }
 .hero__btns .btn { flex: auto; }
