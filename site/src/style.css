@@ -278,7 +278,11 @@ h3 { letter-spacing: -0.015em; font-size: 1rem; font-weight: 560; line-height: 1
   transition: text-decoration-color 0.15s;
 }
 .claim:hover { text-decoration-color: var(--cut); }
-.powered--hero { margin-top: 2px; }
+/* Wide screens: the link sits at the bottom of the left column, centred on the button row at right. */
+@media (width >= 1000px) {
+  .hero__subwrap { align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+  .powered--hero { height: 42px; margin-top: 0; }
+}
 .relink {
   align-items: center;
   gap: 4px;
