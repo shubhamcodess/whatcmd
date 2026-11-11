@@ -11,7 +11,6 @@ whatcmd turns **plain English** into **the right shell command**, on your prompt
 [![CI](https://img.shields.io/github/actions/workflow/status/shubhamcodess/whatcmd/ci.yml?branch=main&style=flat-square&label=CI&logo=githubactions&logoColor=white)](https://github.com/shubhamcodess/whatcmd/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Website](https://img.shields.io/badge/website-whatcmd-0c0c0b?style=flat-square)](https://shubhamcodess.github.io/whatcmd/)
-
 [![npm total downloads](https://img.shields.io/npm/d18m/@shubhamcodess/whatcmd?style=flat-square&logo=npm&label=downloads)](https://www.npmjs.com/package/@shubhamcodess/whatcmd)
 
 - **Never runs anything.** The command lands on your prompt; you read it, edit it, or press Enter.
