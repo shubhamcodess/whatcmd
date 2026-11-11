@@ -18,11 +18,12 @@ export interface Config {
   grounding: boolean;
   /** Free-text notes added to every prompt, e.g. "prefer ripgrep over grep". */
   notes: string;
-  /** Look up docs on the web (via tiny-browse) when local docs aren't enough. Sends queries to search engines. */
+  /**
+   * Look up docs on the web (via tiny-browse), only for requests the model got wrong with local
+   * docs. Sends a cleaned query (no paths, flags or numbers) to search engines.
+   */
   web: boolean;
-  /** How to start tiny-browse: a command or a path to its cli.js. Empty = the installed dependency, then PATH. */
-  webCommand: string;
-  /** Max time for one web lookup, including starting tiny-browse. */
+  /** Max time for one web lookup, including starting Chrome. */
   webTimeoutMs: number;
   /** Detected system profile (set by `whatcmd init` / `whatcmd profile --refresh`). */
   profile?: Profile;
@@ -39,9 +40,8 @@ export const DEFAULTS: Config = {
   prefix: "/w",
   grounding: true,
   notes: "",
-  web: false,
-  webCommand: "",
-  webTimeoutMs: 10000,
+  web: true,
+  webTimeoutMs: 15000,
 };
 
 type KeyType = "string" | "number" | "boolean";
@@ -54,8 +54,7 @@ export const SETTABLE: Record<string, { type: KeyType; help: string }> = {
   prefix: { type: "string", help: "shell trigger, default /w" },
   grounding: { type: "boolean", help: "use local docs of tools you mention" },
   notes: { type: "string", help: "extra instructions added to every prompt" },
-  web: { type: "boolean", help: "look up docs on the web via tiny-browse when unsure (off = fully local)" },
-  webCommand: { type: "string", help: "command or cli.js path that starts tiny-browse" },
+  web: { type: "boolean", help: "look up docs on the web (tiny-browse) when the local answer fails (off = fully local)" },
   webTimeoutMs: { type: "number", help: "max time for one web lookup" },
 };
 

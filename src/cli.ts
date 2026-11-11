@@ -36,7 +36,7 @@ ${bold("Options")}
   --raw          print only the command (for scripts and the shell hook)
   --refine       apply the request as a change to this terminal's last command
   --debug        show grounding, prompts and timings
-  --web          look up docs on the web for this request (needs tiny-browse)
+  --web          allow a web lookup for this request (on by default)
   --no-web       stay fully local for this request
   --yes, -y      accept defaults without asking (doctor/init)
   --model=NAME   use this model for one request (or with doctor/init: switch to it)
@@ -100,7 +100,7 @@ interface RequestOptions {
 }
 
 async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
-  const { generate } = await import("./generate.js");
+  const { generate, webRefOf } = await import("./generate.js");
   const { loadSession, saveSession, refineBase, MAX_REFINES } = await import("./session.js");
   const cfg = loadConfig();
   if (opts.model) cfg.model = opts.model;
@@ -124,7 +124,7 @@ async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
     const refine = session
       ? (() => {
           const b = refineBase(session.command, lastCmd, lastStatus, session.lastSeen);
-          return { originalAsk: session.ask, base: b.command, status: b.status };
+          return { originalAsk: session.ask, base: b.command, status: b.status, web: session.web };
         })()
       : undefined;
 
@@ -155,12 +155,17 @@ async function runRequest(ask: string, opts: RequestOptions): Promise<number> {
 
     const lastSeen = lastCmd?.trim();
     session = refine
-      ? { ask: `${refine.originalAsk}; ${change.trim()}`, command: res.command, turns: (session?.turns ?? 0) + 1, lastSeen, at: 0 }
-      : { ask: change.trim(), command: res.command, turns: 0, lastSeen, at: 0 };
+      ? { ask: `${refine.originalAsk}; ${change.trim()}`, command: res.command, turns: (session?.turns ?? 0) + 1, lastSeen, web: webRefOf(res.debug), at: 0 }
+      : { ask: change.trim(), command: res.command, turns: 0, lastSeen, web: webRefOf(res.debug), at: 0 };
     saveSession(sid, session);
 
     const webRef = res.debug.refs.find((r) => r.source === "web");
-    const webNote = webRef ? `used web docs from ${webRef.url ? new URL(webRef.url).hostname : "a web search"}` : "";
+    const paused = res.debug.webNotes.find((n) => n.startsWith("web: paused"));
+    const webNote = webRef
+      ? `used web docs from ${webRef.url ? new URL(webRef.url).hostname : "a web search"}`
+      : paused
+        ? "web search paused (search engines rate-limited), used local docs only"
+        : "";
     if (opts.raw) {
       process.stdout.write(res.command + "\n");
       if (webNote) err(`whatcmd: ${webNote}`);

@@ -178,10 +178,13 @@ export async function doctor(opts: DoctorOptions): Promise<boolean> {
   // 5. Web lookup (optional).
   if (cfg.web) {
     const { checkBrowse } = await import("./browse.js");
-    const b = await checkBrowse(cfg);
-    if (b.ok) ok(`Web lookup is on: tiny-browse starts ${dim(`(${b.detail})`)}`);
-    else warn(`Web lookup is on, but ${b.detail}`);
-  } else info("Web lookup is off (fully local). To look up docs online when unsure: whatcmd config set web true");
+    const checks = await checkBrowse();
+    const bad = checks.filter((c) => !c.ok);
+    if (!bad.length) ok("Web lookup is on (only for requests the local answer gets wrong)");
+    else warn(`Web lookup is on, but: ${bad.map((c) => `${c.name}: ${c.detail}`).join("; ")}`);
+    for (const c of checks) info(dim(`tiny-browse ${c.name}: ${c.detail}`));
+    info(dim("To stay fully local: whatcmd config set web false"));
+  } else info("Web lookup is off (fully local). To look up docs online when the local answer fails: whatcmd config set web true");
 
   // 6. Shell shortcut.
   if (opts.fromInit) return true;

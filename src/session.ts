@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { cacheDir } from "./config.js";
+import type { WebRef } from "./generate.js";
 
 /**
  * Refinement state, one file per terminal session (shell PID), so tabs never mix.
@@ -20,6 +21,8 @@ export interface Session {
   turns: number;
   /** The shell's last run command when this command was generated; unchanged later = nothing new was run. */
   lastSeen?: string;
+  /** Web docs this command was made with; refinements reuse them instead of searching again. */
+  web?: WebRef;
   at: number;
 }
 

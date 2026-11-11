@@ -1,17 +1,31 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
 import { cacheDir, type Config } from "./config.js";
 import { stems } from "./ground.js";
-import { McpStdioClient } from "./mcp.js";
-import { which } from "./util.js";
 
 /**
- * Web lookup through tiny-browse (an MCP server). Used when local docs aren't enough,
- * e.g. kubectl, whose --help lists subcommands but none of their flags.
- * Everything here fails soft: no tiny-browse, no Chrome or a timeout just means no web docs.
+ * Web lookup through tiny-browse (used as a library). Only runs after the model failed on a
+ * request, e.g. kubectl, whose --help lists subcommands but none of their flags.
+ * Everything here fails soft: no Chrome, a block or a timeout just means no web docs.
+ *
+ * Rate limits: tiny-browse keeps per-engine budgets shared by every tiny-browse process on the
+ * machine (and pauses an engine after a CAPTCHA). whatcmd never passes its own tiny-browse
+ * config, so the user's tiny-browse settings and budgets apply, and on top of that it makes at
+ * most one page read and one search per request, never retries a blocked search, and pauses
+ * its own searches for a while when every engine refused.
  */
+
+type TinyBrowse = Pick<typeof import("@shubhamcodess/tiny-browse"), "webFetch" | "webSearch" | "doctor">;
+
+let load: () => Promise<TinyBrowse> = () => import("@shubhamcodess/tiny-browse");
+
+/** Tests: replace tiny-browse with a fake. */
+export function setTinyBrowse(fake: TinyBrowse | null): void {
+  load = fake ? async () => fake : () => import("@shubhamcodess/tiny-browse");
+}
+
+const errCode = (e: unknown): string => ((e as { code?: unknown })?.code as string | undefined) ?? "error";
 
 export interface WebDoc {
   /** Short excerpt of relevant command lines, ready for the prompt. */
@@ -38,26 +52,6 @@ export const REFERENCE: Record<string, string> = {
   argocd: "https://argo-cd.readthedocs.io/en/stable/getting_started/",
   eksctl: "https://eksctl.io/getting-started/",
 };
-
-/** How to start tiny-browse: config override, then the installed dependency, then PATH. */
-export function resolveBrowse(cfg: Pick<Config, "webCommand">): { command: string; args: string[] } | null {
-  const override = cfg.webCommand?.trim();
-  if (override) {
-    return /\.(c|m)?js$/.test(override) ? { command: process.execPath, args: [override] } : { command: override, args: [] };
-  }
-  try {
-    const req = createRequire(import.meta.url);
-    const pkgPath = req.resolve("tiny-browse/package.json");
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as { bin?: string | Record<string, string> };
-    const bin = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.["tiny-browse"];
-    if (bin) {
-      const file = path.resolve(path.dirname(pkgPath), bin);
-      if (fs.existsSync(file)) return { command: process.execPath, args: [file] };
-    }
-  } catch {}
-  const onPath = which("tiny-browse");
-  return onPath ? { command: onPath, args: [] } : null;
-}
 
 /**
  * Pick the lines of a web page that look like commands for `tool` and match the request:
@@ -149,9 +143,35 @@ export interface LookupOptions {
   query?: string;
 }
 
+/** After every search engine refused, whatcmd stops searching for this long (tiny-browse's first CAPTCHA pause). */
+export const SEARCH_PAUSE_MS = 15 * 60 * 1000;
+const pauseFile = () => path.join(cacheDir(), "web", "search-paused.json");
+
+/** Minutes left on whatcmd's own search pause, or 0. */
+export function searchPausedFor(now = Date.now()): number {
+  try {
+    const until = (JSON.parse(fs.readFileSync(pauseFile(), "utf8")) as { until: number }).until;
+    return until > now ? Math.ceil((until - now) / 60_000) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function pauseSearch(now = Date.now()): void {
+  try {
+    fs.mkdirSync(path.dirname(pauseFile()), { recursive: true });
+    fs.writeFileSync(pauseFile(), JSON.stringify({ until: now + SEARCH_PAUSE_MS }));
+  } catch {}
+}
+
+/** Every engine was skipped or refused (budget used up, paused after a CAPTCHA, blocked). */
+const allRefused = (attempts: { status: string }[]) =>
+  attempts.length > 0 && attempts.every((a) => !["ok", "no_results", "off_topic"].includes(a.status));
+
 /**
  * Look up how to do `ask` on the web. Returns null (with a note) on any failure.
- * `notes` collects one line per step for --debug.
+ * `notes` collects one line per step for --debug; a line starting "web: paused" means
+ * searches are rate-limited right now.
  */
 export async function lookup(ask: string, cfg: Config, o: LookupOptions = {}, notes: string[] = []): Promise<WebDoc | null> {
   const tool = o.tool;
@@ -159,31 +179,28 @@ export async function lookup(ask: string, cfg: Config, o: LookupOptions = {}, no
   if (!query) return null;
   const ref = tool ? REFERENCE[tool] : undefined;
   const t = performance.now();
-  let client: McpStdioClient | null = null;
   const deadline = Date.now() + cfg.webTimeoutMs;
-  const left = () => Math.max(500, deadline - Date.now());
-  /** Start tiny-browse on first use; cached answers never start it. */
-  const connect = async () => {
-    if (client) return client;
-    const how = resolveBrowse(cfg);
-    if (!how) throw new Error("tiny-browse not found (install it, or set webCommand)");
-    client = new McpStdioClient(how.command, how.args, { TINY_BROWSE_LOG_LEVEL: "error" });
-    await client.start(Math.min(5000, left()));
-    return client;
-  };
+  const left = () => Math.max(1000, deadline - Date.now());
   try {
-    // 1. A known reference page: cache the whole page per URL, pick lines per request locally.
+    // 1. A known reference page: plain HTTP (no Chrome, no search budget). The whole page is
+    //    cached per URL for a week; lines are picked per request locally.
     if (ref) {
       let page = readCache(`page\n${ref}`)?.text;
-      if (page) notes.push(`web: ${ref} (cached)`);
+      const cached = page !== undefined;
+      if (cached) notes.push(`web: ${ref} (cached)`);
       else {
-        const r = await (await connect()).callTool("web_fetch", { urls: [ref], max_tokens: 30000 }, left());
-        page = r.isError ? "" : r.text;
-        notes.push(`web: read ${ref} -> ${r.isError ? `error: ${r.text.slice(0, 120)}` : `${page.length} chars`}`);
-        if (page) writeCache(`page\n${ref}`, { text: page, source: ref, cached: false });
+        try {
+          const tb = await load();
+          const r = await tb.webFetch({ urls: [ref], max_tokens: 30000 }, { mode: "http", timeoutMs: left() });
+          page = r.pages[0]?.markdown ?? "";
+          notes.push(`web: read ${ref} -> ${page.length} chars`);
+          if (page) writeCache(`page\n${ref}`, { text: page, source: ref, cached: false });
+        } catch (e) {
+          notes.push(`web: read ${ref} -> ${errCode(e)}: ${(e as Error).message.slice(0, 120)}`);
+        }
       }
       const text = page ? webExcerpt(page, ask, tool) : "";
-      if (text) return { text, source: ref, cached: notes.at(-1)!.endsWith("(cached)") };
+      if (text) return { text, source: ref, cached };
       if (page) notes.push(`web: nothing in ${ref} matches the request`);
     }
 
@@ -194,35 +211,53 @@ export async function lookup(ask: string, cfg: Config, o: LookupOptions = {}, no
       notes.push(`web: search "${query}" (cached${hit.text ? "" : ", nothing found"})`);
       return hit.text ? hit : null;
     }
-    const r = await (await connect()).callTool("web_search", { query, read: 2, max_tokens: 3000 }, left());
-    const text = r.isError ? "" : webExcerpt(r.text, ask, tool);
-    notes.push(`web: search "${query}" -> ${r.isError ? "error" : text ? `${text.split("\n").length} lines` : "nothing relevant"}`);
-    const doc = text ? { text, source: firstSource(r.text) || "web search", cached: false } : null;
-    // "Nothing found" from a blocked or degraded search is kept for an hour only, not a week.
-    const degraded = r.isError || /CAPTCHA|may not match|unavailable/i.test(r.text.slice(0, 600));
-    writeCache(key, doc ?? { text: "", source: "", cached: false }, !doc && degraded);
+    const paused = searchPausedFor();
+    if (paused) {
+      notes.push(`web: paused, search engines are rate-limited (${paused} min left)`);
+      return null;
+    }
+    const tb = await load();
+    let r;
+    try {
+      r = await tb.webSearch({ query, read: 2, max_tokens: 3000 }, { timeoutMs: left(), useServer: "auto" });
+    } catch (e) {
+      // Never retried: a blocked search means the engines' budgets are used up or they want a CAPTCHA.
+      if (errCode(e) === "blocked") {
+        pauseSearch();
+        notes.push(`web: paused, search engines are rate-limited (${Math.round(SEARCH_PAUSE_MS / 60_000)} min)`);
+      } else notes.push(`web: search "${query}" -> ${errCode(e)}: ${(e as Error).message.slice(0, 120)}`);
+      return null;
+    }
+    const attempts = r.attempts.map((a) => `${a.provider} ${a.status}`).join(", ");
+    if (!r.results.length && allRefused(r.attempts)) {
+      pauseSearch();
+      notes.push(`web: paused, search engines are rate-limited (${attempts})`);
+      return null;
+    }
+    const text = webExcerpt(r.markdown, ask, tool);
+    notes.push(
+      `web: search "${query}" via ${r.provider}${r.cached ? " (cached by tiny-browse)" : ""} [${attempts}] -> ${text ? `${text.split("\n").length} lines` : "nothing relevant"}`,
+    );
+    const doc = text ? { text, source: r.pages[0]?.finalUrl || r.results[0]?.url || firstSource(r.markdown) || "web search", cached: r.cached } : null;
+    // "Nothing found" from a degraded engine is kept for an hour only, not a week.
+    writeCache(key, doc ?? { text: "", source: "", cached: false }, !doc && Boolean(r.warning));
     return doc;
   } catch (e) {
-    notes.push(`web: ${(e as Error).message}`);
+    notes.push(`web: ${errCode(e)}: ${(e as Error).message}`);
     return null;
   } finally {
     notes.push(`web: ${Math.round(performance.now() - t)} ms`);
-    await (client as McpStdioClient | null)?.close();
   }
 }
 
-/** For `whatcmd doctor`: can tiny-browse be found and started? */
-export async function checkBrowse(cfg: Config): Promise<{ ok: boolean; detail: string }> {
-  const how = resolveBrowse(cfg);
-  if (!how) return { ok: false, detail: "tiny-browse not found: npm install -g tiny-browse, or set webCommand" };
-  const where = [how.command, ...how.args].join(" ");
-  const client = new McpStdioClient(how.command, how.args, { TINY_BROWSE_LOG_LEVEL: "error" });
+/** For `whatcmd doctor`: tiny-browse's own checks (browser, engine budgets), without starting Chrome. */
+export async function checkBrowse(): Promise<{ name: string; ok: boolean; detail: string }[]> {
   try {
-    await client.start(5000);
-    return { ok: true, detail: where };
+    const tb = await load();
+    const checks = await tb.doctor({ startChrome: false });
+    const paused = searchPausedFor();
+    return paused ? [...checks, { name: "whatcmd search pause", ok: false, detail: `${paused} min left (every engine refused)` }] : checks;
   } catch (e) {
-    return { ok: false, detail: `${where}: ${(e as Error).message}` };
-  } finally {
-    await client.close();
+    return [{ name: "tiny-browse", ok: false, detail: (e as Error).message }];
   }
 }

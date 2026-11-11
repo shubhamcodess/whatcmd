@@ -56,6 +56,21 @@ export interface Refinement {
   base: string;
   /** Exit status of `base` if the user ran it. */
   status?: number;
+  /** Web docs the earlier turn used: reused instead of looking up again. */
+  web?: WebRef;
+}
+
+/** Web docs as kept between refinements. */
+export interface WebRef {
+  tool?: string;
+  text: string;
+  url: string;
+}
+
+/** The web docs a result used, if any (for the refine session). */
+export function webRefOf(debug: DebugInfo): WebRef | undefined {
+  const r = debug.refs.find((x) => x.source === "web");
+  return r ? { tool: r.name === "web" ? undefined : r.name, text: r.text, url: r.url ?? "" } : undefined;
 }
 
 function evaluate(raw: string, ask: string, profile: Profile, base?: string): Checked {
@@ -142,10 +157,17 @@ export async function generate(change: string, cfg: Config, refine?: Refinement)
   debug.refs = cfg.grounding ? ground(ask, profile, 2, debug.groundNotes) : [];
   debug.timings.groundMs = since(t);
 
-  // Web lookup (opt-in): once per request, triggered by a tool with shallow local docs,
-  // by the model answering SEARCH, or by a failed answer.
+  // Web lookup: at most once per request, and only after the model failed with local docs:
+  // it answered SEARCH (it doesn't know the tool), or its answer still fails the checks after
+  // the retries. Requests the model gets right never touch the network.
   const tool = cfg.web ? pickTool(ask, debug.refs) : undefined;
   let webDone = !cfg.web;
+  // A refinement reuses the docs its earlier turn looked up, if it is about the same tool.
+  if (!webDone && refine?.web && refine.web.tool === tool) {
+    debug.refs.push({ name: tool ?? "web", source: "web", text: refine.web.text, url: refine.web.url });
+    debug.webNotes.push(`web: reusing docs from ${refine.web.url || "the last turn"}`);
+    webDone = true;
+  }
   // Offer the SEARCH answer only for requests about a tool: with it in the prompt, small
   // models refuse less, so plain questions keep the exact prompt they'd get with web off.
   const offerSearch = () => !webDone && tool !== undefined && namesTool(ask, tool);
@@ -162,7 +184,6 @@ export async function generate(change: string, cfg: Config, refine?: Refinement)
     debug.refs.push({ name: tool ?? "web", source: "web", text: doc.text, url: doc.source });
     return true;
   };
-  if (tool && tool in REFERENCE) await addWeb("reference");
 
   let messages = build();
   debug.messages = messages;

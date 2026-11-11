@@ -1,6 +1,6 @@
 {
   "name": "@shubhamcodess/whatcmd",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Type plain English in your terminal, get a shell command back. Runs locally on Ollama, grounded in your own system.",
   "type": "module",
   "bin": {
@@ -54,7 +54,7 @@
     "@types/node": "^22.10.0",
     "typescript": "^5.6.3"
   },
-  "optionalDependencies": {
-    "tiny-browse": "file:../tiny-browse"
+  "dependencies": {
+    "@shubhamcodess/tiny-browse": "^0.1.0"
   }
 }
