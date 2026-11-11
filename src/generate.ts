@@ -91,6 +91,15 @@ function badness(c: Checked): number {
   return (c.echoed ? 10 : 0) + (c.unchanged ? 5 : 0) + c.verdict.missing.length * 2 + c.issues.length;
 }
 
+/**
+ * Failures web docs can fix: no usable command, an echo, an unchanged refinement, or lint
+ * issues. A program that isn't installed is not one: the command may be right, and a web
+ * page won't install it (the user gets the "not installed" warning instead).
+ */
+function docsCouldHelp(c: Checked): boolean {
+  return !c.verdict.ok || c.echoed || Boolean(c.unchanged) || c.issues.length > 0;
+}
+
 function fixHint(c: Checked, profile: Profile): string {
   if (!c.verdict.ok) return "";
   const parts: string[] = [];
@@ -239,7 +248,7 @@ export async function generate(change: string, cfg: Config, refine?: Refinement)
   }
 
   // Still failing after all that: look it up on the web (if not done yet) and try once more.
-  const failing = !best.verdict.ok || badness(best) > 0;
+  const failing = docsCouldHelp(best);
   if (failing && !webDone && (tool !== undefined || looksLikeShellTask(ask)) && debug.outputs.length < MAX_CALLS_WEB) {
     if (await addWeb("fallback")) {
       const again = await fresh(!best.verdict.ok && best.verdict.reason === "not-a-shell-task");

@@ -11,7 +11,7 @@ First stable release. Includes everything below that was planned as 0.2.0 (never
 ### Added
 
 - Refine with `/w+ <change>`: changes this terminal's last command (or your edited version of it), up to 5 times, with the last exit status for "fix that". Direct mode asks `[r]un, re[f]ine, [q]uit?`.
-- Web lookup through [tiny-browse](https://github.com/shubhamcodess/tiny-browse), now a regular dependency (`@shubhamcodess/tiny-browse`, used as a library in the same process). On by default, but only for a request the local model got wrong: it answered `SEARCH: …`, or its answer still fails after the retries. Requests it gets right never touch the network. At most one lookup per request.
+- Web lookup through [tiny-browse](https://github.com/shubhamcodess/tiny-browse), now a regular dependency (`@shubhamcodess/tiny-browse`, used as a library in the same process). On by default, but only for a request the local model got wrong: it answered `SEARCH: …`, or its answer still fails after the retries. Requests it gets right never touch the network, and neither does a command whose only problem is that its program isn't installed. At most one lookup per request.
   - Known reference pages (kubectl, helm, gcloud, az, gh, kind, kustomize, istioctl, argocd, eksctl) are read over plain HTTP, without Chrome or a search engine, and cached for 7 days.
   - Rate limits: tiny-browse's shared per-engine budgets and your tiny-browse config apply; a blocked search is never retried, and when every engine refuses whatcmd pauses its searches for 15 minutes (`web search paused`).
   - `/w+` refinements reuse the web docs of the command they change instead of searching again.

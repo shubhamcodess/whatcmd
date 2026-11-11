@@ -5,6 +5,11 @@ import os from "node:os";
 import path from "node:path";
 
 process.env.WHATCMD_CACHE_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "whatcmd-web-"));
+// A stub kubectl first on PATH, so tests don't depend on whether this machine has one
+// (GitHub's macOS runners don't; a missing program changes which retries run).
+const fakeBin = fs.mkdtempSync(path.join(os.tmpdir(), "whatcmd-bin-"));
+fs.writeFileSync(path.join(fakeBin, "kubectl"), "#!/bin/sh\nexit 0\n", { mode: 0o755 });
+process.env.PATH = `${fakeBin}${path.delimiter}${process.env.PATH ?? ""}`;
 const { webExcerpt, cleanQuery, lookup, checkBrowse, setTinyBrowse, searchPausedFor } = await import("./browse.js");
 const { searchRequest, buildMessages } = await import("./prompt.js");
 const { pickTool, namesTool, generate, webRefOf } = await import("./generate.js");
@@ -188,6 +193,22 @@ test("web is on by default but a request the model gets right never touches it",
     assert.equal(r.kind, "command");
     assert.equal(tb.calls.length, 0, "no web call");
     assert.equal(o.seen.length, 1);
+  } finally {
+    o.restore();
+  }
+});
+
+test("a correct command for a program that isn't installed doesn't trigger a lookup", async () => {
+  freshCache();
+  const tb = fakeTb({ page: PAGE, search: () => assert.fail("no search expected") });
+  // zorbtool exists nowhere, so the answer comes back with "not installed"; the fix-up retry
+  // repeats it. Web docs can't install a program, so no lookup either way.
+  const o = fakeOllama(["zorbtool list -a", "zorbtool list -a"]);
+  try {
+    const r = await generate("list all files with zorbtool", { ...DEFAULTS, grounding: false });
+    assert.equal(r.kind, "command");
+    assert.ok(r.kind === "command" && r.warnings.some((w) => /zorbtool is not installed/.test(w)));
+    assert.equal(tb.calls.length, 0, "no web call");
   } finally {
     o.restore();
   }
