@@ -12,9 +12,7 @@ whatcmd turns **plain English** into **the right shell command**, on your prompt
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Website](https://img.shields.io/badge/website-whatcmd-0c0c0b?style=flat-square)](https://shubhamcodess.github.io/whatcmd/)
 
-[![npm weekly downloads](https://img.shields.io/npm/dw/@shubhamcodess/whatcmd?style=flat-square&logo=npm&label=weekly)](https://www.npmjs.com/package/@shubhamcodess/whatcmd)
-[![npm monthly downloads](https://img.shields.io/npm/dm/@shubhamcodess/whatcmd?style=flat-square&logo=npm&label=monthly)](https://www.npmjs.com/package/@shubhamcodess/whatcmd)
-[![npm total downloads](https://img.shields.io/npm/d18m/@shubhamcodess/whatcmd?style=flat-square&logo=npm&label=total)](https://www.npmjs.com/package/@shubhamcodess/whatcmd)
+[![npm total downloads](https://img.shields.io/npm/d18m/@shubhamcodess/whatcmd?style=flat-square&logo=npm&label=downloads)](https://www.npmjs.com/package/@shubhamcodess/whatcmd)
 
 - **Never runs anything.** The command lands on your prompt; you read it, edit it, or press Enter.
 - **Knows your machine.** OS, shell, GNU vs BSD flags, installed tools and their man pages go into the prompt.
