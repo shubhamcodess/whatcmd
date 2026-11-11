@@ -92,6 +92,36 @@ $$(".reveal, .bench").forEach((el) => io.observe(el));
   });
 })();
 
+/* ---------- npm downloads (total since first publish) ---------- */
+(async () => {
+  const fmt = (n) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "")}k` : String(n));
+  const PKG = "@shubhamcodess/whatcmd";
+  const SINCE = "2026-11-04"; // first publish
+  let n;
+  try {
+    n = Number(sessionStorage.getItem("wc-downloads"));
+  } catch {}
+  if (!n) {
+    try {
+      // npm caps a point range at 18 months, so count from whichever is later
+      const today = new Date().toISOString().slice(0, 10);
+      const cap = new Date(Date.now() - 540 * 864e5).toISOString().slice(0, 10);
+      const from = SINCE > cap ? SINCE : cap;
+      const r = await fetch(`https://api.npmjs.org/downloads/point/${from}:${today}/${PKG}`);
+      if (r.ok) n = (await r.json()).downloads;
+      try {
+        if (n) sessionStorage.setItem("wc-downloads", String(n));
+      } catch {}
+    } catch {}
+  }
+  if (!n) return; // no count (or the API failed): the button still links to npm
+  $$("[data-downloads]").forEach((el) => {
+    el.textContent = `↓ ${fmt(n)}`;
+    el.title = `${n.toLocaleString()} npm downloads`;
+    el.hidden = false;
+  });
+})();
+
 /* ---------- background dot field (same as mcp-token-optimizer) ---------- */
 (() => {
   const canvas = $(".bgfield canvas");
